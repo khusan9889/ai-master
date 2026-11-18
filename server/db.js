@@ -1,6 +1,5 @@
 // Простое файловое хранилище (JSON) с атомарной записью.
-// Без нативных зависимостей — запускается на любом сервере с Node.js.
-// Для высокой нагрузки модуль можно заменить на PostgreSQL, сохранив интерфейс.
+// Без нативных зависимостей — запускается на любом хостинге с Node.js.
 
 const fs = require('fs');
 const path = require('path');
@@ -11,31 +10,22 @@ const FILE = path.join(DATA_DIR, 'db.json');
 
 function fresh() {
   return {
-    version: 1,
-    seq: { lead: 0, order: 10000, user: 0 },
-    users: [],
-    sessions: {},
+    version: 2,
+    seq: { lead: 0 },
     adminSessions: {},
-    otp: {},
     courses: JSON.parse(JSON.stringify(seed.courses)),
     lessons: JSON.parse(JSON.stringify(seed.lessons)),
     plans: JSON.parse(JSON.stringify(seed.plans)),
-    promos: JSON.parse(JSON.stringify(seed.promos)),
-    certs: JSON.parse(JSON.stringify(seed.certs)),
-    orders: [],
     leads: [],
     settings: {
       telegramToken: '',
       telegramChatId: '',
       notifyLeads: true,
-      notifyOrders: true,
-      notifySignups: false,
-      smsDemo: true,
-      demoCode: '1234',
-      paymentsDemo: true,
-      siteName: 'AI Master',
       contactPhone: '+998 71 200 00 00',
-      contactTelegram: '@aimaster_uz'
+      contactTelegram: '@aimaster_uz',
+      metaPixelId: '',
+      yandexMetrikaId: '',
+      gaId: ''
     }
   };
 }
@@ -45,7 +35,6 @@ function load() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   if (fs.existsSync(FILE)) {
     data = JSON.parse(fs.readFileSync(FILE, 'utf8'));
-    // добавляем поля, появившиеся в новых версиях
     const def = fresh();
     for (const k of Object.keys(def)) if (data[k] === undefined) data[k] = def[k];
     data.settings = Object.assign(def.settings, data.settings);
@@ -68,4 +57,4 @@ function save() {
 }
 function saveNow() { clearTimeout(timer); flush(); }
 
-module.exports = { load, save, saveNow, get db() { return data; }, FILE };
+module.exports = { load, save, saveNow, get db() { return data; }, DATA_DIR };

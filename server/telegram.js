@@ -1,4 +1,4 @@
-// Отправка уведомлений в Telegram-группу через Bot API.
+// Отправка заявок в Telegram-группу через Bot API.
 
 const store = require('./db');
 
@@ -24,7 +24,7 @@ async function send(text, { retry = true } = {}) {
     });
     const j = await r.json().catch(() => ({}));
     if (j.ok) return { ok: true, messageId: j.result?.message_id };
-    // Группа превратилась в супергруппу — у неё новый ID. Сохраняем и повторяем.
+    // Группа стала супергруппой — у неё новый ID. Сохраняем и повторяем.
     const newId = j.parameters?.migrate_to_chat_id;
     if (newId && retry) {
       store.db.settings.telegramChatId = String(newId);
@@ -39,10 +39,10 @@ async function send(text, { retry = true } = {}) {
 }
 
 const LEAD_TYPES = {
-  consult: '🎯 Подбор курса / консультация',
-  business: '🏢 Корпоративное обучение',
-  course: '📚 Интерес к курсу',
-  'level-test': '🧭 Тест уровня'
+  plan: '💳 Заявка на подписку',
+  buy: '🛒 Заявка на покупку курса',
+  consult: '📞 Консультация',
+  business: '🏢 Обучение для компании'
 };
 
 function fmtDate(iso) {
@@ -57,29 +57,14 @@ function leadText(l) {
     `👤 <b>Имя:</b> ${h(l.name)}`,
     `📞 <b>Телефон:</b> ${h(l.phone)}`
   ];
+  if (l.item) rows.push(`📦 <b>Выбор:</b> ${h(l.item)}`);
   if (l.company) rows.push(`🏢 <b>Компания:</b> ${h(l.company)}`);
   if (l.size) rows.push(`👥 <b>Сотрудников:</b> ${h(l.size)}`);
-  if (l.courseTitle) rows.push(`📚 <b>Курс:</b> ${h(l.courseTitle)}`);
-  if (l.goal) rows.push(`🎯 <b>Цель:</b> ${h(l.goal)}`);
-  if (l.contactWay) rows.push(`💬 <b>Как связаться:</b> ${h(l.contactWay)}`);
   if (l.message) rows.push(`📝 <b>Комментарий:</b> ${h(l.message)}`);
-  rows.push('', `🌐 Страница: ${h(l.page || '—')}`, `🕒 ${fmtDate(l.createdAt)} (Ташкент)`);
+  const src = [l.src, l.med, l.cmp].filter(Boolean).join(' / ');
+  rows.push('', `📊 Источник: ${h(src || 'прямой заход')}${l.cnt ? ` · ${h(l.cnt)}` : ''}`);
+  rows.push(`🕒 ${fmtDate(l.createdAt)} (Ташкент)`);
   return rows.join('\n');
 }
 
-function orderText(o, user) {
-  return [
-    `<b>💳 Оплачен заказ ${h(o.id)}</b>${o.demo ? ' <i>(демо-оплата)</i>' : ''}`,
-    '',
-    `📦 ${h(o.title)}`,
-    `💰 ${Number(o.amount).toLocaleString('ru-RU')} сум · ${h(o.method)}`,
-    `👤 ${h(user?.name || '—')} · ${h(user?.phone || '—')}`,
-    `🕒 ${fmtDate(o.paidAt || o.createdAt)}`
-  ].join('\n');
-}
-
-function signupText(u) {
-  return [`<b>🆕 Новая регистрация</b>`, '', `👤 ${h(u.name)}`, `📞 ${h(u.phone)}`, `🕒 ${fmtDate(u.createdAt)}`].join('\n');
-}
-
-module.exports = { send, leadText, orderText, signupText, cfg, LEAD_TYPES };
+module.exports = { send, leadText, cfg, LEAD_TYPES };

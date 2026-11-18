@@ -13,29 +13,29 @@ const LLM_SVG = `<svg viewBox="0 0 680 170" width="100%" role="img" aria-label="
 <text x="570" y="74" font-size="12" fill="#16834A">Ташкент 92%</text><text x="570" y="96" font-size="12" fill="#16834A">город 5%</text><text x="570" y="118" font-size="12" fill="#16834A">… 3%</text></svg>`;
 
 const courses = [
-  { id: 'ai-basics', title: 'Что такое ИИ: основы за вечер', topic: 'Основы', level: 'Начальный', audience: 'beginner', hours: 2, price: 0, cover: 'c', rating: 4.8, students: 3120, isNew: false, published: true, order: 1,
+  { id: 'ai-basics', icon: 'cpu', title: 'Что такое ИИ: основы за вечер', topic: 'Основы', level: 'Начальный', audience: 'beginner', hours: 2, price: 0, cover: 'c', rating: 4.8, students: 3120, isNew: false, published: true, order: 1,
     desc: 'Как работают нейросети и языковые модели, что они умеют и где ошибаются. Без формул и кода.',
     outcomes: ['Понимать, как устроены нейросети', 'Отличать сильные и слабые стороны ИИ', 'Безопасно пользоваться ИИ-сервисами'],
     modules: [{ t: 'Знакомство с ИИ', l: [{ id: 'b1', t: 'Что такое нейросеть', free: true }, { id: 'b2', t: 'Где ИИ ошибается', free: true }] }] },
-  { id: 'prompt-eng', title: 'Промпт-инжиниринг на практике', topic: 'ИИ в работе', level: 'Начальный', audience: 'work', hours: 5, price: 249000, cover: 'a', rating: 4.9, students: 1840, isNew: true, seq: true, published: true, order: 2,
+  { id: 'prompt-eng', icon: 'pen', title: 'Промпт-инжиниринг на практике', topic: 'ИИ в работе', level: 'Начальный', audience: 'work', hours: 5, price: 249000, cover: 'a', rating: 4.9, students: 1840, isNew: true, seq: true, published: true, order: 2,
     desc: 'Учимся писать промпты, которые стабильно дают нужный результат: роль, формат, примеры, проверка. Каждый урок — живое задание в песочнице.',
     outcomes: ['Писать промпты с ролью, форматом и примерами', 'Извлекать данные из документов в JSON', 'Проверять и улучшать ответы модели'],
     modules: [{ t: 'Как думает модель', l: [{ id: 'p1', t: 'Как устроены языковые модели', free: true }, { id: 'p2', t: 'Анатомия хорошего промпта' }] },
       { t: 'Практика', l: [{ id: 'p3', t: 'Задание: данные из договора' }] },
       { t: 'Финал', l: [{ id: 'p4', t: 'Итоговый тест', final: true }] }] },
-  { id: 'chatgpt-work', title: 'ChatGPT, Claude и Gemini для работы', topic: 'ИИ в работе', level: 'Начальный', audience: 'work', hours: 6, price: 299000, cover: 'b', rating: 4.8, students: 2410, isNew: false, published: true, order: 3,
+  { id: 'chatgpt-work', icon: 'msg', title: 'ChatGPT, Claude и Gemini для работы', topic: 'ИИ в работе', level: 'Начальный', audience: 'work', hours: 6, price: 299000, cover: 'b', rating: 4.8, students: 2410, isNew: false, published: true, order: 3,
     desc: 'Письма, отчёты, таблицы и презентации с помощью ИИ-ассистентов. Для офисных специалистов без кода.',
     outcomes: ['Ускорить рутину с письмами и отчётами', 'Работать с таблицами и документами через ИИ', 'Выбирать ассистента под задачу'],
     modules: [{ t: 'Ассистенты в работе', l: [{ id: 'w1', t: 'Выбираем ассистента под задачу', free: true }, { id: 'w2', t: 'Письма и отчёты за минуты' }, { id: 'w3', t: 'Таблицы и анализ данных' }] }] },
-  { id: 'ai-business', title: 'ИИ для бизнеса и маркетинга', topic: 'Бизнес', level: 'Средний', audience: 'business', hours: 8, price: 349000, cover: 'f', rating: 4.7, students: 960, isNew: false, published: true, order: 4,
+  { id: 'ai-business', icon: 'trend', title: 'ИИ для бизнеса и маркетинга', topic: 'Бизнес', level: 'Средний', audience: 'business', hours: 8, price: 349000, cover: 'f', rating: 4.7, students: 960, isNew: false, published: true, order: 4,
     desc: 'Контент, продажи и поддержка клиентов с ИИ: от контент-плана до чат-бота для Telegram.',
     outcomes: ['Собрать контент-план и тексты с ИИ', 'Автоматизировать ответы клиентам', 'Посчитать экономику внедрения ИИ'],
     modules: [{ t: 'Маркетинг', l: [{ id: 'm1', t: 'Контент-план за час', free: true }, { id: 'm2', t: 'Тексты для рекламы' }] }, { t: 'Продажи', l: [{ id: 'm3', t: 'ИИ в отделе продаж' }] }] },
-  { id: 'ml-zero', title: 'Машинное обучение с нуля', topic: 'Разработка', level: 'Средний', audience: 'dev', hours: 14, price: 449000, cover: 'd', rating: 4.8, students: 720, isNew: true, published: true, order: 5,
+  { id: 'ml-zero', icon: 'chart', title: 'Машинное обучение с нуля', topic: 'Разработка', level: 'Средний', audience: 'dev', hours: 14, price: 449000, cover: 'd', rating: 4.8, students: 720, isNew: true, published: true, order: 5,
     desc: 'Основы ML на Python: регрессия, классификация, оценка моделей. Формулы объясняем на пальцах.',
     outcomes: ['Понимать, как модель учится на данных', 'Обучить первую модель на Python', 'Оценивать качество модели'],
     modules: [{ t: 'Первые модели', l: [{ id: 'l1', t: 'Линейная регрессия на пальцах', free: true }, { id: 'l2', t: 'Градиентный спуск' }, { id: 'l3', t: 'Классификация' }] }] },
-  { id: 'agents', title: 'ИИ-агенты и автоматизация', topic: 'Разработка', level: 'Продвинутый', audience: 'dev', hours: 10, price: 449000, cover: 'e', rating: 4.9, students: 530, isNew: true, published: true, order: 6,
+  { id: 'agents', icon: 'bot', title: 'ИИ-агенты и автоматизация', topic: 'Разработка', level: 'Продвинутый', audience: 'dev', hours: 10, price: 449000, cover: 'e', rating: 4.9, students: 530, isNew: true, published: true, order: 6,
     desc: 'Собираем агентов и автоматизации: n8n, Telegram-боты, работа с базой знаний (RAG).',
     outcomes: ['Собрать бота с базой знаний', 'Связать ИИ с таблицами и мессенджерами', 'Защищать ботов от промпт-инъекций'],
     modules: [{ t: 'Агенты', l: [{ id: 'g1', t: 'Что такое агент', free: true }, { id: 'g2', t: 'RAG: бот по документам' }, { id: 'g3', t: 'Автоматизация в n8n' }] }] }
@@ -89,13 +89,4 @@ const plans = [
   { id: 'sub12', months: 12, price: 1290000, best: false }
 ];
 
-const promos = [
-  { code: 'AIMASTER20', type: 'pct', val: 20, limit: 500, used: 37, active: true },
-  { code: 'START50', type: 'sum', val: 50000, limit: 200, used: 12, active: true }
-];
-
-const certs = [
-  { no: 'AIM-2026-000123', name: 'Нодира Каримова', course: 'Что такое ИИ: основы за вечер', courseId: 'ai-basics', hours: 2, date: '12.10.2026', userId: null }
-];
-
-module.exports = { courses, lessons, plans, promos, certs };
+module.exports = { courses, lessons, plans };
