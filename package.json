@@ -16,5 +16,8 @@
   "private": true,
   "engines": {
     "node": ">=18.17"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.18.1"
   }
 }

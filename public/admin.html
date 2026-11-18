@@ -178,7 +178,7 @@ function openLead(id){const l=D.leads.find(x=>x.id===Number(id));if(!l)return;
  <div style="margin-top:auto"><button class="btn danger sm" data-act="leadDel" data-arg="${l.id}">Удалить заявку</button></div>`)}
 
 /* ---------- courses ---------- */
-const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E']};
+const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E'],g:['#0E8C82','#06514B']};
 const grad=k=>{const c=COVERS[k]||COVERS.a;return `linear-gradient(140deg,${c[0]},${c[1]})`};
 const AUD={beginner:'Новичкам',work:'Для работы',business:'Для бизнеса',dev:'Разработчикам'};
 const ICONS={cpu:'Процессор',pen:'Перо',msg:'Чат',trend:'График роста',chart:'Диаграмма',bot:'Бот',code:'Код',layers:'Слои',book:'Книга'};
@@ -201,7 +201,7 @@ function pCourseEdit(id){const c=D.courses.find(x=>x.id===id);if(!c)return '<div
    <label class="f">Чему научится студент — по пункту в строке<textarea data-outc rows="4">${esc(e.outcomes.map(o=>o[EDL]||'').join('\n'))}</textarea></label></div>
   <div class="card col"><div class="row between"><h3>Программа · ${EDL.toUpperCase()}</h3><button class="btn ghost sm" data-act="addMod">+ Модуль</button></div>
    ${e.modules.map((m,mi)=>`<div class="blk col"><div class="row" style="flex-wrap:nowrap"><input data-mod="${mi}" value="${V(m.t)}" placeholder="Название модуля" style="font-weight:600"><button class="btn ghost sm" data-act="delMod" data-arg="${mi}">✕</button></div>
-    ${m.l.map((l,li)=>`<div class="row" style="flex-wrap:nowrap;gap:6px"><input data-les="${mi}|${li}|t" value="${V(l.t)}" placeholder="Название урока"><input data-les="${mi}|${li}|id" value="${esc(l.id)}" class="mono" style="max-width:110px" title="ID урока"><label class="chk" title="Открыт бесплатно"><input type="checkbox" data-les="${mi}|${li}|free" ${l.free?'checked':''}>пробный</label><button class="btn ghost sm" data-act="editLesson" data-arg="${esc(l.id)}">Контент${D.lessonIds.includes(l.id)?'':' ⚠'}</button><button class="btn ghost sm" data-act="delLes" data-arg="${mi}|${li}">✕</button></div>`).join('')}
+    ${m.l.map((l,li)=>`<div class="row" style="flex-wrap:nowrap;gap:6px"><input data-les="${mi}|${li}|t" value="${V(l.t)}" placeholder="Название урока"><input data-les="${mi}|${li}|task" value="${V(l.task)}" placeholder="Задание урока" class="small"><input data-les="${mi}|${li}|id" value="${esc(l.id)}" class="mono" style="max-width:110px" title="ID урока"><label class="chk" title="Открыт бесплатно"><input type="checkbox" data-les="${mi}|${li}|free" ${l.free?'checked':''}>пробный</label><button class="btn ghost sm" data-act="editLesson" data-arg="${esc(l.id)}">Контент${D.lessonIds.includes(l.id)?'':' ⚠'}</button><button class="btn ghost sm" data-act="delLes" data-arg="${mi}|${li}">✕</button></div>`).join('')}
     <button class="btn ghost sm" style="width:fit-content" data-act="addLes" data-arg="${mi}">+ Урок</button></div>`).join('')}
    <p class="tiny muted">«Пробный» — урок открыт всем. Остальные уроки закрыты: посетитель видит кнопки «Купить курс» и «Оформить подписку». ⚠ — у урока ещё нет контента.</p></div>
  </div>
@@ -319,7 +319,7 @@ document.addEventListener('input',e=>{const el=e.target;
  if(el.dataset.loc)setLoc(EC,el.dataset.loc);
  if(el.dataset.outc!==undefined){const lines=el.value.split('\n');const n=Math.max(lines.length,EC.outcomes.length);const out=[];for(let i=0;i<n;i++){const o={uz:'',ru:'',en:'',...(EC.outcomes[i]||{})};o[EDL]=(lines[i]||'').trim();out.push(o)}EC.outcomes=out.filter(o=>o.uz||o.ru||o.en)}
  if(el.dataset.mod!==undefined)setLoc(EC.modules[el.dataset.mod],'t');
- if(el.dataset.les){const[m,l,k]=el.dataset.les.split('|');const les=EC.modules[m].l[l];if(k==='t')setLoc(les,'t');else les[k]=el.type==='checkbox'?el.checked:el.value}
+ if(el.dataset.les){const[m,l,k]=el.dataset.les.split('|');const les=EC.modules[m].l[l];if(k==='t'||k==='task')setLoc(les,k);else les[k]=el.type==='checkbox'?el.checked:el.value}
  if(el.dataset.b){const[i,k]=el.dataset.b.split('|');EL.lesson.blocks[i][k]=el.type==='checkbox'?el.checked:el.value}
  if(el.dataset.o){const[i,k,f]=el.dataset.o.split('|');const opts=EL.lesson.blocks[i].opts;if(f==='ok'){opts.forEach((o,n)=>o.ok=n==k);redrawLesson()}else opts[k][f]=el.value}
  if(el.dataset.plan){const[i,k]=el.dataset.plan.split('|');if(k==='best')D.plans.forEach((p,n)=>p.best=n==i);else D.plans[i][k]=Number(el.value)}});

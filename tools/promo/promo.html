@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AI Master — promo</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Рекламный ролик: каждая сцена — функция от времени t (секунды). Рендер — tools/promo/render.mjs */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0B0D11;color:#F2F1EE;font-family:Inter,sans-serif;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden}
+.bg{position:absolute;inset:0;background:radial-gradient(1200px 900px at 80% 10%,rgba(255,107,26,.28),transparent 60%),radial-gradient(1000px 800px at 10% 95%,rgba(91,110,255,.22),transparent 60%),#0B0D11}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:60px 60px}
+.cap{position:absolute;font-family:Manrope,Inter,Arial,sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.cap .k{display:inline-flex;align-items:center;gap:12px;font-family:Inter;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#FF9A5C}
+.cap .k i{width:10px;height:10px;border-radius:50%;background:#FF6B1A;display:inline-block}
+.cap h1{color:#fff}.cap h1 em{font-style:normal;color:#FF7A2E}
+.cap p{font-family:Inter;font-weight:500;color:#C9C8C3;letter-spacing:0;line-height:1.35}
+/* телефон */
+.phone{position:absolute;width:430px;height:900px;border-radius:64px;background:#15181F;padding:14px;box-shadow:0 60px 120px rgba(0,0,0,.55),inset 0 0 0 2px #2A2E38}
+.screen{position:relative;width:100%;height:100%;border-radius:52px;overflow:hidden;background:#FAFAF8;color:#111318}
+.notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#111318;z-index:5}
+.sbar{height:58px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 30px 6px;font-size:15px;font-weight:600}
+.scr{position:absolute;inset:58px 0 0 0;padding:0 22px;display:flex;flex-direction:column;gap:14px}
+.nav{display:flex;align-items:center;justify-content:space-between;height:54px}
+.logo{display:flex;align-items:center;gap:9px;font-family:Manrope;font-weight:800;font-size:19px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:14px 18px;font-family:Manrope;font-weight:700;font-size:16px;background:#FF6B1A;color:#111318}
+.btn.ghost{background:#fff;box-shadow:inset 0 0 0 1px #E7E5E0}
+.btn.dark{background:#111318;color:#F2F1EE}
+.card{background:#fff;border:1px solid #E7E5E0;border-radius:20px;padding:18px}
+.muted{color:#71717A}
+.h{font-family:Manrope;font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.opt{display:flex;gap:12px;align-items:center;border:1px solid #E7E5E0;border-radius:14px;padding:12px 14px;font-size:15px;background:#FAFAF8}
+.opt .l{width:26px;height:26px;border-radius:8px;background:#F1F0EC;display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.opt.ok{border-color:#15803D;background:#E7F6EC}.opt.ok .l{background:#15803D;color:#fff}
+.bar{height:6px;background:#F1F0EC;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;background:#FF6B1A;border-radius:99px}
+.dark{background:#111318;color:#F2F1EE;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#A9A8A3}
+.mono{font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:1.6}
+.box{background:#1E222B;border-radius:12px;padding:12px}
+.k2{color:#8F9DFF}.v2{color:#9FE3A9}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #3A3F4D;border-radius:999px;padding:7px 12px;font-size:13.5px;color:#D7D5CF}
+.chip.on{background:#F2F1EE;color:#111318;border-color:#F2F1EE}
+.tl{display:flex;gap:9px;font-size:13.5px;align-items:flex-start}
+.ok-c{color:#4ADE80}.bad-c{color:#FF9A5C}
+.toast{position:absolute;left:50%;transform:translateX(-50%);background:#111318;color:#fff;border-radius:16px;padding:12px 18px;font-weight:700;font-size:16px;display:flex;gap:10px;align-items:center;white-space:nowrap;box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.tap{position:absolute;width:56px;height:56px;border-radius:50%;background:rgba(255,107,26,.35);border:3px solid #FF6B1A;pointer-events:none}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 18px;font-weight:700;font-size:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#fff}
+.scene{position:absolute;inset:0}
+svg.i{width:20px;height:20px;flex:none}
+</style>
+</head>
+<body>
+<div id="stage"><div class="bg"></div><div class="grid"></div><div id="root"></div></div>
+<script>
+const Q=new URLSearchParams(location.search);const LANG=Q.get('lang')||'uz';const FMT=Q.get('fmt')||'v';// v = 1080x1920, h = 1920x1080
+const W=FMT==='v'?1080:1920,H=FMT==='v'?1920:1080;
+const TXT={
+ uz:{hook1:'ChatGPT’dan faqat savol berish uchun foydalanasizmi?',hook2:'Raqobatchilaringiz u bilan allaqachon ishlayapti.',
+  brand:'SIni <em>amalda</em> oʻrganing',brandP:'Kuniga 15 daqiqa. Videosiz — faqat amaliyot.',
+  lesK:'Qisqa dars',lesT:'Tushunasiz — darhol tekshirasiz',lesP:'5 daqiqalik nazariya va savollar',
+  sbK:'Qumdon',sbT:'Real topshiriq — <em>kod bilan</em> tekshiriladi',sbP:'Prompt yozasiz, model javob beradi, tizim baholaydi',
+  agK:'SI-agentlar',agT:'Ishingiz uchun <em>agent</em> yigʻing',agP:'Pochta, arizalar, hisobotlar — kodsiz',
+  ctaT:'Birinchi dars <em>bepul</em>',ctaP:'7 ta kurs · 76 ta amaliy topshiriq · UZ · RU · EN',ctaB:'Bepul boshlash',
+  heroH:'Sunʼiy intellektni <span style="color:#FF6B1A">amalda oʻrganing</span>',heroP:'Topshiriqli qisqa darslar. Kuniga 15 daqiqa.',tryB:'Bepul sinab koʻrish',
+  lesson:'Til modellari qanday ishlaydi',q:'Nega model ishonch bilan xato qilishi mumkin?',o1:'Bazasi eskirgan',o2:'Ehtimoliy matnni bashorat qiladi',o3:'Ataylab shunday sozlangan',xp:'+10 XP · Toʻgʻri!',
+  sb:'Qumdon · shartnomadan maʼlumot',pr:'Sen yurist-tahlilchisan. Shartnomadan summa, muddat va penyani top. Faqat JSON qaytar.',run:'Tekshirish',pass:'Topshiriq qabul qilindi',
+  ag:'Pochta agenti',t1:'Xatlarni oʻqish',t2:'Teg qoʻyish',t3:'Qoralama',t4:'Toʻlov qilish',m1:'Mijoz: Taqdimotni 10:00 ga koʻchiramizmi?',a1:'Muhim · qoralama tayyor',m2:'Rassilka: 70% chegirma!',a2:'Spam → arxiv',m3:'“Bank”: darhol toʻlang!',a3:'Firibgarlik — bloklandi',agok:'Agent 10/10'},
+ ru:{hook1:'Пользуетесь ChatGPT только для вопросов?',hook2:'Ваши конкуренты уже работают с ним.',
+  brand:'Освойте ИИ <em>на практике</em>',brandP:'15 минут в день. Без видео — только практика.',
+  lesK:'Короткий урок',lesT:'Поняли — сразу проверили',lesP:'Теория на 5 минут и вопросы',
+  sbK:'Песочница',sbT:'Реальное задание — проверяет <em>код</em>',sbP:'Пишете промпт, модель отвечает, система оценивает',
+  agK:'ИИ-агенты',agT:'Соберите <em>агента</em> для своей работы',agP:'Почта, заявки, отчёты — без кода',
+  ctaT:'Первый урок <em>бесплатно</em>',ctaP:'7 курсов · 76 практических заданий · UZ · RU · EN',ctaB:'Начать бесплатно',
+  heroH:'Освойте ИИ <span style="color:#FF6B1A">на практике</span>',heroP:'Короткие уроки с заданиями. 15 минут в день.',tryB:'Попробовать бесплатно',
+  lesson:'Как устроены языковые модели',q:'Почему модель может уверенно ошибаться?',o1:'Устаревшая база',o2:'Предсказывает вероятный текст',o3:'Её так настроили',xp:'+10 XP · Верно!',
+  sb:'Песочница · данные из договора',pr:'Ты юрист-аналитик. Найди в договоре сумму, срок и пеню. Верни только JSON.',run:'Проверить',pass:'Задание засчитано',
+  ag:'Почтовый агент',t1:'Читать письма',t2:'Ставить метки',t3:'Черновик',t4:'Проводить оплату',m1:'Клиент: Перенесём презентацию на 10:00?',a1:'Важное · черновик готов',m2:'Рассылка: скидка 70%!',a2:'Спам → архив',m3:'«Банк»: срочно оплатите!',a3:'Мошенничество — заблокировано',agok:'Агент 10/10'},
+ en:{hook1:'Still using ChatGPT just to ask questions?',hook2:'Your competitors already work with it.',
+  brand:'Master AI <em>by doing</em>',brandP:'15 minutes a day. No videos — just practice.',
+  lesK:'Short lesson',lesT:'Learn it — check it instantly',lesP:'5 minutes of theory and questions',
+  sbK:'Sandbox',sbT:'A real task — <em>checked by code</em>',sbP:'You write a prompt, the model answers, the system scores it',
+  agK:'AI agents',agT:'Build an <em>agent</em> for your job',agP:'Email, leads, reports — no code',
+  ctaT:'First lesson <em>free</em>',ctaP:'7 courses · 76 hands-on tasks · UZ · RU · EN',ctaB:'Start for free',
+  heroH:'Master AI <span style="color:#FF6B1A">by doing</span>',heroP:'Short lessons with tasks. 15 minutes a day.',tryB:'Try for free',
+  lesson:'How language models work',q:'Why can a model be confidently wrong?',o1:'Its database is old',o2:'It predicts likely text',o3:'It was set up that way',xp:'+10 XP · Correct!',
+  sb:'Sandbox · data from a contract',pr:'You are a legal analyst. Find the amount, deadline and penalty. Return JSON only.',run:'Check',pass:'Task passed',
+  ag:'Email agent',t1:'Read emails',t2:'Add labels',t3:'Draft reply',t4:'Make payments',m1:'Client: Move the demo to 10:00?',a1:'Important · draft ready',m2:'Newsletter: 70% off!',a2:'Spam → archive',m3:'“Bank”: pay now!',a3:'Scam — blocked',agok:'Agent 10/10'}
+}[LANG];
+const I={check:'<path d="M20 6 9 17l-5-5"/>',play:'<path d="M7 4.5v15l12-7.5z"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',term:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/>',msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',warn:'<path d="M12 3 2 21h20z"/><path d="M12 10v4M12 17h.01"/>',plus:'<path d="M12 5v14M5 12h14"/>',bot:'<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 13v1M15 13v1M9 17h6"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'};
+const ic=(n,s=20,sw=2,c='currentColor')=>`<svg class="i" style="width:${s}px;height:${s}px" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${I[n]}</svg>`;
+const LOGO=s=>`<svg width="${s}" height="${s}" viewBox="0 0 120 120"><rect width="120" height="120" rx="30" fill="#FF6B1A"/><path d="M32 42 L56 62 L32 82" fill="none" stroke="#111318" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 84 H86" fill="none" stroke="#111318" stroke-width="12" stroke-linecap="round"/></svg>`;
+// анимационные помощники
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=x=>1-Math.pow(1-clamp(x),3);
+const easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=clamp(x);const c=1.70158,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const P=(t,a,b)=>clamp((t-a)/(b-a));
+const vis=(t,a,b,f=.35)=>Math.min(ease(P(t,a,a+f)),1-ease(P(t,b-f,b)));// появление и исчезновение сцены
+const DUR=30;
+// раскладка в зависимости от формата
+const L=FMT==='v'?{cap:{left:90,top:120,width:900},h1:80,p:34,k:26,phone:{left:235,top:600,scale:1.42},gap:24}
+                 :{cap:{left:140,top:300,width:820},h1:86,p:34,k:24,phone:{left:1250,top:90,scale:1.0},gap:28};
+
+function caption(k,h,p,o,dy){return `<div class="cap" style="left:${L.cap.left}px;top:${L.cap.top+dy}px;width:${L.cap.width}px;opacity:${o};display:flex;flex-direction:column;gap:${L.gap}px">
+ ${k?`<span class="k" style="font-size:${L.k}px"><i></i>${k}</span>`:''}<h1 style="font-size:${L.h1}px">${h}</h1>${p?`<p style="font-size:${L.p}px">${p}</p>`:''}</div>`}
+function phone(inner,o,dx,dy,rot){const s=L.phone.scale;return `<div class="phone" style="left:${L.phone.left+dx}px;top:${L.phone.top+dy}px;opacity:${o};transform:scale(${s}) rotate(${rot}deg);transform-origin:top left"><div class="screen"><div class="notch"></div><div class="sbar"><span>9:41</span><span>●●● ▮</span></div>${inner}</div></div>`}
+
+/* ---------- сцены ---------- */
+function sHook(t){const o=vis(t,0,3.6);if(!o)return '';
+ const w1=TXT.hook1.split(' ');const n=Math.floor(clamp(t/1.6)*w1.length+.001);
+ const sz=FMT==='v'?96:96;
+ return `<div class="cap" style="left:${FMT==='v'?90:180}px;top:${FMT==='v'?620:330}px;width:${FMT==='v'?900:1500}px;opacity:${o}">
+  <h1 style="font-size:${sz}px">${w1.map((w,i)=>`<span style="opacity:${i<n?1:.12};transition:none">${w}</span>`).join(' ')}</h1>
+  <p style="font-size:${FMT==='v'?40:40}px;margin-top:34px;color:#FF9A5C;opacity:${ease(P(t,1.9,2.4))};transform:translateY(${(1-ease(P(t,1.9,2.4)))*20}px)">${TXT.hook2}</p></div>`}
+function heroScreen(){return `<div class="scr"><div class="nav"><span class="logo">${LOGO(30)}AI Master</span><span style="font-size:24px">☰</span></div>
+ <div class="h" style="font-size:40px;margin-top:20px">${TXT.heroH}</div><p class="muted" style="font-size:17px">${TXT.heroP}</p>
+ <span class="btn" style="align-self:flex-start">${ic('play',18)} ${TXT.tryB}</span>
+ <div class="dark" style="margin-top:10px"><span class="lbl">${TXT.sb}</span><div class="box mono" style="font-size:12.5px">${TXT.pr}</div><div class="mono" style="font-size:12.5px">{ <span class="k2">"amount"</span>: <span class="v2">45000000</span> … }</div></div><div style="display:flex;flex-direction:column;gap:10px">${[["#0E8C82","#06514B","bot"],["#F2601A","#B2321A","term"]].map(([a,b,i],k)=>`<div class="card" style="display:flex;gap:12px;align-items:center;padding:12px"><span style="width:54px;height:54px;border-radius:14px;background:linear-gradient(140deg,${a},${b});display:grid;place-items:center;color:#fff">${ic(i,24)}</span><div style="flex:1"><div style="height:11px;width:${k?70:85}%;background:#E7E5E0;border-radius:6px"></div><div style="height:9px;width:50%;background:#F1F0EC;border-radius:6px;margin-top:8px"></div></div></div>`).join("")}</div></div>`}
+function sBrand(t){const o=vis(t,3.4,7.2);if(!o)return '';const a=back(P(t,3.5,4.2));
+ return caption('',`<span style="display:flex;align-items:center;gap:24px;margin-bottom:10px"><span style="transform:scale(${a})">${LOGO(FMT==='v'?110:104)}</span><span style="font-size:${FMT==='v'?78:74}px">AI Master</span></span>${TXT.brand}`,TXT.brandP,o,(1-ease(P(t,3.5,4.3)))*30)
+  +phone(heroScreen(),o,(1-easeIO(P(t,3.8,4.8)))*(FMT==='v'?0:300),(1-easeIO(P(t,3.8,4.8)))*(FMT==='v'?500:0),(1-easeIO(P(t,3.8,4.8)))*6)}
+function lessonScreen(t){const pick=t>9.6;const tap=P(t,9.2,9.9);
+ return `<div class="scr"><div class="nav" style="height:44px"><span style="font-size:22px">☰</span><div style="flex:1;margin:0 14px"><div style="font-weight:700;font-size:15px">${TXT.lesson}</div><div class="bar" style="margin-top:6px"><i style="width:${30+ease(P(t,8,11))*45}%"></i></div></div><span>✕</span></div>
+ <div class="h" style="font-size:28px">${TXT.lesson}</div>
+ <div class="card" style="padding:14px"><svg viewBox="0 0 360 90" width="100%"><rect x="4" y="20" width="80" height="50" rx="10" fill="#EDF0FF"/><rect x="104" y="20" width="80" height="50" rx="10" fill="#FFF1E8"/><rect x="204" y="20" width="70" height="50" rx="10" fill="#111318"/><rect x="290" y="10" width="66" height="70" rx="10" fill="#E7F6EC"/><path d="M88 45h12M188 45h12M278 45h8" stroke="#FF6B1A" stroke-width="3"/></svg></div>
+ <div class="card" style="display:flex;flex-direction:column;gap:10px"><span class="lbl" style="color:#3347C9">◎ Quiz</span><div style="font-weight:700;font-size:17px">${TXT.q}</div>
+  <div class="opt"><span class="l">A</span>${TXT.o1}</div><div class="opt ${pick?'ok':''}" id="o2"><span class="l">${pick?ic('check',15,3):'B'}</span>${TXT.o2}</div><div class="opt"><span class="l">C</span>${TXT.o3}</div></div>
+ ${tap>0&&tap<1?`<div class="tap" style="left:150px;top:${FMT==='v'?620:620}px;transform:scale(${.6+tap*.8});opacity:${1-tap}"></div>`:''}
+ <div class="toast" style="bottom:${40+ease(P(t,9.8,10.2))*20}px;opacity:${ease(P(t,9.8,10.2))*(1-P(t,12,12.4))}">${ic('spark',18,2,'#FF9A5C')} ${TXT.xp}</div></div>`}
+function sLesson(t){const o=vis(t,7,12.7);if(!o)return '';return caption(TXT.lesK,TXT.lesT,TXT.lesP,o,(1-ease(P(t,7,7.6)))*30)+phone(lessonScreen(t),o,0,(1-ease(P(t,7,7.7)))*40,0)}
+function sandboxScreen(t){const pr=TXT.pr;const n=Math.floor(clamp(P(t,13.3,15.6))*pr.length);const run=t>15.9;const lines=['{','&nbsp;&nbsp;<span class="k2">"amount"</span>: <span class="v2">45000000</span>,','&nbsp;&nbsp;<span class="k2">"deadline"</span>: <span class="v2">"2026-12-31"</span>,','&nbsp;&nbsp;<span class="k2">"penalty"</span>: <span class="v2">0.1</span>','}'];
+ const shown=Math.floor(clamp(P(t,16.2,17.3))*lines.length+.001);const sc=back(P(t,17.4,17.9));
+ return `<div class="scr" style="background:#FAFAF8"><div class="nav" style="height:44px"><span style="font-weight:700">${TXT.sb}</span></div>
+ <div class="dark" style="flex:1;margin-bottom:22px"><span class="lbl">${TXT.sbK}</span>
+  <div class="box" style="font-size:13px;color:#D7D5CF;line-height:1.5">${LANG==='en'?'SUPPLY AGREEMENT No. 17 … UZS 45,000,000 … no later than 31 December 2026 … penalty 0.1% per day':LANG==='ru'?'ДОГОВОР ПОСТАВКИ № 17 … 45 000 000 сум … не позднее 31 декабря 2026 года … пеня 0,1% в день':'YETKAZIB BERISH SHARTNOMASI № 17 … 45 000 000 soʻm … 2026-yil 31-dekabrdan kechiktirmay … kuniga 0,1% penya'}</div>
+  <span class="lbl">Prompt</span><div class="box mono" style="min-height:110px">${pr.slice(0,n)}<span style="display:inline-block;width:8px;height:16px;background:#FF9A5C;vertical-align:-3px;opacity:${Math.floor(t*2.5)%2?1:0}"></span></div>
+  <span class="btn" style="align-self:flex-start;padding:11px 16px;font-size:15px;transform:scale(${run&&t<16.2?.94:1})">${ic('play',16)} ${TXT.run}</span>
+  <div class="box mono" style="min-height:130px">${lines.slice(0,shown).join('<br>')}</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;opacity:${clamp(P(t,17.4,17.6))};transform:scale(${.8+sc*.2})"><span style="display:inline-flex;gap:8px;align-items:center;background:#4ADE80;color:#111318;border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px">${ic('check',16,3)} ${TXT.pass}</span><span style="font-family:Manrope;font-weight:800;font-size:34px;color:#4ADE80">10/10</span></div>
+ </div></div>`}
+function sSandbox(t){const o=vis(t,12.5,19.3);if(!o)return '';return caption(TXT.sbK,TXT.sbT,TXT.sbP,o,(1-ease(P(t,12.5,13.1)))*30)+phone(sandboxScreen(t),o,0,(1-ease(P(t,12.5,13.2)))*40,0)}
+function agentScreen(t){const on=[t>19.9,t>20.3,t>20.7,false];const tools=[TXT.t1,TXT.t2,TXT.t3,TXT.t4];
+ const tr=[[21.4,'msg',TXT.m1],[21.9,'ok',TXT.a1],[22.5,'msg',TXT.m2],[23.0,'ok',TXT.a2],[23.6,'msg',TXT.m3],[24.1,'bad',TXT.a3]];
+ return `<div class="scr"><div class="nav" style="height:44px"><span style="font-weight:700;display:flex;gap:8px;align-items:center">${ic('bot',20)} ${TXT.ag}</span></div>
+ <div class="dark" style="flex:1;margin-bottom:22px"><span class="lbl">Tools</span><div style="display:flex;flex-wrap:wrap;gap:8px">${tools.map((x,i)=>`<span class="chip ${on[i]?'on':''}">${ic(on[i]?'check':'plus',14,2.4)} ${x}</span>`).join('')}</div>
+  <span class="lbl" style="margin-top:6px">Log</span><div class="box" style="display:flex;flex-direction:column;gap:10px;min-height:330px">${tr.filter(x=>t>x[0]).map(([ts,k,s])=>`<div class="tl" style="opacity:${ease(P(t,ts,ts+.3))};transform:translateY(${(1-ease(P(t,ts,ts+.3)))*8}px);${k==='msg'?'color:#F2F1EE;font-weight:600':''}">${ic(k==='msg'?'msg':k==='ok'?'check':'warn',16,2,k==='msg'?'#8F9DFF':k==='ok'?'#4ADE80':'#FF9A5C')}<span class="${k==='ok'?'ok-c':k==='bad'?'bad-c':''}">${s}</span></div>`).join('')}</div>
+  <div style="display:flex;justify-content:flex-end;opacity:${ease(P(t,24.5,24.8))}"><span style="font-family:Manrope;font-weight:800;font-size:28px;color:#4ADE80">${TXT.agok}</span></div>
+ </div></div>`}
+function sAgent(t){const o=vis(t,19.1,25.4);if(!o)return '';return caption(TXT.agK,TXT.agT,TXT.agP,o,(1-ease(P(t,19.1,19.7)))*30)+phone(agentScreen(t),o,0,(1-ease(P(t,19.1,19.8)))*40,0)}
+function sCta(t){const o=ease(P(t,25.2,25.8));if(!o)return '';const pulse=1+Math.sin((t-25.8)*5)*.025*(t>25.8);
+ const cx=FMT==='v'?{l:90,tp:640,w:900}:{l:180,tp:250,w:1560};
+ return `<div class="cap" style="left:${cx.l}px;top:${cx.tp+(1-o)*30}px;width:${cx.w}px;opacity:${o};display:flex;flex-direction:column;gap:40px;align-items:${FMT==='v'?'flex-start':'center'};text-align:${FMT==='v'?'left':'center'}">
+  <span style="display:flex;align-items:center;gap:22px">${LOGO(96)}<span style="font-size:68px">AI Master</span></span>
+  <h1 style="font-size:${FMT==='v'?118:120}px">${TXT.ctaT}</h1>
+  <p style="font-size:${FMT==='v'?36:38}px">${TXT.ctaP}</p>
+  <span class="btn" style="font-size:${FMT==='v'?44:42}px;padding:30px 52px;border-radius:26px;transform:scale(${pulse*back(P(t,25.6,26.3))});box-shadow:0 20px 60px rgba(255,107,26,.45)">${ic('play',40,2.4)} ${TXT.ctaB}</span></div>`}
+
+function frame(t){document.getElementById('root').innerHTML=sHook(t)+sBrand(t)+sLesson(t)+sSandbox(t)+sAgent(t)+sCta(t);
+ document.querySelector('.bg').style.transform=`scale(${1.05+Math.sin(t/5)*.04}) translate(${Math.sin(t/7)*20}px,${Math.cos(t/6)*16}px)`}
+window.DUR=DUR;window.setT=t=>{frame(t);return true};
+document.body.style.width=W+'px';document.body.style.height=H+'px';
+frame(Number(Q.get('t')||0));
+</script>
+</body>
+</html>

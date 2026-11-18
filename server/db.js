@@ -10,7 +10,7 @@ const FILE = path.join(DATA_DIR, 'db.json');
 
 function fresh() {
   return {
-    version: 3,
+    version: 4,
     seq: { lead: 0 },
     adminSessions: {},
     courses: JSON.parse(JSON.stringify(seed.courses)),
@@ -38,14 +38,15 @@ function load() {
     const def = fresh();
     for (const k of Object.keys(def)) if (data[k] === undefined) data[k] = def[k];
     data.settings = Object.assign(def.settings, data.settings);
-    // v3: курсы и уроки стали трёхъязычными — заменяем старый контент, заявки и настройки сохраняем
-    if ((data.version || 1) < 3) {
+    // v3: курсы стали трёхъязычными; v4: задания в каждом уроке, интерактивные демо-уроки, новый курс.
+    // Заменяем контент курсов, заявки и настройки сохраняем.
+    if ((data.version || 1) < 4) {
       fs.copyFileSync(FILE, FILE.replace(/\.json$/, `.backup-v${data.version || 1}.json`));
       data.courses = def.courses; data.lessons = def.lessons;
       for (const k of ['users', 'sessions', 'otp', 'orders', 'promos', 'certs']) delete data[k];
-      data.version = 3;
+      data.version = 4;
       flush();
-      console.log('[db] база обновлена до версии 3 (курсы на трёх языках), резервная копия сохранена');
+      console.log('[db] курсы и уроки обновлены (версия 4), резервная копия сохранена');
     }
   } else {
     data = fresh();

@@ -52,7 +52,7 @@ const L=v=>v&&typeof v==='object'?(v[LANG]||v.ru||v.uz||v.en||''):(v||'');
 const CTR=()=>CONTRACTS[LANG]||CONTRACTS.ru;
 
 /* ================== DATA ================== */
-const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E']};
+const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E'],g:['#0E8C82','#06514B']};
 const AUD={beginner:'sprout',work:'briefcase',business:'trend',dev:'code'};
 const AUD_ICON={beginner:'cpu',work:'pen',business:'trend',dev:'code'};
 const TOOLS=['ChatGPT','Claude','Gemini','Midjourney','Copilot','n8n','Telegram','Python','Excel','Google Sheets','Notion','Perplexity'];
@@ -200,9 +200,9 @@ function pHome(){const pop=COURSES.filter(c=>c.price>0).sort((a,b)=>b.students-a
 
  <section id="demo" style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap demo-grid">
   <div class="col rv" style="gap:22px"><span class="eyebrow">${ic('play','ico s',2)} ${t('demo_k')}</span><h2>${t('demo_t')}</h2><p class="muted" style="font-size:18px">${t('demo_p')}</p>
-   <div class="col" style="gap:16px">${[['read','demo_f1'],['terminal','demo_f2'],['check','demo_f3']].map(([i,k])=>`<div class="feat"><span class="tile" style="width:40px;height:40px">${ic(i,'ico s')}</span><b style="padding-top:8px">${t(k)}</b></div>`).join('')}</div></div>
+   <div class="col" style="gap:16px">${[['read','demo_f1'],['terminal','demo_f2'],['check','demo_f3'],['bot','demo_f4']].map(([i,k])=>`<div class="feat"><span class="tile" style="width:40px;height:40px">${ic(i,'ico s')}</span><b style="padding-top:8px">${t(k)}</b></div>`).join('')}</div></div>
   <div class="vid rv paused" id="vid" style="--d:120ms">
-   <video id="demoV" src="/media/demo-music.mp4#t=3" playsinline preload="metadata"></video>
+   <video id="demoV" src="/media/promo-${LANG}-16x9.mp4#t=5.5" playsinline preload="metadata"></video>
    <div class="ov"><button class="vplay" data-act="vplay"><span class="pb">${ic('play','ico',2)}</span>${t('play_video')}</button></div>
    <div class="vbar"><button data-act="vtoggle" aria-label="Play/Pause" id="vtg">${ic('play','ico s',2)}</button><div class="pg" id="vpg"><i id="vpi"></i></div><button data-act="vsound" id="vsd" aria-label="${t('sound_off')}" title="${t('sound_off')}">${ic('vol','ico s',2)}</button></div>
   </div>
@@ -272,11 +272,11 @@ function pCourse(id){const c=course(id);if(!c)return pNotFound();
  <div class="course-grid">
  <div class="col" style="gap:40px">
   <div class="col h-in" style="gap:18px"><h1 style="font-size:clamp(34px,4.6vw,52px)">${esc(L(c.title))}</h1><p style="font-size:19px;color:var(--ink2)">${esc(L(c.desc))}</p>
-   <div class="meta" style="font-size:15px"><span>${ic('book','ico s')} ${t('n_lessons',{n:ls.length})}</span><span>${ic('layers','ico s')} ${t('n_modules',{n:c.modules.length})}</span><span>${ic('clock','ico s')} ${t('hours',{n:c.hours})}</span><span>${ic('signal','ico s')} ${level(c)}</span><span>${ic('award','ico s')} ${t('tick3')}</span></div></div>
+   <div class="meta" style="font-size:15px"><span>${ic('book','ico s')} ${t('n_lessons',{n:ls.length})}</span><span>${ic('terminal','ico s')} ${t('n_tasks',{n:ls.filter(l=>l.task).length})}</span><span>${ic('layers','ico s')} ${t('n_modules',{n:c.modules.length})}</span><span>${ic('clock','ico s')} ${t('hours',{n:c.hours})}</span><span>${ic('signal','ico s')} ${level(c)}</span><span>${ic('award','ico s')} ${t('tick3')}</span></div></div>
   <div class="col rv" style="gap:16px"><h2 style="font-size:26px">${t('learn_t')}</h2><div class="grid g2" style="gap:14px">${c.outcomes.map(o=>`<div class="outc">${ic('check','ico',2.2)}<span>${esc(L(o))}</span></div>`).join('')}</div></div>
   <div class="col rv" style="gap:14px"><div class="row between"><h2 style="font-size:26px">${t('program')}</h2><span class="muted small">${t('n_lessons',{n:ls.length})}</span></div>
    ${c.modules.map((m,mi)=>`<details class="mod" ${mi<2?'open':''}><summary><span>${mi+1}. ${esc(L(m.t))}</span><span class="row" style="gap:10px"><span class="small muted">${t('n_lessons',{n:m.l.length})}</span>${ic('down','ico s')}</span></summary>
-    <div class="ls">${m.l.map(l=>{k++;return `<a href="#lesson-${l.id}"><span class="num ${S.done[l.id]?'done':''}">${S.done[l.id]?ic('check','ico',2.5):k}</span><span style="flex:1">${esc(L(l.t))}</span>${isOpen(c,l)?(free?'':`<span class="tag">${t('free')}</span>`):`<span class="muted">${ic('lock','ico s')}</span>`}</a>`}).join('')}</div></details>`).join('')}
+    <div class="ls">${m.l.map(l=>{k++;return `<a href="#lesson-${l.id}"><span class="num ${S.done[l.id]?'done':''}">${S.done[l.id]?ic('check','ico',2.5):k}</span><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span>${esc(L(l.t))}</span>${l.task?`<span class="ltask">${ic('terminal','ico s')} ${esc(L(l.task))}</span>`:''}</span>${isOpen(c,l)?(free?'':`<span class="tag">${t('free')}</span>`):`<span class="muted">${ic('lock','ico s')}</span>`}</a>`}).join('')}</div></details>`).join('')}
   </div>
  </div>
  <aside class="card buybox rv" style="box-shadow:var(--sh)">${cover(c,120)}<div class="col" style="gap:14px;padding:24px">
@@ -310,7 +310,7 @@ function pLesson(lid){const f=findLesson(lid);if(!f)return pNotFound();const {c,
  if(cache&&cache.locked)body=lockedHTML(c);
  else if(cache&&cache.error)body=`<div class="card empty"><b>${t('load_err')}</b><button class="btn" data-act="retryLesson" data-arg="${lid}">${t('retry')}</button></div>`;
  else if(!data)body=`<div class="col" style="gap:14px"><div class="skel" style="height:44px;width:70%"></div><div class="skel" style="height:18px"></div><div class="skel" style="height:160px"></div></div>`;
- else body=data.blocks.map((b,i)=>renderBlock(b,i,lid)).join('')+`
+ else body=(l.task&&L(l.task)?`<div class="block taskbar"><span class="tile">${ic('terminal')}</span><div><span class="eyebrow">${t('lesson_task')}</span><div style="font-weight:600">${esc(L(l.task))}</div></div></div>`:'')+data.blocks.map((b,i)=>renderBlock(b,i,lid)).join('')+`
   <div class="card row between block" style="margin-top:40px;gap:16px"><div class="col" style="gap:2px"><b>${reqDone<req.length?t('left',{n:req.length-reqDone}):t('done')}</b><span class="small muted">${reqDone<req.length?t('answer_above'):next?t('go_next'):t('last')}</span></div>
   ${next?`<button class="btn" data-act="nextLesson" data-arg="${lid}" ${reqDone<req.length?'disabled':''}>${t('next_lesson')} ${ic('arrow','ico s')}</button>`:`<a class="btn" href="#course-${c.id}">${t('to_course')}</a>`}</div>`;
  let k=0;
@@ -342,7 +342,7 @@ function renderBlock(b,i,lid){
  if(b.t==='code')return `<div class="block"><div class="code"><div class="hd"><span>${esc(b.lang)}</span><button data-act="copy" data-arg="${i}">${ic('copy','ico s')} ${t('copy')}</button></div><pre>${hl(b.code,b.lang)}</pre></div></div>`;
  if(b.t==='quiz'){const st=S.quiz[b.id];return `<div class="block quiz"><span class="eyebrow" style="color:var(--blue)">${ic('target','ico s')} ${t('check_self')}</span><h3 style="margin:8px 0 2px;font-size:20px">${esc(b.q)}</h3>
   ${b.opts.map((o,k)=>{const pk=st&&st.pick===k;return `<button class="opt ${pk?(o.ok?'ok':'bad'):''}" data-act="quiz" data-arg="${lid}|${i}|${k}"><span class="l">${pk?(o.ok?ic('check','ico s',2.5):ic('x','ico s',2.5)):String.fromCharCode(65+k)}</span><span>${esc(o.t)}</span></button>${pk?`<div class="why"><b>${o.ok?t('right'):t('wrong')}</b>${esc(o.why)}</div>`:''}`}).join('')}</div>`}
- if(b.t==='sandbox')return sandboxHTML(b);
+ if(b.t==='sandbox')return b.kind==='spot'?spotHTML(b):b.kind==='rubric'?rubricHTML(b):b.kind==='fit'?fitHTML(b):b.kind==='agent'?agentHTML(b):sandboxHTML(b);
  return ''}
 function hl(code,lang){let h=esc(code);if(lang==='Python'){h=h.replace(/(#.*)$/gm,'<span class="c">$1</span>').replace(/\b(from|import|print|def|return|for|in)\b/g,'<span class="k">$1</span>').replace(/\b(LinearRegression|fit|predict)\b/g,'<span class="fn">$1</span>')}else{h=h.replace(/(&quot;[a-z_]+&quot;)/g,'<span class="s">$1</span>')}return h}
 
@@ -368,6 +368,87 @@ function fakeModel(prompt,k){const p=prompt.toLowerCase();const d=k;
 function extractJSON(s){const m=s.match(/\{[\s\S]*\}/);if(!m)return null;try{return JSON.parse(m[0])}catch(e){return null}}
 function checkOne(text,exp){const o=extractJSON(text);const r={json:!!o,amount:false,deadline:false,penalty:false};if(!o)return r;
  r.amount=typeof o.amount==='number'&&o.amount===exp.amount;r.deadline=o.deadline===exp.deadline;const pv=o.penalty;r.penalty=typeof pv==='number'&&(Math.abs(pv-exp.penalty)<1e-9||Math.abs(pv-exp.penalty/100)<1e-9);return r}
+
+/* ---- общие помощники песочниц ---- */
+const SBST=id=>S.quiz[id]||(S.quiz[id]={});
+const scoreRow=st=>st.score==null?'':`<div class="row between" style="margin-top:4px"><span class="lbl">${t('sb_result')}</span><span class="scorebig ${st.score>=7?'ok':'no'}">${st.score}/10</span></div><div class="tiny" style="color:#A9A8A3">${st.score>=7?t('sb_pass'):t('sb_need')}</div>`;
+const curBlock=id=>lessonBlocks(location.hash.slice(8)).find(x=>x.id===id);
+
+/* ---- песочница: найти ошибки ИИ ---- */
+function spotHTML(b){const st=SBST(b.id);const marks=new Set(st.marks||[]);const c=b.cfg;const done=st.checked;
+ return `<div class="block sbx col" style="gap:14px" id="${esc(b.id)}"><span class="lbl">${ic('search','ico s')} ${t('sb')}</span>
+  <div class="bubble u"><span class="lbl">${t('spot_you')}</span><div>${esc(c.q)}</div></div>
+  <div class="bubble a"><span class="lbl">${ic('spark','ico s')} ${t('spot_ai')}</span><div>${c.sents.map((x,i)=>{const m=marks.has(i);const cls=done?(x.bad&&m?'hit':x.bad?'miss':m?'fp':''):(m?'on':'');return `<span class="sp ${cls}" data-act="spotTog" data-arg="${esc(b.id)}|${i}">${esc(x.s)}</span> `}).join('')}</div></div>
+  <p class="tiny" style="color:#A9A8A3">${t('spot_hint')}</p>
+  <div class="row"><button class="btn" data-act="spotCheck" data-arg="${esc(b.id)}">${t('spot_check')}</button>${done?`<button class="btn ghost" data-act="spotReset" data-arg="${esc(b.id)}">${t('spot_retry')}</button>`:''}</div>
+  ${done?`<div class="col" style="gap:6px">${c.sents.map((x,i)=>x.bad||marks.has(i)?`<div class="chk"><span class="ic ${x.bad&&marks.has(i)?'y':'n'}">${ic(x.bad&&marks.has(i)?'check':'x','ico',3)}</span><span><b>«${esc(x.s)}»</b><br>${esc(x.why)}</span></div>`:'').join('')}
+   <div class="tiny" style="color:#A9A8A3">${t('spot_found',{f:st.found,n:c.need})}${st.fp?' · '+t('spot_fp',{n:st.fp}):''}</div>${scoreRow(st)}</div>`:''}</div>`}
+
+/* ---- песочница: промпт по критериям ---- */
+function rubricHTML(b){const st=SBST(b.id);const c=b.cfg;const met=new Set(st.met||[]);const ran=st.out!=null;
+ return `<div class="block sbx col" style="gap:14px" id="${esc(b.id)}"><span class="lbl">${ic('terminal','ico s')} ${t('sb')}</span>
+  <div class="col" style="gap:6px"><span class="lbl">${t('rb_input')}</span><div class="doc" style="white-space:pre-wrap">${esc(c.input)}</div></div>
+  <label class="col" style="gap:6px"><span class="lbl">${t('your_prompt')}</span><textarea id="rbP-${esc(b.id)}" placeholder="${esc(c.ph)}">${esc(st.prompt||'')}</textarea></label>
+  <div class="row"><button class="btn" data-act="rbRun" data-arg="${esc(b.id)}">${ic('play','ico s',2)} ${t('rb_run')}</button><button class="btn ghost" data-act="sbHint">${ic('bulb','ico s')} ${t('hint')}</button></div>
+  <div class="col" style="gap:6px"><span class="lbl">${t('rb_out')}</span><div class="out" id="rbO-${esc(b.id)}">${esc(ran?st.out:t('sb_out'))}</div></div>
+  <div class="col" style="gap:2px"><span class="lbl">${t('rb_criteria')}</span>${c.criteria.map(k=>`<div class="chk ${ran?'':'dim'}"><span class="ic ${met.has(k.id)?'y':ran?'n':'d'}">${ic(met.has(k.id)?'check':ran?'x':'plus','ico',3)}</span><span>${esc(k.label)} <span style="color:#A9A8A3">· ${k.pts}</span></span></div>`).join('')}</div>
+  ${scoreRow(st)}</div>`}
+function rubricRun(b,prompt){const c=b.cfg;const M=new Set(c.criteria.filter(k=>new RegExp(k.rx,'i').test(prompt)).map(k=>k.id));
+ const score=Math.min(10,c.criteria.filter(k=>M.has(k.id)).reduce((a,k)=>a+k.pts,0));
+ const out=c.pieces.map(p=>p.need===''?p.ok:(M.has(p.need)?p.ok:p.bad)).filter(Boolean).join('\n\n');return {met:[...M],score,out,prompt}}
+
+/* ---- песочница: обучить модель руками ---- */
+function fitStats(pts,w,b){return pts.reduce((a,[x,y])=>a+Math.pow(y-(w*x+b),2),0)/pts.length}
+function fitBest(pts){const n=pts.length,mx=pts.reduce((a,p)=>a+p[0],0)/n,my=pts.reduce((a,p)=>a+p[1],0)/n;const w=pts.reduce((a,[x,y])=>a+(x-mx)*(y-my),0)/pts.reduce((a,[x])=>a+(x-mx)**2,0);const b=my-w*mx;return {w,b,mse:fitStats(pts,w,b)}}
+function fitGeom(pts){const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);const x0=Math.floor(Math.min(...xs)/10)*10-10,x1=Math.ceil(Math.max(...xs)/10)*10+10,y0=Math.floor(Math.min(...ys)/100)*100-100,y1=Math.ceil(Math.max(...ys)/100)*100+100;
+ const W=560,H=300,P=44;return {x0,x1,y0,y1,W,H,P,sx:x=>P+(x-x0)/(x1-x0)*(W-P-12),sy:y=>H-28-(y-y0)/(y1-y0)*(H-28-12)}}
+function fitHTML(b){const st=SBST(b.id);const c=b.cfg;const w=st.w??5,bb=st.b??150;const g=fitGeom(c.pts);const best=fitBest(c.pts);const id=esc(b.id);
+ const tx=[];for(let x=g.x0;x<=g.x1;x+=10)tx.push(x);const ty=[];for(let y=g.y0;y<=g.y1;y+=200)ty.push(y);
+ return `<div class="block sbx col" style="gap:14px" id="${id}"><span class="lbl">${ic('chart','ico s')} ${t('sb')}</span>
+  <p style="color:#D7D5CF;font-size:15px">${esc(c.task)}</p>
+  <svg class="fitplot" viewBox="0 0 ${g.W} ${g.H}" role="img" aria-label="${esc(c.x)} / ${esc(c.y)}">
+   ${ty.map(y=>`<line x1="${g.P}" x2="${g.W-12}" y1="${g.sy(y)}" y2="${g.sy(y)}" stroke="#2A2E38"/><text x="${g.P-8}" y="${g.sy(y)+4}" text-anchor="end" font-size="11" fill="#8A90A3">${y}</text>`).join('')}
+   ${tx.map(x=>`<text x="${g.sx(x)}" y="${g.H-10}" text-anchor="middle" font-size="11" fill="#8A90A3">${x}</text>`).join('')}
+   <text x="${g.W-12}" y="${g.H-26}" text-anchor="end" font-size="11" fill="#A9A8A3">${esc(c.x)}</text><text x="${g.P+4}" y="16" font-size="11" fill="#A9A8A3">${esc(c.y)}</text>
+   <g id="fitRes-${id}"></g><line id="fitLine-${id}" stroke="#FF9A5C" stroke-width="3" stroke-linecap="round"/>
+   ${c.pts.map(([x,y])=>`<circle cx="${g.sx(x)}" cy="${g.sy(y)}" r="6" fill="#8F9DFF" stroke="#111318" stroke-width="2"/>`).join('')}
+  </svg>
+  <div class="grid g2" style="gap:14px"><label class="col" style="gap:4px"><span class="lbl">w = <b id="fitW-${id}">${w.toFixed(1)}</b></span><input type="range" min="0" max="20" step="0.1" value="${w}" data-fit="${id}|w"></label>
+  <label class="col" style="gap:4px"><span class="lbl">b = <b id="fitB-${id}">${Math.round(bb)}</b></span><input type="range" min="-300" max="500" step="1" value="${bb}" data-fit="${id}|b"></label></div>
+  <div class="row between"><span>${t('fit_mse')}: <b id="fitM-${id}" style="font-family:'JetBrains Mono',monospace;font-size:20px"></b></span><span class="tiny" style="color:#A9A8A3">${t('fit_best',{v:Math.round(best.mse)})}</span></div>
+  <div class="row"><button class="btn" data-act="fitCheck" data-arg="${id}">${t('fit_check')}</button><button class="btn ghost" data-act="fitAuto" data-arg="${id}">${ic('trend','ico s')} ${t('fit_auto')}</button></div>
+  ${st.score!=null?`<div class="tiny" style="color:#D7D5CF">${st.score>=7?t('fit_pass'):t('fit_fail')}</div>`+scoreRow(st):''}</div>`}
+function fitDraw(id){const b=curBlock(id);if(!b)return;const st=SBST(id);const w=st.w??5,bb=st.b??150;const g=fitGeom(b.cfg.pts);const ln=document.getElementById('fitLine-'+id);if(!ln)return;
+ ln.setAttribute('x1',g.sx(g.x0));ln.setAttribute('y1',g.sy(w*g.x0+bb));ln.setAttribute('x2',g.sx(g.x1));ln.setAttribute('y2',g.sy(w*g.x1+bb));
+ document.getElementById('fitRes-'+id).innerHTML=b.cfg.pts.map(([x,y])=>`<line x1="${g.sx(x)}" x2="${g.sx(x)}" y1="${g.sy(y)}" y2="${g.sy(w*x+bb)}" stroke="#FF6B1A" stroke-opacity=".5" stroke-dasharray="3 3"/>`).join('');
+ document.getElementById('fitW-'+id).textContent=w.toFixed(1);document.getElementById('fitB-'+id).textContent=Math.round(bb);
+ document.getElementById('fitM-'+id).textContent=Math.round(fitStats(b.cfg.pts,w,bb)).toLocaleString('ru-RU').replace(/ /g,' ')}
+function fitScore(b,st){const r=fitStats(b.cfg.pts,st.w??5,st.b??150)/Math.max(1,fitBest(b.cfg.pts).mse);return r<=1.5?10:r<=3?8:r<=6?6:r<=12?4:2}
+
+/* ---- песочница: собрать агента ---- */
+function agentHTML(b){const st=SBST(b.id);const c=b.cfg;const sel=new Set(st.tools||[]);const id=esc(b.id);
+ return `<div class="block sbx col" style="gap:14px" id="${id}"><span class="lbl">${ic('bot','ico s')} ${t('sb')}</span>
+  <div class="doc"><span class="lbl">${t('ag_goal')}</span><div style="margin-top:4px">${esc(c.goal)}</div></div>
+  <div class="col" style="gap:8px"><span class="lbl">${t('ag_tools')}</span><div class="agtools">${c.tools.map(x=>`<button class="agt ${sel.has(x.id)?'on':''}" data-act="agTool" data-arg="${id}|${x.id}" aria-pressed="${sel.has(x.id)}">${ic(sel.has(x.id)?'check':'plus','ico s',2.2)} ${esc(x.name)}</button>`).join('')}</div></div>
+  <label class="col" style="gap:6px"><span class="lbl">${t('ag_instr')}</span><textarea id="agP-${id}" placeholder="${esc(c.ph)}">${esc(st.prompt||'')}</textarea></label>
+  <div class="col" style="gap:2px">${c.rules.map(r=>`<div class="chk dim"><span class="ic d">${ic('plus','ico',3)}</span><span>${t('ag_rule')}: ${esc(r.label)}</span></div>`).join('')}</div>
+  <div class="row"><button class="btn" data-act="agRun" data-arg="${id}">${ic('play','ico s',2)} ${t('ag_run')}</button><button class="btn ghost" data-act="sbHint">${ic('bulb','ico s')} ${t('hint')}</button></div>
+  <div class="col" style="gap:6px"><span class="lbl">${t('ag_trace')}</span><div class="trace" id="agT-${id}">${st.trace||`<span style="color:#8A90A3">${t('ag_ready')}</span>`}</div></div>
+  <div id="agS-${id}">${st.summary||''}</div></div>`}
+function agentEval(b,tools,prompt){const c=b.cfg;const sel=new Set(tools);const met=new Set(c.rules.filter(r=>new RegExp(r.rx,'i').test(prompt)).map(r=>r.id));
+ const name=id=>c.tools.find(x=>x.id===id)?.name||id;const badSel=c.tools.filter(x=>x.role==='bad'&&sel.has(x.id));const lines=[];
+ c.cases.forEach((cs,i)=>{lines.push({k:'msg',h:`${t('ag_msg')} ${i+1} · ${esc(cs.from)}`,s:esc(cs.msg)});const fails=[];
+  cs.tools.forEach(id=>{if(sel.has(id))lines.push({k:'tool',s:`${t('ag_call')}: ${esc(name(id))}`});else fails.push(t('ag_missing',{t:name(id)}))});
+  (cs.rules||[]).forEach(r=>{if(!met.has(r)&&cs.fail[r])fails.push(cs.fail[r])});
+  badSel.forEach(x=>{if(cs.fail[x.id])fails.push(cs.fail[x.id])});
+  if(fails.length)fails.forEach(f=>lines.push({k:'bad',s:esc(f)}));else lines.push({k:'ok',s:esc(cs.ok)})});
+ const need=c.tools.filter(x=>x.role==='need');const got=need.filter(x=>sel.has(x.id)).length;
+ const toolPts=Math.max(0,Math.round(4*got/need.length)-(badSel.length?2:0));const rulePts=Math.round(6*met.size/c.rules.length);
+ const score=Math.min(10,toolPts+rulePts);const toolsOk=got===need.length&&!badSel.length;
+ const summary=`<div class="col" style="gap:2px"><div class="chk"><span class="ic ${toolsOk?'y':'n'}">${ic(toolsOk?'check':'x','ico',3)}</span><span>${toolsOk?t('ag_tools_ok'):t('ag_tools_x')}</span></div>${c.rules.map(r=>`<div class="chk"><span class="ic ${met.has(r.id)?'y':'n'}">${ic(met.has(r.id)?'check':'x','ico',3)}</span><span>${t('ag_rule')}: ${esc(r.label)}</span></div>`).join('')}${scoreRow({score})}</div>`;
+ return {lines,score,summary}}
+const TRACE_IC={msg:'msg',tool:'terminal',ok:'check',bad:'warn'};
+const traceLine=l=>`<div class="tl tl-${l.k}">${ic(TRACE_IC[l.k],'ico s',2)}<div>${l.h?`<b>${l.h}</b><br>`:''}${l.s}</div></div>`;
 
 /* ---- наставник (демо-ответы) ---- */
 function mentorPanel(){return `<aside class="drawer" id="mentor" aria-label="${t('mentor')}"><div class="hd"><b class="row" style="gap:8px">${ic('spark','ico s',2)} ${t('mentor')}</b><button class="iconbtn" data-act="toggleMentor" aria-label="${t('close')}">${ic('x')}</button></div>
@@ -432,7 +513,7 @@ function render(){const r=location.hash.slice(1)||'home';const isLesson=r.starts
  else if(isLesson)html=pLesson(r.slice(7));else if(r==='pricing')html=pricingSection(false);else if(r==='business')html=pBusiness();else if(r==='privacy')html=pPrivacy();else html=pNotFound();
  document.getElementById('hdr').style.display=isLesson?'none':'';document.getElementById('footer').style.display=isLesson?'none':'';
  if(!isLesson)renderNav();document.getElementById('app').innerHTML=html;if(!isLesson)renderFoot();
- observe();runMock();bindVideo();
+ observe();runMock();bindVideo();document.querySelectorAll('[data-fit$="|w"]').forEach(i=>fitDraw(i.dataset.fit.split('|')[0]));
  pricingObs?.disconnect();const pg=document.getElementById('pricingGrid');
  if(pg&&'IntersectionObserver' in window){pricingObs=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){T.ev('view','pricing');pricingObs.disconnect()}},{threshold:.4});pricingObs.observe(pg)}}
 function setTitle(r){const c=r.startsWith('course-')&&course(r.slice(7));const l=r.startsWith('lesson-')&&findLesson(r.slice(7));
@@ -479,12 +560,34 @@ document.addEventListener('click',async e=>{
     const K=CTR();const t1=fakeModel(p,K.A),t2=fakeModel(p,K.B);const A=checkOne(t1,K.A),B=checkOne(t2,K.B);
     let score=0;const checks=[];[['json',3],['amount',2],['deadline',2],['penalty',3]].forEach(([k,pts])=>{const ok=A[k]&&B[k];if(ok)score+=pts;checks.push({ok,k:'c_'+k})});
     S.quiz[arg]={prompt:p,out:t1,score,checks};save();const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'spotTog':{const [id,i]=arg.split('|');const st=SBST(id);if(st.checked)break;const m=new Set(st.marks||[]);m.has(+i)?m.delete(+i):m.add(+i);st.marks=[...m];save();a.classList.toggle('on');break}
+  case 'spotCheck':{const b=curBlock(arg);const st=SBST(arg);const m=new Set(st.marks||[]);
+    const found=b.cfg.sents.filter((x,i)=>x.bad&&m.has(i)).length,fp=b.cfg.sents.filter((x,i)=>!x.bad&&m.has(i)).length;
+    st.found=found;st.fp=fp;st.checked=true;st.score=Math.max(0,found===b.cfg.need?10-fp*2:Math.round(found/b.cfg.need*6)-fp);save();T.ev('lesson',location.hash.slice(8),{a:'sandbox',s:st.score});const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'spotReset':{S.quiz[arg]={};save();const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'rbRun':{const b=curBlock(arg);const p=document.getElementById('rbP-'+arg).value.trim();if(p.length<10){toast(t('sb_longer'));break}if(!useRun())break;
+    a.disabled=true;const out=document.getElementById('rbO-'+arg);out.textContent=t('sb_think');await new Promise(r=>setTimeout(r,700));
+    const r=rubricRun(b,p);let i=0;await new Promise(res=>{const tick=()=>{i+=Math.max(3,Math.round(r.out.length/60));out.textContent=r.out.slice(0,i);if(i<r.out.length)setTimeout(tick,16);else res()};tick()});
+    S.quiz[arg]=r;save();T.ev('lesson',location.hash.slice(8),{a:'sandbox',s:r.score});const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'fitCheck':{const b=curBlock(arg);const st=SBST(arg);st.score=fitScore(b,st);save();T.ev('lesson',location.hash.slice(8),{a:'sandbox',s:st.score});const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'fitAuto':{const b=curBlock(arg);const st=SBST(arg);const best=fitBest(b.cfg.pts);const w0=st.w??5,b0=st.b??150;const t0=performance.now();a.disabled=true;
+    await new Promise(res=>{const step=now=>{const p=Math.min(1,(now-t0)/1600);const e=1-Math.pow(1-p,3);st.w=w0+(best.w-w0)*e;st.b=b0+(best.b-b0)*e;fitDraw(arg);
+      document.getElementById(arg)?.querySelectorAll('input[type=range]').forEach(inp=>{inp.value=st[inp.dataset.fit.split('|')[1]]});if(p<1)requestAnimationFrame(step);else res()};requestAnimationFrame(step)});
+    a.disabled=false;save();break}
+  case 'agTool':{const [id,tid]=arg.split('|');const st=SBST(id);const s2=new Set(st.tools||[]);s2.has(tid)?s2.delete(tid):s2.add(tid);st.tools=[...s2];save();
+    a.classList.toggle('on',s2.has(tid));a.innerHTML=ic(s2.has(tid)?'check':'plus','ico s',2.2)+' '+esc(curBlock(id).cfg.tools.find(x=>x.id===tid).name);break}
+  case 'agRun':{const b=curBlock(arg);const st=SBST(arg);const p=document.getElementById('agP-'+arg).value.trim();if(p.length<10){toast(t('sb_longer'));break}if(!useRun())break;
+    st.prompt=p;a.disabled=true;const r=agentEval(b,st.tools||[],p);const box=document.getElementById('agT-'+arg);box.innerHTML='';document.getElementById('agS-'+arg).innerHTML='';
+    for(const l of r.lines){box.insertAdjacentHTML('beforeend',traceLine(l));box.scrollTop=box.scrollHeight;await new Promise(res=>setTimeout(res,l.k==='msg'?420:260))}
+    st.trace=box.innerHTML;st.summary=r.summary;st.score=r.score;save();T.ev('lesson',location.hash.slice(8),{a:'sandbox',s:r.score});
+    const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
   case 'sbHint':openMentor();mentorAsk(t('sb_hint_q'),'m_task');break;
   case 'mentorQuick':mentorAsk(t(arg==='simpler'?'simpler':'example')+(selText?`: «${selText}»`:''),arg==='simpler'?'m_simple':'m_example');selText='';break;
  }
 });
 document.addEventListener('input',e=>{const el=e.target;
  if(el.matches('[data-phone]')){const v=fmtPhone(el.value);if(v!==el.value)el.value=v}
+ if(el.dataset.fit){const [id,k]=el.dataset.fit.split('|');const st=SBST(id);st[k]=Number(el.value);fitDraw(id);clearTimeout(window._fitSave);window._fitSave=setTimeout(save,300)}
  if(el.dataset.input==='catq'){catF.q=el.value;document.getElementById('catGrid').innerHTML=catalogItems();observe()}});
 document.addEventListener('submit',async e=>{const f=e.target;const k=f.dataset.submit;if(!k)return;e.preventDefault();
  if(k==='lead'){const btn=f.querySelector('button');const fd=Object.fromEntries(new FormData(f).entries());

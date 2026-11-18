@@ -205,7 +205,7 @@ function applyCourse(c, b) {
   if (!['beginner', 'intermediate', 'advanced'].includes(c.level)) c.level = 'beginner';
   c.outcomes = (Array.isArray(c.outcomes) ? c.outcomes : []).map((o) => locObj(o, 200)).filter((o) => o.uz || o.ru || o.en);
   if (!Array.isArray(c.modules)) c.modules = [];
-  c.modules = c.modules.map((m) => ({ t: locObj(m.t, 120), l: (m.l || []).map((l) => ({ id: clean(l.id, 40) || 'l' + crypto.randomBytes(3).toString('hex'), t: locObj(l.t, 160), free: !!l.free, final: !!l.final })) }));
+  c.modules = c.modules.map((m) => ({ t: locObj(m.t, 120), l: (m.l || []).map((l) => ({ id: clean(l.id, 40) || 'l' + crypto.randomBytes(3).toString('hex'), t: locObj(l.t, 160), task: locObj(l.task, 200), free: !!l.free, final: !!l.final })) }));
 }
 A.get('/courses', (req, res) => res.json({ courses: db().courses, lessonIds: Object.keys(db().lessons) }));
 A.post('/courses', (req, res) => {
