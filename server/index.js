@@ -22,6 +22,8 @@ const an = require('./analytics');
 const db = () => store.db;
 
 const PORT = Number(process.env.PORT) || 3000;
+// На сервере за nginx слушаем только локально: HOST=127.0.0.1
+const HOST = process.env.HOST || '0.0.0.0';
 const ADMIN_LOGIN = process.env.ADMIN_LOGIN || 'admin';
 let ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 if (!ADMIN_PASSWORD) {
@@ -290,7 +292,7 @@ app.use((err, req, res, next) => {
 process.on('SIGINT', () => { store.saveNow(); process.exit(0); });
 process.on('SIGTERM', () => { store.saveNow(); process.exit(0); });
 
-app.listen(PORT, (err) => {
+app.listen(PORT, HOST, (err) => {
   if (err) {
     console.error(err.code === 'EADDRINUSE'
       ? `Порт ${PORT} уже занят — возможно, сайт уже запущен в другом окне. Закройте его (Ctrl+C) или укажите другой PORT в .env.`
