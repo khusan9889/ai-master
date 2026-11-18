@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Master — обучение ИИ на практике</title>
+<meta name="description" content="Короткие интерактивные уроки по искусственному интеллекту: практика в песочнице, ИИ-наставник и сертификат. На узбекском, русском и английском.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FF6B1A'/%3E%3Cpath d='M32 42 L56 62 L32 82' fill='none' stroke='%2314161F' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M64 84 H86' stroke='%2314161F' stroke-width='12' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#FAF9F6;--bg2:#F2F0EA;--card:#FFFFFF;--ink:#14161F;--ink2:#3A3D48;--muted:#6E6C66;--line:#E9E6DE;
+ --brand:#FF6B1A;--brand-ink:#B24A0B;--brand-soft:#FFF0E5;--indigo:#3B4FD8;--indigo-soft:#ECEFFF;
+ --green:#16834A;--green-soft:#E3F5EA;--red:#C2410C;--red-soft:#FDE8DD;
+ --dark:#14161F;--dark2:#1E212C;--dark3:#2A2E3B;--onDark:#F4F2EE;
+ --r:20px;--r-sm:12px;
+ --sh-sm:0 1px 2px rgba(20,22,31,.05);
+ --sh:0 1px 2px rgba(20,22,31,.04),0 8px 28px rgba(20,22,31,.07);
+ --sh-lg:0 24px 60px rgba(20,22,31,.16);
+}
+[data-theme="dark"]{
+ --bg:#0E1016;--bg2:#161922;--card:#1A1D27;--ink:#F1EFEA;--ink2:#CFCCC4;--muted:#9B988F;--line:#2A2D39;
+ --brand-ink:#FF9A5C;--brand-soft:#33221A;--indigo:#8C9BFF;--indigo-soft:#1D2240;
+ --green:#5ACB86;--green-soft:#15291E;--red:#FF8A5B;--red-soft:#361D14;
+ --dark:#1E212C;--dark2:#262A36;--dark3:#30344250;
+ --sh:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img,svg{max-width:100%}
+button{font:inherit;cursor:pointer;color:inherit}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;width:100%;transition:border-color .15s}
+input:hover,select:hover,textarea:hover{border-color:color-mix(in srgb,var(--ink) 25%,var(--line))}
+input:focus,select:focus,textarea:focus{outline:3px solid color-mix(in srgb,var(--brand) 30%,transparent);border-color:var(--brand)}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 45%,transparent);outline-offset:2px}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--ink2)}
+h1,h2,h3,h4{font-family:Manrope,Inter,sans-serif;margin:0;line-height:1.12;letter-spacing:-.02em}
+h1{font-size:clamp(34px,5.2vw,60px);font-weight:800}
+h2{font-size:clamp(28px,3.4vw,42px);font-weight:800}
+h3{font-size:19px;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.narrow{max-width:760px}
+.muted{color:var(--muted)}
+.small{font-size:14px}.tiny{font-size:12.5px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.col{display:flex;flex-direction:column;gap:12px}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:960px){.g3,.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:var(--sh-sm)}
+.ico{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 20px;font-weight:700;font-family:Manrope,Inter,sans-serif;font-size:15.5px;background:var(--brand);color:#14161F;text-decoration:none;white-space:nowrap;transition:transform .12s,filter .15s,background .15s;line-height:1.2}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px)}
+.btn.dark{background:var(--ink);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.ghost:hover{background:var(--bg2);filter:none}
+.btn.soft{background:var(--bg2);color:var(--ink)}
+.btn.link{background:none;padding:0;color:var(--brand-ink);font-weight:700}
+.btn.sm{padding:8px 14px;font-size:14px;border-radius:11px}
+.btn.lg{padding:16px 26px;font-size:17px;border-radius:16px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none;transform:none}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:5px 11px;border-radius:999px;background:var(--bg2);color:var(--ink2);white-space:nowrap}
+.pill.o{background:var(--brand-soft);color:var(--brand-ink)}.pill.g{background:var(--green-soft);color:var(--green)}.pill.b{background:var(--indigo-soft);color:var(--indigo)}.pill.r{background:var(--red-soft);color:var(--red)}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-ink)}
+section{padding:72px 0}
+.sec-head{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;max-width:680px}
+.sec-head p{font-size:18px;color:var(--muted)}
+/* header */
+header.top{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid transparent;transition:border-color .2s}
+header.top.scrolled{border-bottom-color:var(--line)}
+.nav{display:flex;align-items:center;gap:10px;height:70px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:Manrope;font-weight:800;font-size:20px;letter-spacing:-.02em;white-space:nowrap}
+.logo b{color:var(--brand)}
+.navlinks{display:flex;gap:2px;margin-left:24px}
+.navlinks a{text-decoration:none;padding:9px 14px;border-radius:11px;color:var(--ink2);font-weight:600;font-size:15px}
+.navlinks a:hover{background:var(--bg2);color:var(--ink)}
+.navlinks a.on{color:var(--ink);background:var(--bg2)}
+.navright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:0;border-radius:11px;height:40px;min-width:40px;padding:0 10px;color:var(--ink2);font-weight:700;font-size:13.5px}
+.iconbtn:hover{background:var(--bg2);color:var(--ink)}
+.langsel{appearance:none;width:auto;border:0;background:transparent;padding:0 10px;height:40px;font-weight:700;font-size:13.5px;color:var(--ink2);border-radius:11px;cursor:pointer}
+.langsel:hover{background:var(--bg2)}
+.burger{display:none}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--brand);color:#14161F;display:grid;place-items:center;font-weight:800;font-family:Manrope;font-size:15px;flex:none}
+.me-link{display:flex;align-items:center;gap:10px;text-decoration:none;padding:3px 12px 3px 3px;border-radius:999px;font-weight:700;font-size:14.5px}
+.me-link:hover{background:var(--bg2)}
+@media(max-width:900px){.navlinks,.hide-md{display:none!important}.burger{display:inline-flex}}
+@media(max-width:520px){.hide-sm{display:none!important}.nav{gap:4px}.logo{font-size:18px}}
+.sheet{position:fixed;inset:70px 0 0 0;z-index:39;background:var(--bg);padding:20px;display:flex;flex-direction:column;gap:6px;overflow:auto;animation:fade .15s}
+.sheet a.big{display:flex;align-items:center;justify-content:space-between;text-decoration:none;font-family:Manrope;font-weight:700;font-size:22px;padding:14px 4px;border-bottom:1px solid var(--line)}
+@keyframes fade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+/* hero */
+.hero{padding:64px 0 56px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+@media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+.hero h1 em{font-style:normal;color:var(--brand)}
+.hero .lead{font-size:19px;color:var(--ink2);max-width:540px}
+.checks{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14.5px;color:var(--ink2)}
+.checks span{display:inline-flex;align-items:center;gap:7px}
+.checks .ico{color:var(--green)}
+.mock{position:relative}
+.mock .win{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--sh-lg);padding:22px;display:flex;flex-direction:column;gap:14px}
+.mock .float{position:absolute;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:12px 14px;display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600}
+.mock .f1{left:-26px;bottom:38px}.mock .f2{right:-14px;top:-18px}
+@media(max-width:560px){.mock .f1{left:-6px;bottom:-22px}.mock .f2{right:-4px}}
+.qopt{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);font-size:14.5px}
+.qopt.ok{border-color:var(--green);background:var(--green-soft)}
+.qopt .l{width:24px;height:24px;border-radius:7px;background:var(--bg2);display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
+.qopt.ok .l{background:var(--green);color:#fff}
+/* path cards */
+.path{display:flex;flex-direction:column;gap:12px;text-decoration:none;transition:transform .15s,box-shadow .15s,border-color .15s;position:relative}
+.path:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.path .pi{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:22px}
+.path .go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14.5px;color:var(--brand-ink)}
+/* steps */
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+@media(max-width:960px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+.step{position:relative;padding-top:4px}
+.step .n{width:40px;height:40px;border-radius:12px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-family:Manrope;font-weight:800;margin-bottom:14px}
+.step p{color:var(--muted);font-size:15px;margin-top:6px}
+/* course card */
+.ccard{display:flex;flex-direction:column;gap:12px;text-decoration:none;padding:0;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.ccard:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.ccard .body{padding:4px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.ccover{height:132px;display:flex;align-items:flex-start;justify-content:space-between;padding:16px;color:#fff;position:relative;overflow:hidden}
+.ccover::after{content:"";position:absolute;right:-30px;bottom:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.14)}
+.ccover::before{content:"";position:absolute;right:60px;bottom:-90px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08)}
+.ccover .tg{background:rgba(0,0,0,.22);backdrop-filter:blur(4px);padding:5px 10px;border-radius:999px;font-size:12.5px;font-weight:700;position:relative;z-index:1}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px;color:var(--muted)}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+.price{font-family:Manrope;font-weight:800;font-size:20px;letter-spacing:-.01em}
+.price.free{color:var(--green)}
+/* chips */
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 16px;font-weight:600;font-size:14.5px;color:var(--ink2);display:inline-flex;align-items:center;gap:7px}
+.chip:hover{border-color:color-mix(in srgb,var(--ink) 30%,var(--line))}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.search{position:relative;flex:1;min-width:220px}
+.search .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search input{padding-left:42px}
+/* band */
+.band{background:var(--dark);color:var(--onDark);border-radius:28px;padding:44px;position:relative;overflow:hidden}
+.band::after{content:"";position:absolute;right:-80px;top:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,26,.35),transparent 70%)}
+.band .muted{color:#B5B2AA}
+.stat .v{font-family:Manrope;font-weight:800;font-size:36px;letter-spacing:-.02em}
+/* pricing */
+.plan{display:flex;flex-direction:column;gap:14px;position:relative}
+.plan.best{border:2px solid var(--brand);box-shadow:var(--sh)}
+.plan ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px;color:var(--ink2)}
+.plan li{display:flex;gap:9px;align-items:flex-start}
+.plan li .ico{color:var(--green);margin-top:2px}
+.plan .badge{position:absolute;top:-13px;left:24px}
+.seg{display:inline-flex;background:var(--bg2);border-radius:14px;padding:4px;gap:2px}
+.seg button{border:0;background:transparent;padding:9px 14px;border-radius:11px;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--sh-sm)}
+/* faq */
+.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq summary{font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;font-size:17px;font-family:Manrope}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:24px;line-height:1;color:var(--muted);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin-top:10px;color:var(--muted)}
+/* lead form */
+.leadbox{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:var(--sh)}
+.success{text-align:center;padding:20px 8px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.success .ok{width:60px;height:60px;border-radius:50%;background:var(--green-soft);color:var(--green);display:grid;place-items:center}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+/* course page */
+.crumbs{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--muted)}
+.crumbs a{text-decoration:none}.crumbs a:hover{color:var(--ink)}
+.course-grid{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:36px;align-items:start}
+@media(max-width:960px){.course-grid{grid-template-columns:1fr}}
+.buybox{position:sticky;top:90px;display:flex;flex-direction:column;gap:14px}
+@media(max-width:960px){.buybox{position:static}}
+.mod{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+.mod+.mod{margin-top:10px}
+.mod summary{padding:16px 18px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;font-weight:700}
+.mod summary::-webkit-details-marker{display:none}
+.mod .ls a{display:flex;align-items:center;gap:12px;padding:12px 18px;text-decoration:none;border-top:1px solid var(--line);font-size:15px}
+.mod .ls a:hover{background:var(--bg)}
+.dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:12px;color:#fff}
+.dot.done{background:var(--green);border-color:var(--green)}
+.outc{display:flex;gap:12px;align-items:flex-start}
+.outc .ic{width:28px;height:28px;border-radius:9px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;flex:none}
+/* lesson */
+.lbar{position:sticky;top:0;z-index:41;background:var(--card);border-bottom:1px solid var(--line)}
+.lbar .in{display:flex;align-items:center;gap:12px;height:62px;padding:0 16px}
+.lbar .ttl{font-weight:700;font-family:Manrope;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.progress{height:6px;background:var(--bg2);border-radius:99px;overflow:hidden}
+.progress>i{display:block;height:100%;background:var(--brand);border-radius:99px;transition:width .35s}
+.progress.g>i{background:var(--green)}
+.lesson-layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:calc(100vh - 62px)}
+@media(max-width:900px){.lesson-layout{grid-template-columns:1fr}.toc{display:none}.toc.open{display:block;position:fixed;inset:62px 0 0 0;z-index:45}}
+.toc{border-right:1px solid var(--line);padding:20px 14px;background:var(--bg);overflow:auto;position:sticky;top:62px;height:calc(100vh - 62px)}
+.toc a{display:flex;gap:10px;align-items:center;text-decoration:none;padding:9px 10px;border-radius:11px;font-size:14.5px;color:var(--ink2)}
+.toc a:hover{background:var(--bg2)}
+.toc a.on{background:var(--brand-soft);color:var(--brand-ink);font-weight:700}
+.toc .mh{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 10px 6px}
+.lesson-main{padding:28px 20px 120px}
+.reader{max-width:720px;margin:0 auto}
+.reader .block{margin:26px 0}
+.reader .txt p{margin:0 0 14px}
+.reader .txt h2{font-size:clamp(28px,3.4vw,36px);margin:0 0 16px}
+.reader .txt h3{margin:24px 0 10px;font-size:22px}
+.reader .txt ul{margin:0 0 14px;padding-left:22px}.reader .txt li{margin:6px 0}
+.reader table{border-collapse:collapse;width:100%;font-size:15px}
+.reader th,.reader td{border:1px solid var(--line);padding:9px 12px;text-align:left}
+.reader th{background:var(--bg2)}
+.reader code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--bg2);padding:1px 6px;border-radius:6px}
+.callout{border-radius:16px;padding:16px 18px;display:flex;gap:12px}
+.callout .h{font-weight:700;margin-bottom:3px}
+.callout.tip{background:var(--indigo-soft)}.callout.tip .ci{color:var(--indigo)}
+.callout.important{background:var(--brand-soft)}.callout.important .ci{color:var(--brand-ink)}
+.callout.error{background:var(--red-soft)}.callout.error .ci{color:var(--red)}
+.callout.example{background:var(--green-soft)}.callout.example .ci{color:var(--green)}
+.callout .ci{flex:none;margin-top:2px}
+.code{background:#14161F;color:#F4F2EE;border-radius:16px;overflow:hidden}
+.code .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 10px 8px 16px;background:#1E212C;font-size:13px;color:#B9B6AE}
+.code .hd button{background:transparent;border:0;color:#D8D5CD;font-size:13px;padding:5px 10px;border-radius:8px}
+.code .hd button:hover{background:#2A2E3B}
+.code pre{margin:0;padding:16px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.6}
+.k{color:#FF9A5C}.s{color:#9FE3A9}.c{color:#8A90A3}.fn{color:#8C9BFF}
+.formula{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;font-family:'Times New Roman',serif;font-size:26px}
+.formula .cap{font-family:Inter;font-size:13.5px;color:var(--muted);margin-top:8px}
+.quiz{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px}
+.quiz .opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:10px;color:var(--ink)}
+.quiz .opt:hover{border-color:color-mix(in srgb,var(--brand) 60%,var(--line))}
+.quiz .opt .l{width:26px;height:26px;border-radius:8px;background:var(--bg2);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.quiz .opt.ok{border-color:var(--green);background:var(--green-soft)}.quiz .opt.ok .l{background:var(--green);color:#fff}
+.quiz .opt.bad{border-color:var(--red);background:var(--red-soft)}.quiz .opt.bad .l{background:var(--red);color:#fff}
+.quiz .why{font-size:14.5px;margin-top:8px;padding:11px 14px;border-radius:12px;background:var(--bg2)}
+.sbx{background:#14161F;color:#F4F2EE;border-radius:22px;padding:22px}
+.sbx textarea{background:#2A2E3B;color:#F4F2EE;border:1px solid #3A3F50;font-family:'JetBrains Mono',monospace;font-size:14px;min-height:120px}
+.sbx .lbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8C9BFF}
+.sbx .out{background:#2A2E3B;border-radius:12px;padding:12px 14px;min-height:60px;white-space:pre-wrap;font-family:'JetBrains Mono',monospace;font-size:13.5px;max-height:300px;overflow:auto}
+.sbx .doc{background:#232734;border-radius:12px;padding:12px 14px;font-size:14px;color:#D7D2C6}
+.sbx .btn.ghost{color:#F4F2EE;box-shadow:inset 0 0 0 1.5px #3A3F50}
+.sbx .btn.ghost:hover{background:#2A2E3B}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:6px 0}
+.chk .ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;flex:none;color:#14161F}
+.chk .ic.y{background:#5ACB86}.chk .ic.n{background:#FF9A5C}
+.okbar{background:#5ACB86;color:#14161F;border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px;display:inline-block}
+.finish{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:36px}
+.fab{position:fixed;right:22px;bottom:22px;z-index:44;box-shadow:var(--sh-lg)}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:min(400px,100%);background:var(--card);border-left:1px solid var(--line);z-index:60;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s ease;box-shadow:var(--sh-lg)}
+.drawer.open{transform:none}
+.drawer .hd{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.msg{padding:11px 14px;border-radius:16px;font-size:14.5px;max-width:90%;white-space:pre-wrap}
+.msg.u{background:var(--brand-soft);align-self:flex-end;border-bottom-right-radius:6px}
+.msg.a{background:var(--bg2);align-self:flex-start;border-bottom-left-radius:6px}
+.drawer form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+.selbar{position:absolute;z-index:70;background:var(--ink);color:var(--bg);border-radius:12px;padding:4px;display:flex;gap:2px;box-shadow:var(--sh-lg)}
+.selbar button{background:transparent;border:0;color:var(--bg);font-size:13px;padding:7px 10px;border-radius:8px;font-weight:600}
+.selbar button:hover{background:color-mix(in srgb,var(--bg) 15%,transparent)}
+.lock{text-align:center;padding:44px 24px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lock .lk{width:64px;height:64px;border-radius:20px;background:var(--brand-soft);color:var(--brand-ink);display:grid;place-items:center}
+/* match test */
+.choice{display:flex;align-items:center;gap:14px;width:100%;border:1.5px solid var(--line);background:var(--card);border-radius:16px;padding:16px 18px;text-align:left;font-weight:600;font-size:16px;transition:border-color .15s,background .15s}
+.choice:hover{border-color:var(--brand)}
+.choice.on{border-color:var(--brand);background:var(--brand-soft)}
+.choice .em{font-size:24px}
+/* cabinet */
+.cab{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;padding:32px 0 72px}
+@media(max-width:860px){.cab{grid-template-columns:1fr}}
+.side{display:flex;flex-direction:column;gap:2px;position:sticky;top:90px;height:fit-content}
+.side a{display:flex;align-items:center;gap:10px;text-decoration:none;padding:11px 14px;border-radius:12px;color:var(--ink2);font-weight:600;font-size:15px}
+.side a:hover{background:var(--bg2)}
+.side a.on{background:var(--card);color:var(--ink);box-shadow:var(--sh-sm);border:1px solid var(--line)}
+@media(max-width:860px){.side{position:static;flex-direction:row;overflow:auto;padding-bottom:4px}.side a{white-space:nowrap}}
+.t{width:100%;border-collapse:collapse;font-size:14.5px}
+.t th{text-align:left;color:var(--muted);font-weight:600;font-size:13px;padding:10px;border-bottom:1px solid var(--line)}
+.t td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tablewrap{overflow:auto}
+/* certificate */
+.cert{background:linear-gradient(135deg,#FFFDF8,#F6EEDC);color:#14161F;border-radius:20px;padding:34px;border:2px solid #E8DABB;position:relative}
+.cert .seal{position:absolute;right:28px;top:28px}
+@media(max-width:560px){.cert .seal{position:static;margin-bottom:12px}}
+/* modal / toast */
+.modal-bg{position:fixed;inset:0;background:rgba(10,12,18,.5);z-index:90;display:grid;place-items:center;padding:16px;animation:fade .15s}
+.modal{background:var(--card);border-radius:24px;max-width:520px;width:100%;max-height:92vh;overflow:auto;padding:28px;box-shadow:var(--sh-lg);position:relative}
+.modal .x{position:absolute;right:14px;top:14px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:13px 20px;border-radius:14px;z-index:100;font-size:14.5px;font-weight:600;box-shadow:var(--sh-lg);max-width:90vw;animation:fade .2s}
+.empty{padding:44px 24px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:12px;align-items:center}
+footer{border-top:1px solid var(--line);padding:56px 0 36px;margin-top:20px}
+footer h4{font-size:14px;margin-bottom:12px}
+footer a{text-decoration:none;color:var(--muted);font-size:14.5px;display:block;padding:4px 0}
+footer a:hover{color:var(--ink)}
+.skel{background:linear-gradient(90deg,var(--bg2),var(--line),var(--bg2));background-size:200% 100%;animation:sk 1.2s infinite;border-radius:14px}
+@keyframes sk{to{background-position:-200% 0}}
+.demo-note{display:flex;gap:10px;align-items:flex-start;background:var(--indigo-soft);color:var(--ink2);border-radius:14px;padding:12px 14px;font-size:14px}
+.demo-note .ico{color:var(--indigo);margin-top:2px}
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.heat i{aspect-ratio:1;border-radius:6px;background:var(--bg2)}
+.heat i.on{background:var(--brand)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="top" id="hdr"><div class="wrap nav" id="nav"></div></header>
+<main id="app"><div class="wrap" style="padding:80px 20px"><div class="skel" style="height:60px;max-width:520px"></div><div class="skel" style="height:20px;max-width:420px;margin-top:18px"></div></div></main>
+<footer id="footer"><div class="wrap" id="foot"></div></footer>
+<div id="layer"></div>
+
+<script>
+/* ================== ICONS ================== */
+const IP={
+ check:'<path d="M20 6 9 17l-5-5"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',back:'<path d="M19 12H5M11 18l-6-6 6-6"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',star:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+ users:'<path d="M16 20v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="9" cy="7" r="4"/><path d="M22 20v-1a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+ lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',play:'<path d="M7 4v16l13-8z"/>',
+ spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>',
+ menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+ moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',down:'<path d="m6 9 6 6 6-6"/>',
+ book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/>',
+ award:'<circle cx="12" cy="8" r="6"/><path d="M8.2 13.4 7 22l5-3 5 3-1.2-8.6"/>',
+ msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+ card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+ note:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+ home:'<path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/>',
+ logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+ info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',warn:'<path d="M12 3 2 21h20z"/><path d="M12 10v4M12 17h.01"/>',
+ bulb:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/>',
+ phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/>',
+ send:'<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
+ flag:'<path d="M4 22V4M4 4h13l-2 4 2 4H4"/>',target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+ shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'
+};
+const ic=(n,cls='ico',sw=2)=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||''}</svg>`;
+const LOGO=(s=34)=>`<svg width="${s}" height="${s}" viewBox="0 0 120 120" aria-hidden="true"><rect width="120" height="120" rx="30" fill="#FF6B1A"/><path d="M32 42 L56 62 L32 82" fill="none" stroke="#14161F" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 84 H86" fill="none" stroke="#14161F" stroke-width="12" stroke-linecap="round"/><path d="M90 18 Q92 32 104 34 Q92 36 90 50 Q88 36 76 34 Q88 32 90 18 Z" fill="#14161F"/></svg>`;
+
+/* ================== CONSTANTS ================== */
+const COVERS={a:'linear-gradient(135deg,#FF6B1A,#FF3D68)',b:'linear-gradient(135deg,#3B4FD8,#7E92FF)',c:'linear-gradient(135deg,#14161F,#3E4459)',d:'linear-gradient(135deg,#16834A,#4FC67F)',e:'linear-gradient(135deg,#6E3CF0,#B784FC)',f:'linear-gradient(135deg,#B24A0B,#FF9A5C)'};
+const AUD={beginner:{t:'Новичкам',e:'🌱',d:'Разберётесь, что такое ИИ и как им безопасно пользоваться. Без кода и формул.',bg:'var(--green-soft)'},
+ work:{t:'Для работы',e:'💼',d:'Письма, отчёты, таблицы и промпты — ускорите рутину в 2–3 раза.',bg:'var(--indigo-soft)'},
+ business:{t:'Для бизнеса',e:'📈',d:'Маркетинг, продажи и поддержка клиентов с помощью ИИ.',bg:'var(--brand-soft)'},
+ dev:{t:'Разработчикам',e:'⚙️',d:'Машинное обучение, агенты, RAG и автоматизации.',bg:'#F1E9FF'}};
+const CONTRACT_A='ДОГОВОР ПОСТАВКИ № 17\nПоставщик обязуется поставить оборудование, а Покупатель — принять и оплатить его. Сумма договора составляет 45 000 000 (сорок пять миллионов) сум. Поставка осуществляется не позднее 31 декабря 2026 года. За каждый день просрочки поставки Поставщик уплачивает пеню в размере 0,1% от суммы договора.';
+const CONTRACT_B='ДОГОВОР ОКАЗАНИЯ УСЛУГ № 204\nИсполнитель оказывает услуги по настройке CRM. Стоимость услуг — 12 800 000 (двенадцать миллионов восемьсот тысяч) сум. Срок оказания услуг — до 15 марта 2027 года. За нарушение срока Исполнитель уплачивает неустойку 0,2% от стоимости за каждый день.';
+const EXPECT_A={amount:45000000,deadline:'2026-12-31',penalty:0.1};
+const EXPECT_B={amount:12800000,deadline:'2027-03-15',penalty:0.2};
+
+let COURSES=[],PLANS=[],SETTINGS={};
+const fmt=n=>Number(n).toLocaleString('ru-RU').replace(/ |,/g,' ')+' сум';
+const course=id=>COURSES.find(c=>c.id===id);
+const allLessons=c=>c.modules.flatMap(m=>m.l);
+function findLesson(lid){for(const c of COURSES)for(const l of allLessons(c))if(l.id===lid)return {c,l};return null}
+function plural(n,a,b,c){n=Math.abs(n)%100;const n1=n%10;if(n>10&&n<20)return c;if(n1>1&&n1<5)return b;if(n1===1)return a;return c}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+/* ================== I18N (интерфейс) ================== */
+const I18N={
+ ru:{courses:'Курсы',pricing:'Цены',business:'Компаниям',login:'Войти',start:'Начать бесплатно',cabinet:'Моё обучение',match:'Подобрать курс',
+  heroK:'Практика вместо лекций',heroT1:'Освойте ИИ',heroT2:'за 15 минут в день',heroP:'Короткие интерактивные уроки без видео: читаете, пробуете в песочнице, получаете разбор от ИИ-наставника. На узбекском, русском и английском.',
+  paths:'С чего начать?',pathsP:'Выберите, что вам ближе — покажем подходящие курсы.',how:'Как проходит урок',popular:'Популярные курсы',all:'Все курсы',faq:'Частые вопросы',reviews:'Что говорят студенты'},
+ uz:{courses:'Kurslar',pricing:'Narxlar',business:'Kompaniyalarga',login:'Kirish',start:'Bepul boshlash',cabinet:'O‘qishim',match:'Kurs tanlash',
+  heroK:'Ma’ruza emas — amaliyot',heroT1:'SIni o‘rganing',heroT2:'kuniga 15 daqiqada',heroP:'Videosiz qisqa interaktiv darslar: o‘qing, qumdonda sinab ko‘ring, SI-murabbiydan tahlil oling. O‘zbek, rus va ingliz tillarida.',
+  paths:'Nimadan boshlash kerak?',pathsP:'O‘zingizga yaqinini tanlang — mos kurslarni ko‘rsatamiz.',how:'Dars qanday o‘tadi',popular:'Mashhur kurslar',all:'Barcha kurslar',faq:'Ko‘p so‘raladigan savollar',reviews:'Talabalar fikri'},
+ en:{courses:'Courses',pricing:'Pricing',business:'For teams',login:'Log in',start:'Start free',cabinet:'My learning',match:'Find a course',
+  heroK:'Practice, not lectures',heroT1:'Master AI',heroT2:'in 15 minutes a day',heroP:'Short interactive lessons without video: read, try it in the sandbox, get feedback from an AI mentor. In Uzbek, Russian and English.',
+  paths:'Where to start?',pathsP:'Pick what fits you best — we’ll show matching courses.',how:'How a lesson works',popular:'Popular courses',all:'All courses',faq:'FAQ',reviews:'What students say'}
+};
+const t=k=>(I18N[S.lang]||I18N.ru)[k]||I18N.ru[k]||k;
+
+/* ================== STATE ================== */
+const KEY='aimaster_v2';
+const SYNC_KEYS=['done','quiz','xp','streak','lastDay','notes','lessonPos','onboarding','sandboxRuns','mentor'];
+const DEFAULT=()=>({lang:'ru',theme:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',font:17,token:null,user:null,
+ done:{},quiz:{},xp:0,streak:0,lastDay:null,notes:[],lessonPos:{},onboarding:null,sandboxRuns:{day:'',n:0},mentor:{day:'',n:0}});
+let S=DEFAULT();
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(DEFAULT(),JSON.parse(raw))}catch(e){}
+document.documentElement.dataset.theme=S.theme;document.documentElement.lang=S.lang;
+let syncT=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
+ if(S.token){clearTimeout(syncT);syncT=setTimeout(()=>{const st={};SYNC_KEYS.forEach(k=>st[k]=S[k]);api('/api/me/state',{method:'PUT',body:{state:st}}).catch(()=>{})},800)}}
+const today=()=>new Date().toISOString().slice(0,10);
+const U=()=>S.user;
+function hasSub(){const u=U();return !!(u&&u.sub&&u.sub.status==='active'&&new Date(u.sub.until)>new Date())}
+function owns(c){const u=U();return !!(u&&u.owned.includes(c.id))}
+function hasAccess(c,l){return (l&&l.free)||c.price===0||owns(c)||hasSub()}
+function courseProgress(c){const ls=allLessons(c);if(!ls.length)return 0;return Math.round(ls.filter(l=>S.done[l.id]).length/ls.length*100)}
+function addXP(n){S.xp+=n;const d=today();if(S.lastDay!==d){const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak=(S.lastDay===y?S.streak:0)+1;S.lastDay=d}save()}
+function mergeState(remote){if(!remote)return;
+ S.done=Object.assign({},remote.done||{},S.done);
+ const q=Object.assign({},remote.quiz||{});for(const[k,v]of Object.entries(S.quiz)){const r=q[k];if(!r||(v.ok&&!r.ok)||((v.score||0)>(r.score||0)))q[k]=v}S.quiz=q;
+ S.xp=Math.max(S.xp||0,remote.xp||0);S.streak=Math.max(S.streak||0,remote.streak||0);S.lastDay=[S.lastDay,remote.lastDay].filter(Boolean).sort().pop()||null;
+ const seen=new Set(S.notes.map(n=>n.text+n.lid));S.notes=S.notes.concat((remote.notes||[]).filter(n=>!seen.has(n.text+n.lid)));
+ S.lessonPos=Object.assign({},remote.lessonPos||{},S.lessonPos);S.onboarding=S.onboarding||remote.onboarding||null}
+
+/* ================== API ================== */
+async function api(path,{method='GET',body}={}){
+ const h={'Content-Type':'application/json'};if(S.token)h.Authorization='Bearer '+S.token;
+ let r;try{r=await fetch(path,{method,headers:h,body:body?JSON.stringify(body):undefined})}catch(e){const er=new Error('Нет связи с сервером. Проверьте интернет.');er.status=0;throw er}
+ const j=await r.json().catch(()=>({}));
+ if(r.status===401&&S.token&&!path.startsWith('/api/auth')){S.token=null;S.user=null;save()}
+ if(!r.ok){const er=new Error(j.error||'Ошибка '+r.status);er.status=r.status;er.data=j;throw er}
+ return j}
+
+/* ================== AI (опционально) ================== */
+let AI=null;
+if(window.claude&&claude.use){claude.use('sample').then(s=>{AI=s}).catch(()=>{})}
+async function askAI(input,opts={}){if(!AI)return null;try{const r=await AI(input,Object.assign({modelTier:'quick'},opts));return r.text}catch(e){return null}}
+
+/* ================== UI helpers ================== */
+function toast(msg){document.querySelectorAll('.toast').forEach(x=>x.remove());const el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3400)}
+function modal(html){document.getElementById('layer').innerHTML=`<div class="modal-bg" data-act="closeModal"><div class="modal" role="dialog" aria-modal="true"><button class="iconbtn x" data-act="closeModal" aria-label="Закрыть">${ic('x')}</button>${html}</div></div>`;setTimeout(()=>document.querySelector('.modal input:not([type=hidden]):not(.hp)')?.focus(),50)}
+function closeModal(){document.getElementById('layer').innerHTML=''}
+function go(r){if(location.hash==='#'+r)render();else location.hash=r}
+function cover(c,h=132){return `<div class="ccover" style="background:${COVERS[c.cover]||COVERS.a};height:${h}px"><span class="tg">${esc(c.topic)}</span>${c.isNew?'<span class="tg">Новый</span>':''}</div>`}
+function priceTag(c){return c.price===0?`<span class="price free">Бесплатно</span>`:`<span class="price">${fmt(c.price)}</span>`}
+function courseCard(c){const p=courseProgress(c);return `<a class="card ccard" href="#course-${c.id}">${cover(c)}
+ <div class="body"><div class="row" style="gap:6px"><span class="pill">${esc(c.level)}</span>${owns(c)||(hasSub()&&c.price>0)?'<span class="pill g">Доступен</span>':''}</div>
+ <h3>${esc(c.title)}</h3><p class="muted small">${esc(c.desc)}</p>
+ <div class="meta"><span>${ic('clock')} ${c.hours} ч</span><span>${ic('star')} ${c.rating}</span><span>${ic('users')} ${c.students.toLocaleString('ru-RU')}</span></div>
+ ${p>0?`<div class="col" style="gap:4px"><div class="progress g"><i style="width:${p}%"></i></div><span class="tiny muted">Пройдено ${p}%</span></div>`:''}
+ <div class="row between" style="margin-top:auto;padding-top:6px">${priceTag(c)}<span class="btn link">Подробнее ${ic('arrow')}</span></div></div></a>`}
+function phoneInput(id,val){return `<input id="${id}" name="phone" type="tel" inputmode="tel" autocomplete="tel" data-phone value="${esc(val||'+998 ')}" placeholder="+998 90 123 45 67" required>`}
+function fmtPhone(v){let d=v.replace(/\D/g,'');if(!d.startsWith('998'))d='998'+d.replace(/^998?/,'');d=d.slice(0,12);const p=[d.slice(0,3),d.slice(3,5),d.slice(5,8),d.slice(8,10),d.slice(10,12)].filter(Boolean);return '+'+p.join(' ')}
+
+/* ---- lead forms (→ Telegram) ---- */
+function leadForm(o){
+ o=Object.assign({type:'consult',cta:'Отправить заявку',fields:[]},o);
+ const f=o.fields;
+ return `<form class="col" data-submit="lead" style="gap:14px">
+  <input type="hidden" name="type" value="${o.type}"><input type="hidden" name="courseId" value="${esc(o.courseId||'')}"><input type="hidden" name="goal" value="${esc(o.goal||'')}">
+  <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+  <label class="f">Ваше имя<input name="name" autocomplete="name" required placeholder="Как к вам обращаться" value="${esc(U()?.name&&U().name!=='Студент'?U().name:'')}"></label>
+  <label class="f">Телефон${phoneInput('ph-'+Math.random().toString(36).slice(2,7),U()?.phone)}</label>
+  ${f.includes('company')?`<label class="f">Компания<input name="company" required placeholder="Название компании"></label>`:''}
+  ${f.includes('size')?`<label class="f">Сколько сотрудников обучить<select name="size"><option>До 10</option><option>10–50</option><option>50–200</option><option>Более 200</option></select></label>`:''}
+  ${f.includes('contact')?`<div class="col" style="gap:6px"><span class="small" style="font-weight:600;color:var(--ink2)">Как удобнее связаться</span><div class="chips">${['Звонок','Telegram','WhatsApp'].map((x,i)=>`<label class="chip" style="cursor:pointer"><input type="radio" name="contactWay" value="${x}" ${i===0?'checked':''} style="width:auto;margin:0;accent-color:var(--brand)"> ${x}</label>`).join('')}</div></div>`:''}
+  ${f.includes('message')?`<label class="f">Комментарий <span class="muted" style="font-weight:400">— необязательно</span><textarea name="message" rows="3" placeholder="${esc(o.msgPh||'Что хотите узнать?')}"></textarea></label>`:''}
+  <button class="btn lg block">${esc(o.cta)} ${ic('arrow')}</button>
+  <p class="tiny muted" style="text-align:center">Нажимая кнопку, вы соглашаетесь с <a href="#legal-privacy">политикой конфиденциальности</a>. Перезвоним в течение 15 минут в рабочее время.</p>
+ </form>`}
+function leadSuccess(){return `<div class="success"><div class="ok">${ic('check','ico',2.5).replace('class="ico"','class="ico" style="width:30px;height:30px"')}</div><h3>Заявка отправлена!</h3><p class="muted">Менеджер свяжется с вами в ближайшее время. А пока можно пройти бесплатный урок.</p><a class="btn ghost" href="#lesson-p1" data-act="closeModal">Открыть бесплатный урок</a></div>`}
+function openLead(kind,extra={}){
+ const M={consult:{h:'Подберём курс под вашу задачу',p:'Оставьте номер — менеджер позвонит, ответит на вопросы и посоветует, с чего начать.',fields:['contact','message']},
+  course:{h:'Вопрос по курсу',p:'Расскажем о программе, формате и оплате.',fields:['contact','message']},
+  business:{h:'Обучение для команды',p:'Подготовим предложение под ваши задачи и число сотрудников.',fields:['company','size','message'],cta:'Получить предложение'}};
+ const m=M[kind]||M.consult;
+ modal(`<div class="col" style="gap:6px;margin-bottom:18px;padding-right:30px"><h3 style="font-size:24px">${m.h}</h3><p class="muted">${extra.sub||m.p}</p></div>${leadForm({type:kind,fields:m.fields,cta:m.cta,...extra})}`)}
+
+/* ================== HEADER / FOOTER ================== */
+let sheetOpen=false;
+function renderNav(){
+ const r=location.hash.slice(1)||'home';
+ const on=(...x)=>x.some(p=>r.startsWith(p))?'on':'';
+ const u=U();
+ document.getElementById('nav').innerHTML=`
+ <a class="logo" href="#home" aria-label="AI Master — на главную">${LOGO()}<span><b>AI</b> Master</span></a>
+ <nav class="navlinks" aria-label="Основное меню">
+  <a href="#catalog" class="${on('catalog','course-')}">${t('courses')}</a>
+  <a href="#pricing" class="${on('pricing')}">${t('pricing')}</a>
+  <a href="#business" class="${on('business')}">${t('business')}</a>
+ </nav>
+ <div class="navright">
+  <select class="langsel hide-sm" aria-label="Язык интерфейса" data-change="lang">${['uz','ru','en'].map(l=>`<option value="${l}" ${S.lang===l?'selected':''}>${l.toUpperCase()}</option>`).join('')}</select>
+  <button class="iconbtn hide-sm" data-act="theme" aria-label="Сменить тему">${ic(S.theme==='dark'?'sun':'moon')}</button>
+  ${u?`<a href="#me" class="me-link"><span class="avatar">${esc((u.name||'С')[0].toUpperCase())}</span><span class="hide-sm">${t('cabinet')}</span></a>`
+   :`<a class="btn ghost sm hide-sm" href="#login">${t('login')}</a><a class="btn sm" href="#lesson-p1">${t('start')}</a>`}
+  <button class="iconbtn burger" data-act="burger" aria-label="Меню" aria-expanded="${sheetOpen}">${ic(sheetOpen?'x':'menu')}</button>
+ </div>`;
+ document.getElementById('sheet')?.remove();
+ if(sheetOpen){const d=document.createElement('div');d.className='sheet';d.id='sheet';d.innerHTML=`
+  <a class="big" href="#catalog">${t('courses')} ${ic('arrow')}</a><a class="big" href="#match">${t('match')} ${ic('arrow')}</a><a class="big" href="#pricing">${t('pricing')} ${ic('arrow')}</a><a class="big" href="#business">${t('business')} ${ic('arrow')}</a>
+  ${u?`<a class="big" href="#me">${t('cabinet')} ${ic('arrow')}</a>`:''}
+  <div class="row" style="margin-top:16px">${u?'':`<a class="btn ghost lg" href="#login" style="flex:1">${t('login')}</a>`}<a class="btn lg" href="#lesson-p1" style="flex:1">${t('start')}</a></div>
+  <div class="row between" style="margin-top:16px"><select class="langsel" style="background:var(--bg2)" data-change="lang">${['uz','ru','en'].map(l=>`<option value="${l}" ${S.lang===l?'selected':''}>${{uz:'O‘zbekcha',ru:'Русский',en:'English'}[l]}</option>`).join('')}</select><button class="iconbtn" data-act="theme">${ic(S.theme==='dark'?'sun':'moon')} ${S.theme==='dark'?'Светлая тема':'Тёмная тема'}</button></div>`;
+  document.body.appendChild(d)}
+}
+function renderFoot(){const s=SETTINGS;document.getElementById('foot').innerHTML=`<div class="grid g4" style="gap:32px">
+ <div class="col"><a class="logo" href="#home">${LOGO(30)}<span><b>AI</b> Master</span></a><p class="muted small" style="max-width:260px">Практическое обучение искусственному интеллекту. Ташкент, Узбекистан.</p></div>
+ <div><h4>Обучение</h4><a href="#catalog">Все курсы</a><a href="#match">Подобрать курс</a><a href="#pricing">Цены и подписка</a><a href="#verify">Проверить сертификат</a><a href="#blog">Статьи</a></div>
+ <div><h4>Компаниям</h4><a href="#business">Корпоративное обучение</a><a href="#business" data-act="lead" data-arg="business">Получить предложение</a><h4 style="margin-top:18px">Документы</h4><a href="#legal-offer">Публичная оферта</a><a href="#legal-privacy">Конфиденциальность</a><a href="#legal-refund">Возврат средств</a></div>
+ <div><h4>Связаться</h4>${s.contactPhone?`<a href="tel:${esc(s.contactPhone.replace(/\s/g,''))}">${esc(s.contactPhone)}</a>`:''}${s.contactTelegram?`<a href="https://t.me/${esc(s.contactTelegram.replace('@',''))}" target="_blank" rel="noopener">Telegram ${esc(s.contactTelegram)}</a>`:''}<a href="#contacts">Контакты и реквизиты</a><button class="btn sm" style="margin-top:12px" data-act="lead" data-arg="consult">${ic('phone')} Заказать звонок</button></div>
+ </div><p class="tiny muted" style="margin-top:36px">© ${new Date().getFullYear()} AI Master</p>`}
+
+/* ================== PAGES ================== */
+function pHome(){
+ const pop=COURSES.filter(c=>c.price>0).sort((a,b)=>b.students-a.students).slice(0,3);
+ const total=COURSES.reduce((a,c)=>a+c.students,0);
+ return `
+ <section class="hero"><div class="wrap hero-grid">
+  <div class="col" style="gap:24px">
+   <span class="kicker">${ic('spark')} ${t('heroK')}</span>
+   <h1>${t('heroT1')}<br><em>${t('heroT2')}</em></h1>
+   <p class="lead">${t('heroP')}</p>
+   <div class="row" style="gap:12px"><a class="btn lg" href="#lesson-p1">${ic('play')} ${t('start')}</a><a class="btn lg ghost" href="#match">${t('match')}</a></div>
+   <div class="checks"><span>${ic('check')} Первый урок без регистрации</span><span>${ic('check')} Без видео — только практика</span><span>${ic('check')} Сертификат с QR-кодом</span></div>
+  </div>
+  <div class="mock" aria-hidden="true">
+   <div class="win">
+    <div class="row between"><span class="small muted">Урок 1 из 4 · Промпт-инжиниринг</span><span class="pill o">~5 мин</span></div>
+    <div class="progress"><i style="width:62%"></i></div>
+    <h3 style="font-size:20px">Почему модель может уверенно ошибаться?</h3>
+    <div class="qopt"><span class="l">A</span>У неё устаревшая база данных</div>
+    <div class="qopt ok"><span class="l">${ic('check')}</span>Она предсказывает вероятный текст, а не ищет факт</div>
+    <div class="qopt"><span class="l">C</span>Её так специально настроили</div>
+    <div class="why small muted" style="background:var(--bg2);padding:10px 12px;border-radius:12px"><b style="color:var(--green)">Верно.</b> Правдоподобный текст не всегда правдив — важные факты нужно проверять.</div>
+   </div>
+   <div class="float f1"><span class="avatar" style="width:32px;height:32px;background:var(--green-soft);color:var(--green)">${ic('award')}</span>+50 XP · урок пройден</div>
+   <div class="float f2"><span style="color:var(--brand)">${ic('spark')}</span>ИИ-наставник рядом</div>
+  </div>
+ </div></section>
+
+ <section style="padding-top:24px"><div class="wrap">
+  <div class="sec-head"><h2>${t('paths')}</h2><p>${t('pathsP')}</p></div>
+  <div class="grid g4">${Object.entries(AUD).map(([k,a])=>{const n=COURSES.filter(c=>c.audience===k).length;return `<a class="card path" href="#catalog" data-act="pickAud" data-arg="${k}"><span class="pi" style="background:${a.bg}">${a.e}</span><h3>${a.t}</h3><p class="muted small">${a.d}</p><span class="go">${n} ${plural(n,'курс','курса','курсов')} ${ic('arrow')}</span></a>`}).join('')}</div>
+  <div class="card row between" style="margin-top:20px;gap:16px;background:var(--bg2);border:0;box-shadow:none">
+   <div class="row" style="gap:14px;flex-wrap:nowrap"><span style="font-size:28px">🧭</span><div><b>Не уверены, что выбрать?</b><p class="muted small">Ответьте на 4 вопроса — посоветуем курс под вашу цель и опыт.</p></div></div>
+   <a class="btn dark" href="#match">Подобрать за 1 минуту ${ic('arrow')}</a></div>
+ </div></section>
+
+ <section style="background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+  <div class="sec-head"><span class="kicker">Без часовых видео</span><h2>${t('how')}</h2><p>Каждый урок — 10–15 минут. Учитесь с телефона в дороге или за чашкой чая.</p></div>
+  <div class="steps">${[['Короткая теория','Текст, схемы и примеры на 5–7 минут вместо лекции.'],['Вопрос на понимание','Сразу проверяете себя — с пояснением к каждому ответу.'],['Практика в песочнице','Пишете промпт и видите ответ модели прямо в уроке.'],['Разбор и подсказки','Автопроверка по критериям, ИИ-наставник объяснит ошибки.']].map((s,i)=>`<div class="step"><div class="n">${i+1}</div><h3>${s[0]}</h3><p>${s[1]}</p></div>`).join('')}</div>
+ </div></section>
+
+ <section><div class="wrap">
+  <div class="row between" style="margin-bottom:32px;align-items:flex-end"><div class="sec-head" style="margin:0"><h2>${t('popular')}</h2><p>Начните с демо-уроков — они бесплатны в каждом курсе.</p></div><a class="btn ghost" href="#catalog">${t('all')} ${ic('arrow')}</a></div>
+  <div class="grid g3">${pop.map(courseCard).join('')}</div>
+ </div></section>
+
+ <section style="padding-top:0"><div class="wrap"><div class="band"><div class="grid g4" style="position:relative;z-index:1">
+  ${[[total.toLocaleString('ru-RU')+'+','студентов учатся'],[COURSES.length,plural(COURSES.length,'курс','курса','курсов')+' в каталоге'],['4,8','средняя оценка уроков'],['3','языка: UZ · RU · EN']].map(x=>`<div class="stat"><div class="v">${x[0]}</div><div class="muted">${x[1]}</div></div>`).join('')}
+ </div></div></div></section>
+
+ ${pricingSection(true)}
+
+ <section style="background:var(--bg2)"><div class="wrap">
+  <div class="sec-head"><h2>${t('reviews')}</h2></div>
+  <div class="grid g3">${[['Маркетолог','М','Сделала контент-план на месяц за вечер. Главное — сразу пробуешь, а не смотришь видео.'],['Аналитик, банк','А','Песочница с проверкой — как тренажёр. Понял, почему мои промпты работали через раз.'],['Предприниматель','П','Собрал Telegram-бота для заявок по курсу про агентов. Окупилось в первый месяц.']].map(r=>`<div class="card col" style="gap:16px"><div style="color:var(--brand)">${ic('star').repeat(5)}</div><p style="font-size:16.5px">«${r[2]}»</p><div class="row" style="gap:10px;margin-top:auto"><span class="avatar" style="background:var(--bg2);color:var(--ink)">${r[1]}</span><span class="small muted">${r[0]}</span></div></div>`).join('')}</div>
+ </div></section>
+
+ <section id="contact"><div class="wrap grid" style="grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:start" data-stack>
+  <div class="faq"><h2 style="margin-bottom:16px">${t('faq')}</h2>
+   ${[['Нужно ли уметь программировать?','Нет. Большинство курсов — для работы без кода. У курсов по машинному обучению и агентам стоит отметка уровня.'],['Почему уроки без видео?','Текст и интерактив проходить быстрее, и их легко обновлять — ИИ меняется каждые несколько месяцев. Вместо видео — схемы, примеры и практика.'],['Сколько времени нужно?','10–15 минут на урок. Можно учиться с телефона в любое время.'],['Как оплатить?','Картой Uzcard или Humo через Click или Payme. Подписку можно отменить в два клика.'],['Будет ли сертификат?','Да — после всех уроков и финального теста. Его можно проверить по номеру или QR-коду.'],['Можно ли обучить команду?','Да. Для компаний есть корпоративный доступ с отчётами по каждому сотруднику.']].map(f=>`<details><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join('')}
+  </div>
+  <div class="leadbox" id="leadHome"><div class="col" style="gap:6px;margin-bottom:20px"><span class="kicker">${ic('phone')} Бесплатная консультация</span><h3 style="font-size:24px">Остались вопросы?</h3><p class="muted">Оставьте номер — перезвоним, ответим на вопросы и подберём курс.</p></div>${leadForm({type:'consult',fields:['contact'],cta:'Жду звонка'})}</div>
+ </div></section>`}
+
+let priceMode='sub';
+function pricingSection(onHome){
+ const best=PLANS.find(p=>p.best)||PLANS[0];
+ return `<section id="plans" ${onHome?'':'style="padding-top:48px"'}><div class="wrap">
+ <div class="sec-head" ${onHome?'':'style="max-width:760px"'}><span class="kicker">${t('pricing')}</span>${onHome?'<h2>Простые цены</h2>':'<h1 style="font-size:clamp(34px,4.6vw,52px)">Цены и подписка</h1>'}<p>Начните бесплатно. Платите за один курс или откройте весь каталог по подписке.</p></div>
+ <div class="grid g3" style="align-items:stretch">
+  <div class="card plan"><h3>Бесплатно</h3><div class="price" style="font-size:32px">0 сум</div><p class="muted small">Чтобы попробовать формат</p>
+   <ul><li>${ic('check')} Демо-уроки во всех курсах</li><li>${ic('check')} Бесплатные курсы целиком</li><li>${ic('check')} ИИ-наставник: 5 сообщений в день</li></ul>
+   <a class="btn ghost block" href="#lesson-p1" style="margin-top:auto">Начать бесплатно</a></div>
+  <div class="card plan"><h3>Один курс</h3><div class="price" style="font-size:32px">от ${fmt(Math.min(...COURSES.filter(c=>c.price>0).map(c=>c.price)))}</div><p class="muted small">Навсегда, без подписки</p>
+   <ul><li>${ic('check')} Все уроки и практика курса</li><li>${ic('check')} Сертификат с QR-кодом</li><li>${ic('check')} Доступ навсегда</li></ul>
+   <a class="btn ghost block" href="#catalog" style="margin-top:auto">Выбрать курс</a></div>
+  <div class="card plan best"><span class="pill o badge">Выгоднее всего</span><h3>Подписка на все курсы</h3>
+   <div class="seg" role="tablist">${PLANS.map(p=>`<button class="${(priceMode==='sub'?best.id:priceMode)===p.id?'on':''}" data-act="planPick" data-arg="${p.id}">${p.months} мес</button>`).join('')}</div>
+   ${(()=>{const p=PLANS.find(x=>x.id===priceMode)||best;return `<div><span class="price" style="font-size:32px">${fmt(p.price)}</span><p class="muted small">${fmt(Math.round(p.price/p.months))} в месяц</p></div>
+   <ul><li>${ic('check')} Весь каталог и новые курсы</li><li>${ic('check')} ИИ-наставник: 50 сообщений в день</li><li>${ic('check')} Отмена автопродления в 2 клика</li></ul>
+   <a class="btn block" href="#checkout-${p.id}" style="margin-top:auto">Оформить подписку</a>`})()}</div>
+ </div>
+ <p class="small muted" style="margin-top:18px">Нужно обучить команду? <a href="#business" class="btn link">Корпоративные тарифы ${ic('arrow')}</a></p>
+ </div></section>`}
+
+let catF={q:'',aud:'',free:false,sort:'pop'};
+function pCatalog(){
+ return `<section style="padding-top:44px"><div class="wrap col" style="gap:24px">
+  <div class="sec-head" style="margin:0"><h1 style="font-size:clamp(34px,4.6vw,52px)">Курсы</h1><p>Выберите направление или найдите курс по названию.</p></div>
+  <div class="row" style="gap:12px">
+   <label class="search">${ic('search')}<input type="search" placeholder="Например: промпты, Excel, Telegram-бот" value="${esc(catF.q)}" data-input="catq" aria-label="Поиск курсов"></label>
+   <select data-change="catSort" style="width:auto" aria-label="Сортировка"><option value="pop" ${catF.sort==='pop'?'selected':''}>Сначала популярные</option><option value="new" ${catF.sort==='new'?'selected':''}>Сначала новые</option><option value="cheap" ${catF.sort==='cheap'?'selected':''}>Сначала дешевле</option></select>
+  </div>
+  <div class="chips" id="catChips">${catChips()}</div>
+  <div class="grid g3" id="catGrid">${catalogItems()}</div>
+  <div class="card row between" style="background:var(--bg2);border:0;box-shadow:none;margin-top:12px"><div><b>Не нашли подходящий курс?</b><p class="muted small">Расскажите о задаче — подскажем, с чего начать.</p></div><button class="btn dark" data-act="lead" data-arg="consult">Получить консультацию</button></div>
+ </div></section>`}
+function catChips(){return `<button class="chip ${!catF.aud&&!catF.free?'on':''}" data-act="catAud" data-arg="">Все</button>${Object.entries(AUD).map(([k,a])=>`<button class="chip ${catF.aud===k?'on':''}" data-act="catAud" data-arg="${k}">${a.e} ${a.t}</button>`).join('')}<button class="chip ${catF.free?'on':''}" data-act="catFree">🎁 Бесплатные</button>`}
+function catalogItems(){
+ const q=catF.q.toLowerCase().trim();
+ let list=COURSES.filter(c=>(!q||(c.title+' '+c.desc+' '+c.topic+' '+allLessons(c).map(l=>l.t).join(' ')).toLowerCase().includes(q))&&(!catF.aud||c.audience===catF.aud)&&(!catF.free||c.price===0));
+ list.sort((a,b)=>catF.sort==='new'?(b.isNew-a.isNew)||(b.order-a.order):catF.sort==='cheap'?a.price-b.price:b.students-a.students);
+ return list.length?list.map(courseCard).join(''):`<div class="empty card" style="grid-column:1/-1">${ic('search','ico',1.6).replace('class="ico"','class="ico" style="width:36px;height:36px"')}<b>Ничего не нашлось</b><span>Попробуйте другой запрос или <button class="btn link" data-act="catReset">сбросьте фильтры</button></span></div>`}
+function refreshCatalog(){document.getElementById('catGrid').innerHTML=catalogItems();document.getElementById('catChips').innerHTML=catChips()}
+
+function pCourse(id){
+ const c=course(id);if(!c)return pNotFound();
+ const ls=allLessons(c);const first=ls.find(l=>l.free)||ls[0];const acc=hasAccess(c);const p=courseProgress(c);
+ const next=ls.find(l=>!S.done[l.id])||first;
+ return `<section style="padding-top:28px"><div class="wrap col" style="gap:22px">
+ <nav class="crumbs" aria-label="Навигация"><a href="#catalog">Курсы</a>${ic('arrow')}<span>${esc(c.topic)}</span></nav>
+ <div class="course-grid">
+ <div class="col" style="gap:28px">
+  <div class="col" style="gap:16px">
+   <div class="row" style="gap:6px"><span class="pill">${esc(c.level)}</span>${c.isNew?'<span class="pill o">Новый</span>':''}${AUD[c.audience]?`<span class="pill">${AUD[c.audience].e} ${AUD[c.audience].t}</span>`:''}</div>
+   <h1 style="font-size:clamp(32px,4.4vw,48px)">${esc(c.title)}</h1>
+   <p style="font-size:19px;color:var(--ink2)">${esc(c.desc)}</p>
+   <div class="meta" style="font-size:15px"><span>${ic('book')} ${ls.length} ${plural(ls.length,'урок','урока','уроков')}</span><span>${ic('clock')} ${c.hours} ч</span><span>${ic('star')} ${c.rating}</span><span>${ic('users')} ${c.students.toLocaleString('ru-RU')} студентов</span><span>${ic('globe')} UZ · RU · EN</span></div>
+  </div>
+  <div class="card col" style="gap:14px"><h3>Чему вы научитесь</h3><div class="grid g2" style="gap:14px">${c.outcomes.map(o=>`<div class="outc"><span class="ic">${ic('check')}</span><span>${esc(o)}</span></div>`).join('')}</div></div>
+  <div class="col" style="gap:12px"><div class="row between"><h2 style="font-size:28px">Программа курса</h2><span class="muted small">${c.modules.length} ${plural(c.modules.length,'модуль','модуля','модулей')}</span></div>
+   ${c.modules.map((m,mi)=>`<details class="mod" ${mi===0||m.l.some(l=>l.id===next.id)?'open':''}><summary><span>Модуль ${mi+1}. ${esc(m.t)}</span><span class="row" style="gap:8px"><span class="muted small">${m.l.length} ${plural(m.l.length,'урок','урока','уроков')}</span>${ic('down')}</span></summary>
+    <div class="ls">${m.l.map(l=>`<a href="#lesson-${l.id}"><span class="dot ${S.done[l.id]?'done':''}">${S.done[l.id]?ic('check'):''}</span><span style="flex:1">${esc(l.t)}</span>${l.free&&!acc?'<span class="pill g">Бесплатно</span>':hasAccess(c,l)?'':`<span class="muted">${ic('lock')}</span>`}</a>`).join('')}</div></details>`).join('')}
+   ${c.seq?'<p class="small muted">Уроки открываются по порядку — так материал усваивается лучше.</p>':''}
+  </div>
+  <div class="col" style="gap:12px"><h2 style="font-size:28px">Сертификат</h2><p class="muted">После всех уроков и финального теста. Работодатель может проверить его по номеру или QR-коду.</p>${certHTML({no:'AIM-2026-XXXXXX',name:'Ваше имя',course:c.title,hours:c.hours,date:'—'},true)}</div>
+ </div>
+ <aside class="buybox">
+  <div class="card col" style="gap:14px;box-shadow:var(--sh)">
+   ${cover(c,96)}
+   ${acc&&c.price>0?'<span class="pill g" style="width:fit-content">'+ic('check')+' Курс доступен вам</span>':priceTag(c)}
+   ${p>0?`<div class="col" style="gap:6px"><div class="row between small"><span class="muted">Ваш прогресс</span><b>${p}%</b></div><div class="progress g"><i style="width:${p}%"></i></div></div>`:''}
+   ${acc?`<a class="btn lg block" href="#lesson-${next.id}">${p>0?'Продолжить обучение':'Начать курс'} ${ic('arrow')}</a>`
+    :`<a class="btn lg block" href="#checkout-course-${c.id}">Купить курс</a><a class="btn ghost block" href="#lesson-${first.id}">${ic('play')} Попробовать бесплатно</a>
+     <p class="small muted" style="text-align:center">или <a href="#checkout-${(PLANS.find(x=>x.best)||PLANS[0]).id}">все курсы по подписке</a> от ${fmt(Math.round(Math.min(...PLANS.map(x=>x.price/x.months))))}/мес</p>`}
+   <ul class="col small" style="list-style:none;padding:0;margin:0;gap:8px;color:var(--ink2)"><li class="row" style="gap:8px">${ic('shield')} Оплата Click / Payme · Uzcard, Humo</li><li class="row" style="gap:8px">${ic('award')} Сертификат после прохождения</li><li class="row" style="gap:8px">${ic('spark')} ИИ-наставник в каждом уроке</li></ul>
+  </div>
+  <button class="btn soft block" data-act="lead" data-arg="course" data-course="${c.id}">${ic('msg')} Задать вопрос по курсу</button>
+ </aside></div></div></section>`}
+
+/* ---- lesson player ---- */
+let LP={lesson:null,chat:[]};const LCACHE={};
+async function loadLesson(lid){
+ try{const r=await api('/api/lessons/'+encodeURIComponent(lid));LCACHE[lid]={data:r.lesson}}
+ catch(e){LCACHE[lid]=e.status===402?{locked:true}:{error:e.message}}
+ if(location.hash.slice(1)==='lesson-'+lid)render()}
+function genericLesson(l,c){return {min:12,blocks:[
+ {t:'text',html:`<h2>${esc(l.t)}</h2><p>Материал урока «${esc(l.t)}» курса «${esc(c.title)}» готовится. Скоро здесь появятся теория, схемы, вопросы и практика.</p>`},
+ {t:'callout',kind:'tip',h:'Пока урок наполняется',html:'Посмотрите полностью готовый курс «Промпт-инжиниринг на практике» — в нём есть все виды заданий, включая песочницу.'},
+ {t:'quiz',id:'q-'+l.id,req:true,q:'Готовы перейти к следующему уроку?',opts:[{t:'Да',ok:true,why:'Отлично! Отмечайте урок пройденным.'},{t:'Пока нет',ok:false,why:'Задайте вопрос ИИ-наставнику — кнопка справа внизу.'}]}]}}
+function lessonData(lid){const f=findLesson(lid);const x=LCACHE[lid];if(!x||!x.data)return null;return x.data&&x.data.blocks?x.data:genericLesson(f.l,f.c)}
+function pLesson(lid){
+ const f=findLesson(lid);if(!f)return pNotFound();const {c,l}=f;
+ const ls=allLessons(c);const idx=ls.findIndex(x=>x.id===lid);
+ if(LP.lesson!==lid)LP={lesson:lid,chat:[]};
+ const cache=LCACHE[lid];
+ if(!cache){loadLesson(lid)}
+ const data=cache&&cache.data!==undefined?(cache.data&&cache.data.blocks?cache.data:genericLesson(l,c)):null;
+ const prevOk=!c.seq||idx===0||S.done[ls[idx-1].id]||l.free;
+ const req=data?data.blocks.filter(b=>b.req):[];const reqDone=req.filter(blockDone).length;
+ const pct=data?(req.length?Math.round(reqDone/req.length*100):100):0;
+ S.lessonPos[c.id]=lid;save();
+ let body;
+ if(cache&&cache.locked)body=lockedHTML(c);
+ else if(cache&&cache.error)body=`<div class="card empty"><b>Не удалось загрузить урок</b><span>${esc(cache.error)}</span><button class="btn" data-act="retryLesson" data-arg="${lid}">Повторить</button></div>`;
+ else if(!data)body=`<div class="col" style="gap:14px"><div class="skel" style="height:44px;width:70%"></div><div class="skel" style="height:18px"></div><div class="skel" style="height:18px;width:90%"></div><div class="skel" style="height:160px"></div></div>`;
+ else if(!prevOk)body=`<div class="card lock"><div class="lk">${ic('lock')}</div><h3>Сначала пройдите предыдущий урок</h3><p class="muted">В этом курсе уроки открываются по порядку.</p><a class="btn" href="#lesson-${ls[idx-1].id}">${ic('back')} К предыдущему уроку</a></div>`;
+ else body=data.blocks.map((b,i)=>renderBlock(b,i,lid)).join('')+`
+  <div class="card finish">
+   <div class="col" style="gap:4px"><b style="font-size:17px">${S.done[lid]?'Урок пройден '+ic('check'):reqDone<req.length?`Осталось заданий: ${req.length-reqDone}`:'Все задания выполнены!'}</b><span class="small muted">${S.done[lid]?'Можно переходить дальше.':reqDone<req.length?'Ответьте на вопросы выше, чтобы завершить урок.':'Завершите урок, чтобы получить +50 XP.'}</span></div>
+   ${S.done[lid]?(idx<ls.length-1?`<a class="btn" href="#lesson-${ls[idx+1].id}">Следующий урок ${ic('arrow')}</a>`:`<a class="btn" href="#course-${c.id}">К курсу ${ic('arrow')}</a>`)
+    :`<button class="btn" data-act="completeLesson" data-arg="${lid}" ${reqDone<req.length?'disabled':''}>Завершить урок · +50 XP</button>`}
+  </div>
+  <div class="row between" style="margin-top:14px"><span class="small muted">Урок был полезен?</span><span class="row" style="gap:6px"><button class="btn sm ghost" data-act="rate" data-arg="up">👍 Да</button><button class="btn sm ghost" data-act="rate" data-arg="down">🤔 Не всё понятно</button></span></div>`;
+ return `<div class="lbar"><div class="in">
+   <button class="iconbtn burger" style="display:inline-flex" data-act="toggleToc" aria-label="Содержание курса">${ic('menu')}</button>
+   <a class="iconbtn hide-sm" href="#course-${c.id}" aria-label="К курсу">${ic('back')}</a>
+   <div class="col" style="gap:4px;flex:1;min-width:0"><span class="ttl">${esc(l.t)}</span><div class="row" style="gap:10px;flex-wrap:nowrap"><div class="progress" style="flex:1;max-width:260px"><i style="width:${pct}%"></i></div><span class="tiny muted" style="white-space:nowrap">Урок ${idx+1} из ${ls.length}${data?` · ~${data.min} мин`:''}</span></div></div>
+   <span class="row hide-sm" style="gap:2px;flex-wrap:nowrap"><button class="iconbtn" data-act="font" data-arg="-1" aria-label="Уменьшить текст">A−</button><button class="iconbtn" data-act="font" data-arg="1" aria-label="Увеличить текст">A+</button></span>
+   <a class="iconbtn" href="#course-${c.id}" aria-label="Закрыть урок">${ic('x')}</a>
+ </div></div>
+ <div class="lesson-layout">
+ <aside class="toc" id="toc"><a href="#course-${c.id}" style="font-weight:700;color:var(--ink)">${ic('back')} ${esc(c.title)}</a>
+  <div style="padding:10px"><div class="progress g"><i style="width:${courseProgress(c)}%"></i></div><span class="tiny muted">Курс пройден на ${courseProgress(c)}%</span></div>
+  ${c.modules.map(m=>`<div class="mh">${esc(m.t)}</div>${m.l.map(x=>`<a href="#lesson-${x.id}" class="${x.id===lid?'on':''}"><span class="dot ${S.done[x.id]?'done':''}">${S.done[x.id]?ic('check'):''}</span><span style="flex:1">${esc(x.t)}</span>${!hasAccess(c,x)?`<span class="muted">${ic('lock')}</span>`:''}</a>`).join('')}`).join('')}
+ </aside>
+ <div class="lesson-main"><div class="reader" id="reader" style="font-size:${S.font||17}px">
+  ${body}
+  <div class="row between" style="margin-top:28px;padding-top:20px;border-top:1px solid var(--line)">
+   ${idx>0?`<a class="btn ghost" href="#lesson-${ls[idx-1].id}">${ic('back')} Назад</a>`:'<span></span>'}
+   ${idx<ls.length-1?`<a class="btn ghost" href="#lesson-${ls[idx+1].id}">Далее ${ic('arrow')}</a>`:`<a class="btn ghost" href="#course-${c.id}">К курсу ${ic('arrow')}</a>`}
+  </div></div></div>
+ </div>
+ ${data&&prevOk&&!(cache&&cache.locked)?`<button class="btn dark lg fab" data-act="toggleMentor">${ic('spark')} <span class="hide-sm">Спросить наставника</span></button>${mentorPanel()}`:''}`}
+function lockedHTML(c){const pl=PLANS.find(x=>x.best)||PLANS[0];return `<div class="card lock"><div class="lk">${ic('lock','ico',2)}</div><h2 style="font-size:28px">Этот урок — в полной версии курса</h2><p class="muted" style="max-width:440px">Вы прошли бесплатную часть. Откройте весь курс или оформите подписку на все курсы сразу.</p>
+ <div class="row" style="justify-content:center"><a class="btn lg" href="#checkout-course-${c.id}">Купить курс · ${fmt(c.price)}</a>${pl?`<a class="btn ghost lg" href="#checkout-${pl.id}">Подписка · ${fmt(pl.price)}</a>`:''}</div>
+ ${U()?'':`<p class="small muted">Уже покупали? <a href="#login">Войдите в аккаунт</a></p>`}</div>`}
+function blockDone(b){if(b.t==='quiz')return !!(S.quiz[b.id]&&S.quiz[b.id].ok);if(b.t==='sandbox')return !!(S.quiz[b.id]&&S.quiz[b.id].score>=7);return true}
+const CALL_IC={tip:'bulb',important:'info',error:'warn',example:'check'};
+function renderBlock(b,i,lid){
+ if(b.t==='text')return `<div class="block txt" data-sel>${b.html}</div>`;
+ if(b.t==='callout')return `<div class="block"><div class="callout ${b.kind}" data-sel><span class="ci">${ic(CALL_IC[b.kind]||'info')}</span><div><div class="h">${esc(b.h)}</div><div>${b.html}</div></div></div></div>`;
+ if(b.t==='diagram')return `<div class="block"><div class="card" style="padding:18px;background:#fff">${b.svg}<p class="small" style="text-align:center;margin-top:8px;color:#6E6C66">${esc(b.cap)}</p></div></div>`;
+ if(b.t==='formula')return `<div class="block"><div class="formula">${b.html}<div class="cap">${esc(b.cap)}</div></div></div>`;
+ if(b.t==='code')return `<div class="block"><div class="code"><div class="hd"><span>${esc(b.lang)}</span><button data-act="copy" data-arg="${i}">${ic('copy')} Копировать</button></div><pre>${hl(b.code,b.lang)}</pre></div></div>`;
+ if(b.t==='quiz'){const st=S.quiz[b.id];return `<div class="block quiz" id="${esc(b.id)}"><span class="kicker" style="color:var(--indigo)">${ic('target')} Проверьте себя</span><h3 style="margin:8px 0 2px;font-size:20px">${esc(b.q)}</h3>
+  ${b.opts.map((o,k)=>{const picked=st&&st.pick===k;return `<button class="opt ${picked?(o.ok?'ok':'bad'):''}" data-act="quiz" data-arg="${lid}|${i}|${k}"><span class="l">${picked?(o.ok?'✓':'✕'):String.fromCharCode(65+k)}</span><span>${esc(o.t)}</span></button>${picked?`<div class="why"><b>${o.ok?'Верно. ':'Не совсем. '}</b>${esc(o.why)}</div>`:''}`}).join('')}</div>`}
+ if(b.t==='sandbox')return sandboxHTML(b);
+ return ''}
+function hl(code,lang){let h=esc(code);if(lang==='Python'){h=h.replace(/(#.*)$/gm,'<span class="c">$1</span>').replace(/\b(from|import|print|def|return|for|in)\b/g,'<span class="k">$1</span>').replace(/\b(LinearRegression|fit|predict)\b/g,'<span class="fn">$1</span>')}else{h=h.replace(/(&quot;[a-z]+&quot;)/g,'<span class="s">$1</span>')}return h}
+
+/* ---- sandbox ---- */
+const runLimit=()=>hasSub()||(U()&&U().owned.length)?30:10;
+function sandboxHTML(b){const st=S.quiz[b.id]||{};const runs=S.sandboxRuns.day===today()?S.sandboxRuns.n:0;
+ return `<div class="block sbx col" style="gap:14px" id="${esc(b.id)}">
+  <div class="row between"><span class="lbl">${ic('spark')} Песочница</span><span class="tiny" style="color:#B9B6AE">Запусков сегодня: <span id="runs">${runs}</span> из ${runLimit()}</span></div>
+  <div class="col" style="gap:6px"><span class="lbl" style="color:#B9B6AE">Договор для проверки</span><div class="doc">${esc(CONTRACT_A).replace(/\n/g,'<br>')}</div></div>
+  <label class="col" style="gap:6px"><span class="lbl">Ваш промпт</span><textarea id="sbPrompt" placeholder="Например: Ты юрист-аналитик. Найди в договоре…">${esc(st.prompt||'')}</textarea></label>
+  <div class="row"><button class="btn" data-act="sbCheck" data-arg="${esc(b.id)}">${ic('check')} Проверить решение</button><button class="btn ghost" data-act="sbRun" data-arg="${esc(b.id)}">${ic('play')} Просто запустить</button><button class="btn ghost sm" data-act="sbHint">${ic('bulb')} Подсказка</button></div>
+  <div class="col" style="gap:6px"><span class="lbl">Ответ модели</span><div class="out" id="sbOut">${esc(st.out||'Здесь появится ответ модели.')}</div></div>
+  <div id="sbRes">${st.checks?checksHTML(st):''}</div>
+ </div>`}
+function checksHTML(st){return `<div class="col" style="gap:4px"><div class="row between"><span class="lbl">Результат · проверено на двух договорах</span><span style="font-family:Manrope;font-weight:800;font-size:30px;color:${st.score>=7?'#5ACB86':'#FF9A5C'}">${st.score}/10</span></div>
+ ${st.checks.map(c=>`<div class="chk"><span class="ic ${c.ok?'y':'n'}">${c.ok?'✓':'!'}</span><span>${esc(c.t)}</span></div>`).join('')}
+ ${st.score>=7?'<div><span class="okbar">Задание засчитано</span></div>':'<div class="tiny" style="color:#B9B6AE;margin-top:6px">Нужно 7 из 10. Исправьте промпт и проверьте ещё раз.</div>'}</div>`}
+function useRun(){if(S.sandboxRuns.day!==today())S.sandboxRuns={day:today(),n:0};if(S.sandboxRuns.n>=runLimit()){toast('Дневной лимит запусков исчерпан');return false}S.sandboxRuns.n++;save();const r=document.getElementById('runs');if(r)r.textContent=S.sandboxRuns.n;return true}
+function fakeModel(prompt,contract){
+ const p=prompt.toLowerCase();
+ const amount=Number((contract.match(/(?:составляет|услуг —)\s*([\d\s]+)\s*\(/)||[])[1]?.replace(/\s/g,'')||0);
+ const dm=contract.match(/(\d{1,2})\s+(декабря|марта)\s+(\d{4})/);const mon={декабря:'12',марта:'03'};
+ const iso=dm?`${dm[3]}-${mon[dm[2]]}-${dm[1].padStart(2,'0')}`:'';const human=dm?`${dm[1]} ${dm[2]} ${dm[3]}`:'';
+ const pen=(contract.match(/(\d+,\d+)%/)||[])[1]||'';
+ if(!/json/.test(p))return `В договоре указана сумма ${amount.toLocaleString('ru-RU')} сум, срок — ${human} года, пеня — ${pen}% за каждый день просрочки.`;
+ const keys=/amount|deadline|penalty/.test(p)?['amount','deadline','penalty']:['сумма','срок','штраф'];
+ const numPen=/числ|number|0\.1|процент/.test(p);const isoD=/гггг|yyyy|iso|\d{4}-\d{2}/.test(p);const onlyJson=/только|only|без поясн|без текста/.test(p);
+ const obj={};obj[keys[0]]=/числ|number|сум/.test(p)?amount:amount.toLocaleString('ru-RU')+' сум';obj[keys[1]]=isoD?iso:human;obj[keys[2]]=numPen?Number(pen.replace(',','.')):pen+'% в день';
+ const js=JSON.stringify(obj,null,2);return onlyJson?js:'Вот данные из договора:\n'+js+'\nЕсли нужно, могу добавить другие поля.'}
+async function runModel(prompt,contract){const real=await askAI(`${prompt}\n\n---\nТекст договора:\n${contract}`,{cache:true});if(real!=null)return {text:real,real:true};await new Promise(r=>setTimeout(r,600));return {text:fakeModel(prompt,contract),real:false}}
+function extractJSON(s){const m=s.match(/\{[\s\S]*\}/);if(!m)return null;try{return JSON.parse(m[0])}catch(e){return null}}
+function checkOne(text,exp){const o=extractJSON(text);const r={json:!!o,amount:false,deadline:false,penalty:false};if(!o)return r;
+ r.amount=typeof o.amount==='number'&&o.amount===exp.amount;r.deadline=o.deadline===exp.deadline;
+ const pv=o.penalty;r.penalty=typeof pv==='number'&&(Math.abs(pv-exp.penalty)<1e-9||Math.abs(pv-exp.penalty/100)<1e-9);return r}
+
+/* ---- mentor ---- */
+function mentorPanel(){const lim=hasSub()?50:5;const used=S.mentor.day===today()?S.mentor.n:0;
+ return `<aside class="drawer" id="mentor" aria-label="ИИ-наставник"><div class="hd"><div class="col" style="gap:2px"><b class="row" style="gap:8px">${ic('spark')} ИИ-наставник</b><span class="tiny muted">Знает этот урок · ${used} из ${lim} сообщений сегодня</span></div><button class="iconbtn" data-act="toggleMentor" aria-label="Закрыть">${ic('x')}</button></div>
+ <div class="msgs" id="msgs">${LP.chat.length?LP.chat.map(m=>`<div class="msg ${m.role==='user'?'u':'a'}">${esc(m.content)}</div>`).join(''):`<div class="msg a">Привет! Спросите, что непонятно, или выделите текст в уроке — объясню проще или дам пример. В заданиях даю подсказки, а не готовые ответы.</div>`}</div>
+ <div class="row" style="padding:0 12px 8px;gap:6px">${['Объясни проще','Дай пример','Переведи на узбекский'].map(q=>`<button class="pill" style="border:0;cursor:pointer" data-act="mentorQuick" data-arg="${q}">${q}</button>`).join('')}</div>
+ <form data-submit="mentor"><input id="mentorIn" placeholder="Ваш вопрос по уроку…" autocomplete="off"><button class="btn" aria-label="Отправить">${ic('send')}</button></form></aside>`}
+function lessonPlain(lid){const d=lessonData(lid);if(!d)return '';const tmp=document.createElement('div');tmp.innerHTML=d.blocks.map(b=>b.html||b.q||b.code||'').join('\n');return tmp.textContent.slice(0,6000)}
+function openMentor(){document.getElementById('mentor')?.classList.add('open')}
+async function mentorAsk(q){
+ const lim=hasSub()?50:5;if(S.mentor.day!==today())S.mentor={day:today(),n:0};if(S.mentor.n>=lim){toast('Дневной лимит наставника исчерпан. В подписке — 50 сообщений в день.');return}
+ S.mentor.n++;save();LP.chat.push({role:'user',content:q});const box=document.getElementById('msgs');if(!box)return;
+ box.insertAdjacentHTML('beforeend',`<div class="msg u">${esc(q)}</div><div class="msg a" id="pending">…</div>`);box.scrollTop=box.scrollHeight;
+ const sys=`Ты ИИ-наставник платформы AI Master. Отвечай кратко (до 120 слов), простыми словами и только в рамках урока. Если вопрос про задание — дай подсказку, но не готовый ответ.\n\nТЕКСТ УРОКА:\n${lessonPlain(LP.lesson)}`;
+ const el=document.getElementById('pending');
+ let ans=await askAI([{role:'user',content:sys+'\n\nОтветь «Готов».'},{role:'assistant',content:'Готов.'},...LP.chat.slice(-8)],{onText:({text})=>{if(el)el.textContent=text}});
+ if(ans==null){await new Promise(r=>setTimeout(r,500));ans=fakeMentor(q)}
+ if(el){el.textContent=ans;el.removeAttribute('id')}LP.chat.push({role:'assistant',content:ans});box.scrollTop=box.scrollHeight}
+function fakeMentor(q){const s=q.toLowerCase();
+ if(s.includes('прощ'))return 'Проще: языковая модель — как очень начитанный автодополнитель. Она не ищет ответ в базе, а дописывает самый правдоподобный текст.';
+ if(s.includes('пример'))return 'Пример: вместо «Найди данные» напишите «Ты юрист. Верни только JSON с полями amount (число), deadline (ГГГГ-ММ-ДД), penalty (число)».';
+ if(s.includes('узбек'))return 'Til modeli — matnni davom ettiradigan dastur. U keyingi so‘zni ehtimollik bo‘yicha tanlaydi.';
+ if(s.includes('промпт')||s.includes('задани'))return 'Подсказка: проверьте, что в промпте есть роль, задача, точный формат ответа (JSON с конкретными полями и типами) и запрет на лишний текст.';
+ return 'Хороший вопрос! Вернитесь к блоку «Анатомия промпта»: роль, задача, формат и пример. Если что-то конкретное непонятно — выделите фрагмент текста, и я объясню.'}
+
+/* ---- подбор курса ---- */
+const MQ=[{k:'goal',q:'Зачем вам ИИ?',o:[['🌱','Хочу разобраться, что это такое'],['💼','Ускорить работу: письма, отчёты, таблицы'],['📈','Применить в бизнесе и маркетинге'],['⚙️','Создавать ИИ-решения и ботов']]},
+ {k:'exp',q:'Пользуетесь ли вы ChatGPT или похожими сервисами?',o:[['🙈','Ни разу не пробовал(а)'],['🙂','Иногда'],['😎','Каждый день']]},
+ {k:'code',q:'Умеете программировать?',o:[['✋','Нет'],['🤏','Немного'],['💻','Да, уверенно']]},
+ {k:'time',q:'Сколько времени готовы уделять?',o:[['☕','10 минут в день'],['📘','20–30 минут'],['🚀','Час и больше']]}];
+let mA=[];
+function matchRec(){const [g,e,c]=mA;if(g===3)return c===2?'ml-zero':'agents';if(g===2)return 'ai-business';if(g===0||e===0)return 'ai-basics';return e===2?'prompt-eng':'chatgpt-work'}
+function pMatch(){
+ if(mA.length>=MQ.length){const c=course(matchRec())||COURSES[0];const goal=MQ.map((q,i)=>q.o[mA[i]][1]).join(' · ');
+  return `<section style="padding-top:44px"><div class="wrap narrow col" style="gap:22px">
+  <span class="kicker">${ic('check')} Готово</span><h1 style="font-size:clamp(32px,4.4vw,46px)">Вам подойдёт этот курс</h1><p class="muted" style="font-size:18px">Начните с бесплатного урока — без регистрации.</p>
+  ${courseCard(c)}
+  <div class="row"><a class="btn lg" href="#lesson-${(allLessons(c).find(l=>l.free)||allLessons(c)[0]).id}">${ic('play')} Начать бесплатный урок</a><button class="btn ghost lg" data-act="mReset">Пройти заново</button></div>
+  <div class="leadbox" style="margin-top:12px" id="leadMatch"><div class="col" style="gap:6px;margin-bottom:18px"><h3 style="font-size:22px">Хотите личную консультацию?</h3><p class="muted">Менеджер позвонит, расскажет про курс и поможет составить план обучения.</p></div>${leadForm({type:'level-test',courseId:c.id,goal,fields:['contact'],cta:'Получить консультацию'})}</div>
+  </div></section>`}
+ const i=mA.length,q=MQ[i];
+ return `<section style="padding-top:44px"><div class="wrap narrow col" style="gap:22px">
+  <div class="row between"><span class="kicker">Подбор курса · ${i+1} из ${MQ.length}</span>${i>0?`<button class="btn link" data-act="mBack">${ic('back')} Назад</button>`:''}</div>
+  <div class="progress"><i style="width:${(i)/MQ.length*100}%"></i></div>
+  <h2>${q.q}</h2>
+  <div class="col">${q.o.map((o,k)=>`<button class="choice" data-act="mPick" data-arg="${k}"><span class="em">${o[0]}</span>${o[1]}</button>`).join('')}</div>
+ </div></section>`}
+
+/* ---- auth ---- */
+let auth={step:'phone',phone:'',busy:false};
+function pLogin(){
+ return `<section style="padding-top:56px"><div class="wrap" style="max-width:460px"><div class="card col" style="gap:18px;padding:32px;box-shadow:var(--sh)">
+ <div class="col" style="gap:8px;align-items:center;text-align:center">${LOGO(52)}<h2 style="font-size:28px;margin-top:6px">${auth.step==='phone'?'Вход и регистрация':'Введите код'}</h2><p class="muted">${auth.step==='phone'?'По номеру телефона — без пароля':`Отправили SMS на <b>${esc(auth.phone)}</b>`}</p></div>
+ ${auth.step==='phone'?`<form class="col" data-submit="phone" style="gap:14px"><label class="f">Номер телефона${phoneInput('phone',auth.phone)}</label>
+  <label class="row small" style="gap:10px;flex-wrap:nowrap;align-items:flex-start;font-weight:400"><input type="checkbox" id="agree" style="width:18px;height:18px;margin-top:2px;accent-color:var(--brand)" checked><span class="muted">Принимаю <a href="#legal-offer">оферту</a> и согласен(на) на обработку персональных данных</span></label>
+  <button class="btn lg block" ${auth.busy?'disabled':''}>Получить код</button></form>`
+ :`<form class="col" data-submit="code" style="gap:14px"><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="• • • •" style="font-size:26px;letter-spacing:.5em;text-align:center;font-family:Manrope;font-weight:700">
+  ${SETTINGS.smsDemo?`<div class="demo-note">${ic('info')}<span>SMS пока работает в демо-режиме. Введите код <b>1234</b>.</span></div>`:''}
+  <button class="btn lg block" ${auth.busy?'disabled':''}>Войти</button>
+  <div class="row between small"><button type="button" class="btn link" data-act="authBack">${ic('back')} Другой номер</button><span class="muted" id="tmr"></span></div></form>`}
+ </div><p class="small muted" style="text-align:center;margin-top:18px">Первый урок можно пройти <a href="#lesson-p1">без регистрации</a></p></div></section>`}
+async function afterLogin(r){S.token=r.token;S.user=r.user;mergeState(r.user.state);save();Object.keys(LCACHE).forEach(k=>delete LCACHE[k]);
+ toast(r.isNew?'Добро пожаловать в AI Master!':'С возвращением!');
+ if(r.isNew&&!S.onboarding){go('onboarding');return}
+ const back=sessionStorage.getItem('after')||'';try{sessionStorage.removeItem('after')}catch(e){}go(back||'me')}
+let ob={goal:null,level:null,min:null,name:null};
+function pOnboarding(){if(!U())return pLogin();const Q=[['goal','Какая у вас цель?',['Использовать ИИ в работе','Автоматизировать бизнес','Стать ML-разработчиком','Просто разобраться']],['level','Ваш опыт с ИИ',['Новичок','Пользуюсь иногда','Уверенный пользователь']],['min','Сколько минут в день готовы учиться',['10','20','30','60']]];
+ return `<section style="padding-top:44px"><div class="wrap narrow col" style="gap:26px"><div class="col" style="gap:8px"><span class="kicker">Добро пожаловать · 30 секунд</span><h1 style="font-size:clamp(30px,4vw,42px)">Настроим обучение под вас</h1></div>
+ <label class="f" style="max-width:420px">Как вас зовут? <span class="muted" style="font-weight:400">Имя будет в сертификате</span><input id="obName" value="${esc(ob.name??(U().name==='Студент'?'':U().name))}" placeholder="Имя и фамилия"></label>
+ ${Q.map(([k,h,os])=>`<div class="col" style="gap:10px"><b>${h}</b><div class="chips">${os.map(o=>`<button class="chip ${ob[k]===o?'on':''}" data-act="ob" data-arg="${k}|${o}">${k==='min'?o+' мин':o}</button>`).join('')}</div></div>`).join('')}
+ <div class="row"><button class="btn lg" data-act="obDone">Готово ${ic('arrow')}</button><button class="btn link" data-act="obSkip">Пропустить</button></div></div></section>`}
+
+/* ---- cabinet ---- */
+function cabWrap(active,body){if(!U()){try{sessionStorage.setItem('after',location.hash.slice(1))}catch(e){}return pLogin()}
+ const items=[['me','home','Моё обучение'],['me-certs','award','Сертификаты'],['me-notes','note','Заметки'],['me-billing','card','Подписка и платежи'],['me-profile','user','Профиль']];
+ return `<div class="wrap cab"><nav class="side" aria-label="Личный кабинет">${items.map(([r,i,l])=>`<a href="#${r}" class="${active===r?'on':''}">${ic(i)} ${l}</a>`).join('')}<a href="#home" data-act="logout">${ic('logout')} Выйти</a></nav><div class="col" style="gap:22px;min-width:0">${body}</div></div>`}
+function pMe(){if(!U())return cabWrap('me','');
+ const started=COURSES.filter(c=>S.lessonPos[c.id]||courseProgress(c)>0);const cont=started.filter(c=>courseProgress(c)<100);
+ const mine=COURSES.filter(c=>owns(c)||started.includes(c)||(hasSub()&&c.price>0));
+ const rec=course(S.onboarding?.rec)||course('prompt-eng');const doneToday=S.lastDay===today();
+ const week=[];for(let i=6;i>=0;i--){const d=new Date(Date.now()-i*864e5).toISOString().slice(0,10);week.push(d===S.lastDay||(i<S.streak&&S.lastDay===today()))}
+ return cabWrap('me',`<div class="row between"><div class="col" style="gap:4px"><h1 style="font-size:clamp(28px,3.6vw,38px)">Привет, ${esc(U().name)}!</h1><p class="muted">${doneToday?'Сегодня вы уже позанимались — отлично!':'Один урок сегодня — и серия продолжится.'}</p></div><span class="pill o" style="font-size:15px;padding:8px 14px">🔥 ${S.streak} ${plural(S.streak,'день','дня','дней')} подряд</span></div>
+ ${cont.length?`<div class="card col" style="gap:16px;box-shadow:var(--sh)"><h3>Продолжить обучение</h3>${cont.map(c=>{const lid=S.lessonPos[c.id]||allLessons(c)[0].id;const f=findLesson(lid);return `<div class="row between" style="gap:16px"><div class="col" style="gap:6px;flex:1;min-width:200px"><b>${esc(c.title)}</b><span class="small muted">Следующий: ${esc(f?f.l.t:'')}</span><div class="progress g"><i style="width:${courseProgress(c)}%"></i></div></div><a class="btn" href="#lesson-${lid}">${ic('play')} Продолжить</a></div>`}).join('<hr style="border:0;border-top:1px solid var(--line);width:100%;margin:0">')}</div>`
+  :`<div class="card row between" style="gap:16px;box-shadow:var(--sh)"><div class="col" style="gap:6px;max-width:460px"><span class="kicker">Рекомендуем начать</span><h3>${esc(rec.title)}</h3><p class="small muted">${esc(rec.desc)}</p></div><a class="btn" href="#course-${rec.id}">Открыть курс ${ic('arrow')}</a></div>`}
+ <div class="grid g3">${[['XP',S.xp,'spark'],['Уроков пройдено',Object.keys(S.done).length,'book'],['Сертификатов',CERTS.length,'award']].map(s=>`<div class="card stat" style="padding:20px"><div class="row small muted" style="gap:6px">${ic(s[2])} ${s[0]}</div><div class="v">${s[1]}</div></div>`).join('')}</div>
+ <div class="col" style="gap:14px"><div class="row between"><h2 style="font-size:26px">Мои курсы</h2><a class="btn ghost sm" href="#catalog">Каталог ${ic('arrow')}</a></div>
+ ${mine.length?`<div class="grid g3">${mine.map(courseCard).join('')}</div>`:`<div class="card empty"><b>Здесь появятся ваши курсы</b><span>Начните любой курс — он сразу окажется в этом списке.</span><a class="btn" href="#catalog">Выбрать курс</a></div>`}</div>`)}
+let CERTS=[];
+async function loadCerts(){if(!S.token)return;try{CERTS=(await api('/api/me/certs')).certs}catch(e){}}
+function certHTML(c,sample){return `<div class="cert"><div class="seal">${qrSVG(c.no)}</div><div class="row" style="gap:10px">${LOGO(36)}<b style="font-family:Manrope;font-size:18px">AI Master</b></div>
+ <p style="margin-top:22px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#7A6A4C">Сертификат${sample?' · образец':''}</p><h2 style="margin:6px 0;font-size:30px">${esc(c.name)}</h2><p>успешно завершил(а) курс</p><h3 style="margin:6px 0;font-size:22px">«${esc(c.course)}»</h3>
+ <p style="font-size:14px;color:#5F5B52;margin-top:14px">${c.hours} академических часов · ${esc(c.date)} · № ${esc(c.no)}</p></div>`}
+function qrSVG(seed){let h=0;for(const ch of seed)h=(h*31+ch.charCodeAt(0))>>>0;let s='';const n=21;for(let y=0;y<n;y++)for(let x=0;x<n;x++){const corner=(x<7&&y<7)||(x>13&&y<7)||(x<7&&y>13);let on;if(corner){const cx=x>13?x-14:x,cy=y>13?y-14:y;on=cx===0||cy===0||cx===6||cy===6||(cx>=2&&cx<=4&&cy>=2&&cy<=4)}else{h=(h*1103515245+12345)>>>0;on=(h>>16)&1}if(on)s+=`<rect x="${x}" y="${y}" width="1" height="1"/>`}
+ return `<svg width="84" height="84" viewBox="-1 -1 23 23" style="background:#fff;border-radius:6px" aria-label="QR-код"><g fill="#14161F">${s}</g></svg>`}
+function pCerts(){return cabWrap('me-certs',`<h1 style="font-size:clamp(28px,3.6vw,38px)">Сертификаты</h1>${CERTS.length?CERTS.map(c=>`<div class="col">${certHTML(c)}<div class="row"><button class="btn sm" data-act="copyText" data-arg="${location.origin}/#verify-${c.no}">${ic('copy')} Ссылка для проверки</button><button class="btn sm ghost" data-act="print">Распечатать</button></div></div>`).join(''):`<div class="card empty">${ic('award','ico',1.6).replace('class="ico"','class="ico" style="width:40px;height:40px"')}<b>Сертификатов пока нет</b><span>Пройдите все уроки любого курса и финальный тест — сертификат появится здесь.</span><a class="btn" href="#me">К обучению</a></div>`}`)}
+let noteQ='';
+function pNotes(){return cabWrap('me-notes',`<h1 style="font-size:clamp(28px,3.6vw,38px)">Заметки</h1>${S.notes.length?`<label class="search">${ic('search')}<input placeholder="Поиск по заметкам" data-input="noteq" value="${esc(noteQ)}"></label>`:''}<div class="col" id="notesList">${notesList()}</div>`)}
+function notesList(){const l=S.notes.filter(n=>!noteQ||(n.text).toLowerCase().includes(noteQ.toLowerCase()));return l.length?l.map(n=>`<div class="card col" style="gap:8px"><span class="tiny muted">${esc(n.lesson)} · ${n.date}</span><p style="border-left:3px solid var(--brand);padding-left:12px">${esc(n.text)}</p><a class="btn link small" href="#lesson-${n.lid}">Открыть урок ${ic('arrow')}</a></div>`).join(''):`<div class="card empty">${ic('note','ico',1.6).replace('class="ico"','class="ico" style="width:40px;height:40px"')}<b>Заметок пока нет</b><span>Выделите текст в уроке и нажмите «Заметка» — фрагмент сохранится здесь.</span></div>`}
+let ORDERS=[];
+async function loadOrders(){if(!S.token)return;try{ORDERS=(await api('/api/me/orders')).orders}catch(e){}}
+function pBilling(){if(!U())return cabWrap('me-billing','');const sub=hasSub();const s=U().sub;
+ return cabWrap('me-billing',`<h1 style="font-size:clamp(28px,3.6vw,38px)">Подписка и платежи</h1>
+ <div class="card col"><div class="row between"><h3>Ваш тариф</h3>${sub?'<span class="pill g">Подписка активна</span>':'<span class="pill">Бесплатный</span>'}</div>
+ ${sub?`<p>Подписка на ${s.months} мес. · действует до <b>${new Date(s.until).toLocaleDateString('ru-RU')}</b></p><p class="small muted">Автопродление: <b>${s.auto?'включено':'выключено'}</b>${s.auto?' · напомним за 3 дня до списания':''}</p>
+  <div class="row">${s.auto?'<button class="btn ghost" data-act="autoOff">Отменить автопродление</button>':'<button class="btn ghost" data-act="autoOn">Включить автопродление</button>'}<a class="btn" href="#pricing">Продлить</a></div>`
+  :`<p class="muted">Откройте весь каталог курсов по подписке.</p><a class="btn" href="#pricing" style="width:fit-content">Выбрать тариф</a>`}</div>
+ <div class="card col"><h3>История платежей</h3>${ORDERS.length?`<div class="tablewrap"><table class="t"><tr><th>Заказ</th><th>Дата</th><th>Что</th><th>Сумма</th><th>Статус</th></tr>${ORDERS.map(o=>`<tr><td>${esc(o.id)}</td><td>${new Date(o.createdAt).toLocaleDateString('ru-RU')}</td><td>${esc(o.title)}</td><td>${fmt(o.amount)}</td><td>${statusPill(o.status)}${o.status==='pending'?` <a class="btn link small" href="#pay-${o.id}">Оплатить</a>`:''}</td></tr>`).join('')}</table></div>`:'<p class="muted small">Платежей пока нет.</p>'}</div>`)}
+function statusPill(s){const m={pending:['Ожидает оплаты','b'],paid:['Оплачен','g'],cancelled:['Отменён',''],refunded:['Возвращён','r']};const x=m[s]||[s,''];return `<span class="pill ${x[1]}">${x[0]}</span>`}
+function pProfile(){if(!U())return cabWrap('me-profile','');return cabWrap('me-profile',`<h1 style="font-size:clamp(28px,3.6vw,38px)">Профиль</h1>
+ <div class="card"><form class="col" data-submit="profile" style="gap:16px;max-width:480px"><label class="f">Имя и фамилия <span class="muted" style="font-weight:400">— так будет в сертификате</span><input id="pfName" value="${esc(U().name)}"></label><label class="f">Телефон<input value="${esc(U().phone)}" disabled></label>
+ <label class="f">Язык интерфейса<select data-change="lang">${['uz','ru','en'].map(l=>`<option value="${l}" ${S.lang===l?'selected':''}>${{uz:'O‘zbekcha',ru:'Русский',en:'English'}[l]}</option>`).join('')}</select></label>
+ <button class="btn" style="width:fit-content">Сохранить</button></form></div>
+ <div class="card col"><h3>Пригласите друга</h3><p class="muted small">Вы оба получите 7 дней подписки после его первой оплаты.</p><div class="row" style="flex-wrap:nowrap"><input value="${location.origin}/?ref=${U().id}" readonly><button class="btn ghost" data-act="copyText" data-arg="${location.origin}/?ref=${U().id}">${ic('copy')}</button></div></div>`)}
+
+/* ---- checkout ---- */
+let co={promo:null,method:'Click'};
+function coItem(arg){if(arg.startsWith('course-')){const c=course(arg.slice(7));return c&&c.price>0?{title:'Курс «'+c.title+'»',amount:c.price,type:'course',c}:null}const p=PLANS.find(x=>x.id===arg);return p?{title:`Подписка на ${p.months} мес.`,amount:p.price,type:'sub',months:p.months}:null}
+function calc(it){let d=0;if(co.promo)d=co.promo.type==='pct'?Math.round(it.amount*co.promo.val/100):co.promo.val;d=Math.min(d,it.amount);return {disc:d,total:it.amount-d}}
+function pCheckout(arg){const it=coItem(arg);if(!it)return pNotFound();
+ if(!U()){try{sessionStorage.setItem('after','checkout-'+arg)}catch(e){}return `<section style="padding-top:56px"><div class="wrap" style="max-width:480px"><div class="card col" style="text-align:center;align-items:center;gap:14px;padding:32px"><div class="lock" style="padding:0"><div class="lk">${ic('user')}</div></div><h2 style="font-size:26px">Войдите, чтобы оформить покупку</h2><p class="muted">Доступ к курсу привяжется к вашему номеру телефона. Это займёт 30 секунд.</p><a class="btn lg block" href="#login">Войти по номеру телефона</a></div></div></section>`}
+ const {disc,total}=calc(it);
+ return `<section style="padding-top:36px"><div class="wrap" style="max-width:980px">
+ <nav class="crumbs" style="margin-bottom:16px"><a href="${it.c?'#course-'+it.c.id:'#pricing'}">${ic('back')} Назад</a></nav>
+ <div class="course-grid" style="grid-template-columns:minmax(0,1fr) 360px">
+ <div class="col" style="gap:20px"><h1 style="font-size:clamp(30px,4vw,40px)">Оформление заказа</h1>
+  <div class="card col"><h3>1. Способ оплаты</h3><div class="grid g2" style="gap:10px">${['Click','Payme'].map(m=>`<button class="choice ${co.method===m?'on':''}" data-act="coMethod" data-arg="${m}"><div class="col" style="gap:2px"><b>${m}</b><span class="small muted" style="font-weight:400">Uzcard, Humo, кошелёк ${m}</span></div></button>`).join('')}</div></div>
+  <div class="card col"><h3>2. Промокод <span class="muted small" style="font-weight:400">— если есть</span></h3><form class="row" data-submit="promo" style="flex-wrap:nowrap"><input id="promoIn" placeholder="Введите промокод" value="${esc(co.promo?.code||'')}"><button class="btn ghost">Применить</button></form></div>
+  ${SETTINGS.paymentsDemo?`<div class="demo-note">${ic('info')}<span>Оплата сейчас работает в демо-режиме: деньги не списываются, доступ открывается сразу после подтверждения.</span></div>`:''}
+ </div>
+ <aside class="buybox"><div class="card col" style="gap:14px;box-shadow:var(--sh)"><h3>Ваш заказ</h3>
+  <div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><span>${esc(it.title)}</span><b style="white-space:nowrap">${fmt(it.amount)}</b></div>
+  ${disc?`<div class="row between"><span class="muted">Промокод ${esc(co.promo.code)}</span><span style="color:var(--green);font-weight:700">−${fmt(disc)}</span></div>`:''}
+  <hr style="border:0;border-top:1px solid var(--line);width:100%;margin:0"><div class="row between"><b>Итого</b><span class="price" style="font-size:26px">${fmt(total)}</span></div>
+  <button class="btn lg block" data-act="createOrder" data-arg="${arg}">Оплатить через ${co.method}</button>
+  <p class="tiny muted">Нажимая кнопку, вы принимаете <a href="#legal-offer">оферту</a>.${it.type==='sub'?' Подписка продлевается автоматически, отменить можно в кабинете.':''}</p></div></aside>
+ </div></div></section>`}
+function pPay(oid){const o=ORDERS.find(x=>x.id===oid);if(!o){if(S.token&&!pPay.loading){pPay.loading=true;loadOrders().then(()=>{pPay.loading=false;render()})}return `<div class="wrap" style="padding:80px 20px"><div class="skel" style="height:200px;max-width:520px;margin:0 auto"></div></div>`}
+ return `<section style="padding-top:56px"><div class="wrap" style="max-width:520px"><div class="card col" style="gap:18px;padding:32px;box-shadow:var(--sh)">
+ ${o.status==='paid'?`<div class="success" style="padding:0"><div class="ok">${ic('check','ico',2.5).replace('class="ico"','class="ico" style="width:30px;height:30px"')}</div><h2 style="font-size:28px">Оплата прошла!</h2><p class="muted">${esc(o.title)} — доступ уже открыт.</p>
+   <a class="btn lg block" href="${o.type==='course'?'#course-'+o.ref:'#catalog'}">${o.type==='course'?'Перейти к курсу':'Выбрать курс'} ${ic('arrow')}</a><a class="btn ghost block" href="#me-billing">История платежей</a></div>`
+ :o.status==='cancelled'?`<h2 style="font-size:26px">Оплата отменена</h2><p class="muted">Заказ ${esc(o.id)} не оплачен. Можно попробовать снова.</p><a class="btn lg block" href="#checkout-${o.key}">Вернуться к оформлению</a>`
+ :`<div class="row between"><span class="small muted">Заказ ${esc(o.id)}</span>${statusPill(o.status)}</div><div><span class="muted">${esc(o.title)}</span><div class="price" style="font-size:36px">${fmt(o.amount)}</div></div>
+   <div class="demo-note">${ic('info')}<span>Демо-оплата. В рабочей версии здесь будет переход на защищённую страницу ${esc(o.method)}, где вводятся данные карты.</span></div>
+   <button class="btn lg block" data-act="payOk" data-arg="${o.id}">Подтвердить оплату</button><button class="btn ghost block" data-act="payCancel" data-arg="${o.id}">Отменить</button>`}
+ </div></div></section>`}
+
+/* ---- business & misc ---- */
+function pBusiness(){return `<section class="hero" style="padding-bottom:40px"><div class="wrap hero-grid" style="align-items:start">
+ <div class="col" style="gap:22px"><span class="kicker">${ic('users')} AI Master для компаний</span><h1 style="font-size:clamp(34px,4.6vw,54px)">Научим команду работать с ИИ — с отчётом по каждому сотруднику</h1>
+  <p class="lead">Корпоративный трек «ИИ-грамотность», задания на задачах вашей отрасли и кабинет для HR: назначайте курсы с дедлайнами и смотрите прогресс.</p>
+  <div class="col" style="gap:14px">${[['Пакет мест','Лицензии на нужное число сотрудников, оплата по счёту с НДС'],['Назначение курсов','Группы, отделы, дедлайны, приглашение по ссылке или списком'],['Отчёты для HR','Кто начал, кто завершил, результаты тестов, выгрузка в Excel']].map(x=>`<div class="outc"><span class="ic">${ic('check')}</span><div><b>${x[0]}</b><p class="muted small">${x[1]}</p></div></div>`).join('')}</div>
+ </div>
+ <div class="leadbox" id="leadBiz"><div class="col" style="gap:6px;margin-bottom:20px"><h3 style="font-size:24px">Получите предложение</h3><p class="muted">Ответим в течение рабочего дня и подготовим программу под ваши задачи.</p></div>${leadForm({type:'business',fields:['company','size','message'],cta:'Получить предложение',msgPh:'Какие задачи хотите решить с помощью ИИ?'})}</div>
+ </div></section>
+ <section style="padding-top:24px"><div class="wrap"><div class="sec-head"><h2>Как мы работаем</h2></div><div class="steps">${[['Заявка','Обсуждаем цели, отделы и сроки обучения.'],['Программа','Подбираем курсы и отраслевые задания.'],['Обучение','Сотрудники учатся в удобное время, 15 минут в день.'],['Отчёт','HR видит прогресс и результаты каждого.']].map((s,i)=>`<div class="step"><div class="n">${i+1}</div><h3>${s[0]}</h3><p>${s[1]}</p></div>`).join('')}</div></div></section>`}
+let vRes=null;
+function pVerify(no){if(no&&(!vRes||vRes.no!==no)){vRes={no,loading:true};api('/api/certs/'+encodeURIComponent(no)).then(r=>{vRes={no,ok:true,c:r.cert};render()}).catch(()=>{vRes={no,ok:false};render()})}
+ return `<section style="padding-top:44px"><div class="wrap narrow col" style="gap:20px"><h1 style="font-size:clamp(32px,4.4vw,46px)">Проверка сертификата</h1><p class="muted" style="font-size:18px">Введите номер сертификата — он указан внизу документа.</p>
+ <form class="row" data-submit="verify" style="flex-wrap:nowrap"><input id="vNo" placeholder="AIM-2026-000123" value="${esc(vRes?.no||'')}"><button class="btn">Проверить</button></form>
+ ${vRes&&!vRes.loading?vRes.ok?`<div class="callout example"><span class="ci">${ic('check')}</span><div><div class="h">Сертификат действителен</div>${esc(vRes.c.name)} · «${esc(vRes.c.course)}» · ${vRes.c.hours} ч · выдан ${esc(vRes.c.date)}</div></div>`:`<div class="callout error"><span class="ci">${ic('warn')}</span><div><div class="h">Сертификат не найден</div>Проверьте номер. Пример: AIM-2026-000123.</div></div>`:''}</div></section>`}
+function pBlog(){return `<section style="padding-top:44px"><div class="wrap col" style="gap:24px"><h1 style="font-size:clamp(32px,4.4vw,46px)">Статьи</h1><div class="grid g3">${[['Промпты','10 приёмов, которые сразу улучшат ваши промпты'],['Бизнес','Как посчитать окупаемость ИИ-ассистента для отдела продаж'],['Основы','Что такое токены и почему они стоят денег']].map(a=>`<div class="card col"><span class="pill b" style="width:fit-content">${a[0]}</span><h3>${a[1]}</h3><p class="small muted">Скоро</p></div>`).join('')}</div></div></section>`}
+function pLegal(kind){const T={'legal-offer':'Публичная оферта','legal-privacy':'Политика конфиденциальности','legal-refund':'Правила возврата','contacts':'Контакты и реквизиты'};
+ return `<section style="padding-top:44px"><div class="wrap narrow col" style="gap:18px"><h1 style="font-size:clamp(30px,4vw,42px)">${T[kind]}</h1>${kind==='contacts'?`<div class="card col"><p><b>Телефон:</b> ${esc(SETTINGS.contactPhone||'—')}</p><p><b>Telegram:</b> ${esc(SETTINGS.contactTelegram||'—')}</p><p><b>Адрес:</b> г. Ташкент</p><p class="muted small">ООО «AI Master» · ИНН и банковские реквизиты — будут добавлены.</p></div><button class="btn" style="width:fit-content" data-act="lead" data-arg="consult">${ic('phone')} Заказать звонок</button>`:'<p class="muted">Текст документа готовится юристом и будет опубликован до запуска приёма платежей.</p>'}</div></section>`}
+function pNotFound(){return `<section><div class="wrap empty"><h2>Страница не найдена</h2><p>Возможно, ссылка устарела.</p><a class="btn" href="#home">На главную</a></div></section>`}
+
+/* ================== ROUTER ================== */
+function render(){
+ const r=location.hash.slice(1)||'home';let html;
+ const isLesson=r.startsWith('lesson-');
+ if(r==='home')html=pHome();else if(r==='catalog')html=pCatalog();else if(r.startsWith('course-'))html=pCourse(r.slice(7));
+ else if(isLesson)html=pLesson(r.slice(7));else if(r==='match')html=pMatch();
+ else if(r==='login')html=U()?(setTimeout(()=>go('me')),''):pLogin();else if(r==='onboarding')html=pOnboarding();
+ else if(r==='me')html=pMe();else if(r==='me-certs')html=pCerts();else if(r==='me-notes')html=pNotes();else if(r==='me-billing')html=pBilling();else if(r==='me-profile')html=pProfile();
+ else if(r.startsWith('checkout-'))html=pCheckout(r.slice(9));else if(r.startsWith('pay-'))html=pPay(r.slice(4));
+ else if(r==='business')html=pBusiness();else if(r==='pricing')html=pricingSection(false);else if(r==='verify')html=pVerify();else if(r.startsWith('verify-'))html=pVerify(r.slice(7));
+ else if(r==='blog')html=pBlog();else if(r.startsWith('legal-')||r==='contacts')html=pLegal(r);else html=pNotFound();
+ document.getElementById('hdr').style.display=isLesson?'none':'';
+ document.getElementById('footer').style.display=isLesson?'none':'';
+ if(!isLesson)renderNav();
+ document.getElementById('app').innerHTML=html;
+ if(!isLesson)renderFoot();
+ document.querySelectorAll('[data-stack]').forEach(g=>{if(matchMedia('(max-width:900px)').matches)g.style.gridTemplateColumns='1fr'});
+ if(r==='login'&&auth.step==='code')startTimer();
+}
+let lastRoute='';
+const TITLES={home:'AI Master — обучение ИИ на практике',catalog:'Курсы — AI Master',pricing:'Цены — AI Master',business:'Обучение для компаний — AI Master',match:'Подбор курса — AI Master',login:'Вход — AI Master'};
+function setTitle(r){const c=r.startsWith('course-')&&course(r.slice(7));const l=r.startsWith('lesson-')&&findLesson(r.slice(7));document.title=c?c.title+' — AI Master':l?l.l.t+' — AI Master':TITLES[r]||'AI Master'}
+window.addEventListener('hashchange',async()=>{const r=location.hash.slice(1)||'home';sheetOpen=false;
+ const changed=r!==lastRoute;lastRoute=r;setTitle(r);
+ if(r==='me-certs'||r==='me')await loadCerts();if(r==='me-billing')await loadOrders();
+ render();if(changed)window.scrollTo({top:0,left:0,behavior:'instant'})});
+addEventListener('scroll',()=>document.getElementById('hdr').classList.toggle('scrolled',scrollY>8),{passive:true});
+
+/* ================== EVENTS ================== */
+let tmrI=null;
+function startTimer(){clearInterval(tmrI);let s=120;const tick=()=>{const el=document.getElementById('tmr');if(!el){clearInterval(tmrI);return}if(s<=0){clearInterval(tmrI);el.innerHTML='<button type="button" class="btn link" data-act="resend">Отправить код ещё раз</button>';return}el.textContent=`Новый код через ${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;s--};tick();tmrI=setInterval(tick,1000)}
+function lessonBlocks(lid){return lessonData(lid)?.blocks||[]}
+document.addEventListener('click',async e=>{
+ const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act,arg=a.dataset.arg;
+ if(a.tagName==='A'&&!['logout','pickAud','closeModal'].includes(act))e.preventDefault();
+ switch(act){
+  case 'closeModal':if(a.classList.contains('modal-bg')&&e.target!==a)break;closeModal();break;
+  case 'theme':S.theme=S.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=S.theme;save();renderNav();break;
+  case 'burger':sheetOpen=!sheetOpen;renderNav();break;
+  case 'lead':e.preventDefault();openLead(arg,a.dataset.course?{courseId:a.dataset.course,sub:'Курс «'+(course(a.dataset.course)?.title||'')+'». Расскажем о программе, формате и оплате.'}:{});break;
+  case 'pickAud':catF={q:'',aud:arg,free:false,sort:'pop'};break;
+  case 'catAud':catF.aud=arg;catF.free=false;refreshCatalog();break;
+  case 'catFree':catF.free=!catF.free;if(catF.free)catF.aud='';refreshCatalog();break;
+  case 'catReset':catF={q:'',aud:'',free:false,sort:'pop'};render();break;
+  case 'planPick':priceMode=arg;render();break;
+  case 'font':S.font=Math.max(14,Math.min(22,(S.font||17)+Number(arg)));save();document.getElementById('reader').style.fontSize=S.font+'px';break;
+  case 'toggleMentor':document.getElementById('mentor')?.classList.toggle('open');setTimeout(()=>document.getElementById('mentorIn')?.focus(),250);break;
+  case 'toggleToc':document.getElementById('toc')?.classList.toggle('open');break;
+  case 'retryLesson':delete LCACHE[arg];render();break;
+  case 'copy':{const b=lessonBlocks(location.hash.slice(8))[arg];try{await navigator.clipboard.writeText(b.code);toast('Скопировано')}catch(_){toast('Не удалось скопировать')}break}
+  case 'copyText':try{await navigator.clipboard.writeText(arg);toast('Скопировано')}catch(_){toast(arg)}break;
+  case 'print':window.print();break;
+  case 'rate':toast(arg==='up'?'Спасибо за оценку!':'Спасибо! Учтём при доработке урока');break;
+  case 'quiz':{const [lid,bi,k]=arg.split('|');const b=lessonBlocks(lid)[bi];if(!b)break;const ok=b.opts[k].ok;const prev=S.quiz[b.id];S.quiz[b.id]={pick:Number(k),ok:ok||!!(prev&&prev.ok)};if(ok&&!(prev&&prev.ok))addXP(10);save();const y=scrollY;render();scrollTo(0,y);break}
+  case 'completeLesson':{S.done[arg]=true;addXP(50);const c=findLesson(arg).c;const ls=allLessons(c);const i=ls.findIndex(x=>x.id===arg);
+    if(courseProgress(c)===100){
+     if(!U()){toast('Курс пройден! Войдите, чтобы получить сертификат');try{sessionStorage.setItem('after','me-certs')}catch(_){}setTimeout(()=>go('login'),900);break}
+     try{await api('/api/me/state',{method:'PUT',body:{state:Object.fromEntries(SYNC_KEYS.map(k=>[k,S[k]]))}});await api('/api/me/certs',{method:'POST',body:{courseId:c.id}});await loadCerts();toast('Курс завершён! Сертификат выдан 🎓');setTimeout(()=>go('me-certs'),900)}catch(er){toast(er.message)}}
+    else{toast('Урок пройден · +50 XP');if(i<ls.length-1)setTimeout(()=>go('lesson-'+ls[i+1].id),600);else render()}break}
+  case 'sbRun':case 'sbCheck':{const p=document.getElementById('sbPrompt').value.trim();if(p.length<10){toast('Напишите промпт подлиннее');break}
+    if(!useRun())break;const out=document.getElementById('sbOut');out.textContent='Модель думает…';a.disabled=true;
+    const st=S.quiz[arg]||{};st.prompt=p;
+    const r1=await runModel(p,CONTRACT_A);out.textContent=r1.text;st.out=r1.text;
+    if(act==='sbCheck'){document.getElementById('sbRes').innerHTML='<div class="tiny" style="color:#B9B6AE">Проверяю на втором, скрытом договоре…</div>';const r2=await runModel(p,CONTRACT_B);
+     const A=checkOne(r1.text,EXPECT_A),B=checkOne(r2.text,EXPECT_B);let score=0;const checks=[];
+     const both=(k,pts,okT,badT)=>{const ok=A[k]&&B[k];if(ok)score+=pts;checks.push({ok,t:ok?okT:badT})};
+     both('json',3,'Ответ — валидный JSON на обоих договорах','JSON не найден. Попросите вернуть ТОЛЬКО JSON без пояснений');
+     both('amount',2,'Сумма — число и совпадает','amount должен быть числом в сумах, без пробелов и слова «сум»');
+     both('deadline',2,'Срок в формате ГГГГ-ММ-ДД и совпадает','deadline должен быть строкой вида 2026-12-31');
+     both('penalty',3,'Пеня — число и совпадает','penalty должен быть числом (например, 0.1), а не текстом');
+     if(!(B.json&&B.amount&&B.deadline&&B.penalty)&&(A.json&&A.amount&&A.deadline&&A.penalty))checks.push({ok:false,t:'На скрытом договоре промпт ошибся — возможно, он подогнан под пример'});
+     const was=S.quiz[arg]&&S.quiz[arg].score>=7;st.score=score;st.checks=checks;if(score>=7&&!was)addXP(30);
+     S.quiz[arg]=st;save();const y=scrollY;render();scrollTo(0,y)}
+    else{S.quiz[arg]=st;save();a.disabled=false}break}
+  case 'sbHint':{const p=document.getElementById('sbPrompt').value.trim();openMentor();mentorAsk(p?`Подскажи, как улучшить мой промпт (без готового ответа): «${p}»`:'С чего начать это задание?');break}
+  case 'mentorQuick':mentorAsk(arg+(selText?`: «${selText}»`:' — по теме этого урока'));selText='';break;
+  case 'mPick':mA.push(Number(arg));render();scrollTo({top:0,behavior:'instant'});break;
+  case 'mBack':mA.pop();render();break;
+  case 'mReset':mA=[];render();break;
+  case 'authBack':auth.step='phone';render();break;
+  case 'resend':try{await api('/api/auth/request',{method:'POST',body:{phone:auth.phone}});toast('Код отправлен повторно');startTimer()}catch(er){toast(er.message)}break;
+  case 'ob':{const [k,v]=arg.split('|');ob[k]=v;ob.name=document.getElementById('obName')?.value??ob.name;render();break}
+  case 'obDone':case 'obSkip':{const name=document.getElementById('obName')?.value.trim();if(act==='obDone'&&name&&name!==U().name){try{S.user=(await api('/api/me',{method:'PUT',body:{name}})).user}catch(_){}}
+    const g=ob.goal||'';const rec=g.startsWith('Стать')?'ml-zero':g.startsWith('Автомат')?'ai-business':ob.level==='Новичок'?'ai-basics':'prompt-eng';S.onboarding={goal:ob.goal,level:ob.level,min:ob.min,rec};save();const back=sessionStorage.getItem('after')||'me';try{sessionStorage.removeItem('after')}catch(_){}go(back);break}
+  case 'logout':api('/api/auth/logout',{method:'POST'}).catch(()=>{});S.token=null;S.user=null;CERTS=[];ORDERS=[];Object.keys(LCACHE).forEach(k=>delete LCACHE[k]);save();toast('Вы вышли из аккаунта');break;
+  case 'autoOff':case 'autoOn':try{S.user=(await api('/api/me/sub/auto',{method:'POST',body:{auto:act==='autoOn'}})).user;save();render();toast(act==='autoOn'?'Автопродление включено':'Автопродление отменено')}catch(er){toast(er.message)}break;
+  case 'coMethod':co.method=arg;render();break;
+  case 'createOrder':{a.disabled=true;try{const r=await api('/api/orders',{method:'POST',body:{item:arg,method:co.method,promo:co.promo?.code}});ORDERS.unshift(r.order);co.promo=null;go('pay-'+r.order.id)}catch(er){toast(er.message);a.disabled=false}break}
+  case 'payOk':{a.disabled=true;a.textContent='Подтверждаем…';try{const r=await api(`/api/orders/${arg}/pay-demo`,{method:'POST'});S.user=r.user;save();ORDERS=ORDERS.map(o=>o.id===arg?r.order:o);Object.keys(LCACHE).forEach(k=>delete LCACHE[k]);render()}catch(er){toast(er.message);a.disabled=false}break}
+  case 'payCancel':{try{const r=await api(`/api/orders/${arg}/cancel`,{method:'POST'});ORDERS=ORDERS.map(o=>o.id===arg?r.order:o);render()}catch(er){toast(er.message)}break}
+ }
+});
+document.addEventListener('change',e=>{const el=e.target;const k=el.dataset.change;if(!k)return;
+ if(k==='lang'){S.lang=el.value;document.documentElement.lang=S.lang;save();render()}
+ if(k==='catSort'){catF.sort=el.value;refreshCatalog()}
+});
+document.addEventListener('input',e=>{const el=e.target;
+ if(el.matches('[data-phone]')){const v=fmtPhone(el.value);if(v!==el.value)el.value=v}
+ const k=el.dataset.input;if(k==='catq'){catF.q=el.value;document.getElementById('catGrid').innerHTML=catalogItems()}if(k==='noteq'){noteQ=el.value;document.getElementById('notesList').innerHTML=notesList()}});
+document.addEventListener('focusin',e=>{if(e.target.matches('[data-phone]')&&!e.target.value)e.target.value='+998 '});
+document.addEventListener('submit',async e=>{const f=e.target;const k=f.dataset.submit;if(!k)return;e.preventDefault();
+ const btn=f.querySelector('button:not([type=button])');
+ if(k==='lead'){const fd=Object.fromEntries(new FormData(f).entries());fd.page=location.hash.slice(1)||'home';
+  if(fd.phone.replace(/\D/g,'').length<12){toast('Введите номер полностью: +998 XX XXX XX XX');return}
+  btn.disabled=true;btn.textContent='Отправляем…';
+  try{await api('/api/leads',{method:'POST',body:fd});const box=f.parentElement;box.innerHTML=leadSuccess()}catch(er){toast(er.message);btn.disabled=false;btn.innerHTML='Попробовать ещё раз'}return}
+ if(k==='phone'){const ph=document.getElementById('phone').value.trim();if(ph.replace(/\D/g,'').length!==12){toast('Введите номер полностью: +998 XX XXX XX XX');return}if(!document.getElementById('agree').checked){toast('Нужно принять оферту');return}
+  auth.busy=true;btn.disabled=true;try{await api('/api/auth/request',{method:'POST',body:{phone:ph}});auth={step:'code',phone:ph,busy:false};render();document.getElementById('code')?.focus()}catch(er){auth.busy=false;btn.disabled=false;toast(er.message)}return}
+ if(k==='code'){const c=document.getElementById('code').value.trim();if(c.length<4){toast('Введите код из SMS');return}btn.disabled=true;
+  try{const r=await api('/api/auth/verify',{method:'POST',body:{phone:auth.phone,code:c}});auth={step:'phone',phone:'',busy:false};await afterLogin(r);loadCerts()}catch(er){btn.disabled=false;toast(er.message)}return}
+ if(k==='mentor'){const i=document.getElementById('mentorIn');const q=i.value.trim();if(!q)return;i.value='';mentorAsk(q);return}
+ if(k==='promo'){const code=document.getElementById('promoIn').value.trim();if(!code)return;try{co.promo=(await api('/api/promo',{method:'POST',body:{code}})).promo;toast('Промокод применён');render()}catch(er){toast(er.message)}return}
+ if(k==='profile'){try{S.user=(await api('/api/me',{method:'PUT',body:{name:document.getElementById('pfName').value.trim()}})).user;save();toast('Сохранено');render()}catch(er){toast(er.message)}return}
+ if(k==='verify'){const no=document.getElementById('vNo').value.trim().toUpperCase();if(no)go('verify-'+no);return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();document.getElementById('mentor')?.classList.remove('open');if(sheetOpen){sheetOpen=false;renderNav()}}});
+
+/* ---- выделение текста в уроке ---- */
+let selText='';
+document.addEventListener('mouseup',e=>{setTimeout(()=>{if(e.target.closest('.selbar'))return;document.querySelector('.selbar')?.remove();
+ const s=window.getSelection();const txt=s?String(s).trim():'';if(!txt||txt.length<3)return;const an=s.anchorNode&&s.anchorNode.parentElement;if(!an||!an.closest('[data-sel]'))return;
+ selText=txt.slice(0,400);const rect=s.getRangeAt(0).getBoundingClientRect();const bar=document.createElement('div');bar.className='selbar';
+ bar.style.left=Math.max(8,rect.left+scrollX)+'px';bar.style.top=(rect.top+scrollY-46)+'px';
+ bar.innerHTML=`<button data-sa="simple">Объясни проще</button><button data-sa="ex">Пример</button><button data-sa="note">Заметка</button>`;document.body.appendChild(bar)},10)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sa]');if(!b)return;const k=b.dataset.sa;document.querySelector('.selbar')?.remove();
+ if(k==='note'){const lid=location.hash.slice(8);const f=findLesson(lid);S.notes.unshift({text:selText,lid,lesson:f?f.l.t:'',date:new Date().toLocaleDateString('ru-RU')});save();toast('Заметка сохранена — Кабинет → Заметки');return}
+ openMentor();mentorAsk({simple:'Объясни проще',ex:'Дай пример'}[k]+`: «${selText}»`)});
+
+/* ================== BOOT ================== */
+(async function boot(){
+ try{const r=await api('/api/catalog');COURSES=r.courses;PLANS=r.plans;SETTINGS=r.settings}
+ catch(e){document.getElementById('app').innerHTML=`<div class="wrap empty" style="padding:100px 20px"><h2>Сайт временно недоступен</h2><p>${esc(e.message)}</p><button class="btn" onclick="location.reload()">Обновить страницу</button></div>`;return}
+ if(S.token){try{const r=await api('/api/me');S.user=r.user;mergeState(r.user.state);save();await loadCerts()}catch(e){}}
+ lastRoute=location.hash.slice(1)||'home';setTitle(lastRoute);
+ if(lastRoute==='me-billing')await loadOrders();
+ render();
+})();
+</script>
+</body>
+</html>
