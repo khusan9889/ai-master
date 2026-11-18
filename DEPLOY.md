@@ -16,6 +16,28 @@
 
 ## 2. Загрузка файлов на сервер
 
+### Вариант А: через GitHub (проще)
+
+Подключитесь к серверу (`ssh root@IP`) и выполните:
+
+```bash
+apt-get update && apt-get install -y git
+git clone https://github.com/khusan9889/ai-master.git /opt/aimaster
+cd /opt/aimaster
+```
+
+Если репозиторий приватный, GitHub спросит логин и пароль: в качестве пароля вставьте
+личный токен (GitHub → Settings → Developer settings → Personal access tokens → Fine-grained,
+доступ **Contents: Read-only** только к этому репозиторию).
+
+Обновление сайта потом — одной командой:
+
+```bash
+cd /opt/aimaster && git pull && bash deploy/setup.sh ваш-домен.uz
+```
+
+### Вариант Б: архивом
+
 На своём компьютере откройте PowerShell в папке с архивом и выполните (замените `IP` на адрес сервера):
 
 ```powershell
