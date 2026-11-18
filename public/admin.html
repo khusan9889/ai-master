@@ -96,6 +96,9 @@ const LOGO=s=>`<svg width="${s}" height="${s}" viewBox="0 0 120 120"><rect width
 function toast(m){document.querySelectorAll('.toast').forEach(x=>x.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3000)}
 async function api(p,{method='GET',body}={}){const r=await fetch('/api/admin'+p,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+TK},body:body?JSON.stringify(body):undefined});
  const j=await r.json().catch(()=>({}));if(r.status===401&&p!=='/login'){TK='';sessionStorage.removeItem(TOKEN_KEY);render();throw new Error(j.error||'Нужно войти')}if(!r.ok)throw new Error(j.error||'Ошибка '+r.status);return j}
+const L=v=>v&&typeof v==='object'?(v.ru||v.uz||v.en||''):(v||'');
+const LANGS=['uz','ru','en'];let EDL='uz';
+const langTabs=(act,cur,has)=>`<div class="tabs">${LANGS.map(l=>`<button class="${l===cur?'on':''}" data-act="${act}" data-arg="${l}">${l.toUpperCase()}${has&&!has(l)?' ⚠':''}</button>`).join('')}</div>`;
 const LEAD_ST={new:['Новая','o'],work:['В работе','b'],done:['Успешно','g'],rejected:['Отказ','']};
 const TYPES={plan:'Подписка',buy:'Покупка курса',consult:'Консультация',business:'Компания'};
 let D={an:null,leads:[],courses:[],lessonIds:[],plans:[],settings:null,leadsNew:0};
@@ -149,6 +152,7 @@ function pAnalytics(){const a=D.an;
   <div class="card col"><h2>Популярные страницы</h2>${a.pages.length?`<table class="t"><tr><th>Страница</th><th class="n">Просмотры</th><th class="n">Посетители</th></tr>${a.pages.map(p=>`<tr><td>${esc(p.label)}</td><td class="n">${num(p.views)}</td><td class="n">${num(p.visitors)}</td></tr>`).join('')}</table>`:'<p class="muted small">Нет данных</p>'}</div>
   <div class="card col"><h2>Открывали пробные уроки</h2>${hbars(a.lessons)}<p class="tiny muted">Отказы: ${k.bounce}% — ушли, ничего не сделав, за 10 секунд.</p></div>
  </div>
+ <div class="grid g2"><div class="card col"><h2>Интерес к курсам</h2><p class="tiny muted">Просмотры страниц курсов</p>${hbars(a.courseInterest)}</div><div class="card col"><h2>Языки сайта</h2><p class="tiny muted">На каком языке смотрели сайт (визиты)</p>${hbars(a.langs)}</div></div>
  <div class="grid g3"><div class="card col"><h2>Устройства</h2>${hbars(a.devices)}</div><div class="card col"><h2>Браузеры</h2>${hbars(a.browsers)}</div><div class="card col"><h2>Системы</h2>${hbars(a.os)}</div></div>
  </div>`}
 
@@ -159,12 +163,13 @@ function pLeads(){return `<div class="col" style="gap:16px"><div class="row betw
  <select style="width:auto" data-change="lftype"><option value="">Все типы</option>${Object.entries(TYPES).map(([k,v])=>`<option value="${k}" ${leadF.type===k?'selected':''}>${v}</option>`).join('')}</select>
  <input style="max-width:260px" placeholder="Поиск" value="${esc(leadF.q)}" data-input="lq"></div>
  <div class="card tablewrap" style="padding:6px 10px" id="leadTable">${leadTable(leadsFiltered())}</div></div>`}
-function leadTable(L){return L.length?`<table class="t"><tr><th>#</th><th>Дата</th><th>Имя</th><th>Телефон</th><th>Тип</th><th>Выбор</th><th>Источник</th><th>Статус</th><th>TG</th></tr>${L.map(l=>`<tr class="click" data-act="openLead" data-arg="${l.id}"><td class="muted">${l.id}</td><td class="small">${dt(l.createdAt)}</td><td><b>${esc(l.name)}</b></td><td style="white-space:nowrap">${esc(l.phone)}</td><td><span class="pill">${TYPES[l.type]||esc(l.type)}</span></td><td class="small muted" style="max-width:240px">${esc(l.item||l.company||l.message||'').slice(0,70)}</td><td class="small">${esc([l.src,l.cmp].filter(Boolean).join(' · ')||'прямой')}</td><td><span class="pill ${(LEAD_ST[l.status]||[])[1]||''}">${(LEAD_ST[l.status]||[l.status])[0]}</span></td><td>${l.tg?.ok?'<span class="pill g">✓</span>':`<span class="pill r" title="${esc(l.tg?.error)}">!</span>`}</td></tr>`).join('')}</table>`:'<div class="empty">Заявок пока нет</div>'}
+function leadTable(L){return L.length?`<table class="t"><tr><th>#</th><th>Дата</th><th>Имя</th><th>Телефон</th><th>Тип</th><th>Курс / тариф</th><th>Источник</th><th>Статус</th><th>TG</th></tr>${L.map(l=>`<tr class="click" data-act="openLead" data-arg="${l.id}"><td class="muted">${l.id}</td><td class="small">${dt(l.createdAt)}</td><td><b>${esc(l.name)}</b></td><td style="white-space:nowrap">${esc(l.phone)}</td><td><span class="pill">${TYPES[l.type]||esc(l.type)}</span></td><td class="small" style="max-width:260px">${l.courseTitle?`<b>${esc(l.courseTitle)}</b>`:''}${l.plan?`<div class="muted">${esc(l.plan)}</div>`:''}${!l.courseTitle&&!l.plan?`<span class="muted">${esc(l.company||l.message||'—').slice(0,70)}</span>`:''}</td><td class="small">${esc([l.src,l.cmp].filter(Boolean).join(' · ')||'прямой')}</td><td><span class="pill ${(LEAD_ST[l.status]||[])[1]||''}">${(LEAD_ST[l.status]||[l.status])[0]}</span></td><td>${l.tg?.ok?'<span class="pill g">✓</span>':`<span class="pill r" title="${esc(l.tg?.error)}">!</span>`}</td></tr>`).join('')}</table>`:'<div class="empty">Заявок пока нет</div>'}
 function openLead(id){const l=D.leads.find(x=>x.id===Number(id));if(!l)return;
  drawer(`<div class="row between"><h2>Заявка #${l.id}</h2><button class="btn ghost sm" data-act="closeLayer">✕</button></div>
  <div class="row"><span class="pill">${TYPES[l.type]||esc(l.type)}</span><span class="tiny muted">${dt(l.createdAt)}</span></div>
  <dl class="kv"><dt>Имя</dt><dd><b>${esc(l.name)}</b></dd><dt>Телефон</dt><dd><a href="tel:${esc(l.phone.replace(/\s/g,''))}">${esc(l.phone)}</a></dd>
- ${l.item?`<dt>Выбор</dt><dd>${esc(l.item)}</dd>`:''}${l.company?`<dt>Компания</dt><dd>${esc(l.company)}</dd>`:''}${l.size?`<dt>Сотрудников</dt><dd>${esc(l.size)}</dd>`:''}${l.message?`<dt>Комментарий</dt><dd>${esc(l.message)}</dd>`:''}
+ ${l.courseTitle?`<dt>Курс</dt><dd><b>${esc(l.courseTitle)}</b>${l.coursePrice?' · '+esc(l.coursePrice):''}</dd>`:''}${l.plan?`<dt>Тариф</dt><dd>${esc(l.plan)}</dd>`:''}${!l.courseTitle&&!l.plan&&l.item?`<dt>Выбор</dt><dd>${esc(l.item)}</dd>`:''}
+ ${l.viewed&&l.viewed.length?`<dt>Смотрел курсы</dt><dd>${esc(l.viewed.join(', '))}</dd>`:''}${l.lang?`<dt>Язык сайта</dt><dd>${esc(l.lang.toUpperCase())}</dd>`:''}${l.company?`<dt>Компания</dt><dd>${esc(l.company)}</dd>`:''}${l.size?`<dt>Сотрудников</dt><dd>${esc(l.size)}</dd>`:''}${l.message?`<dt>Комментарий</dt><dd>${esc(l.message)}</dd>`:''}
  <dt>Источник</dt><dd>${esc([l.src,l.med].filter(Boolean).join(' / ')||'прямой заход')}</dd>${l.cmp?`<dt>Кампания</dt><dd>${esc(l.cmp)}${l.cnt?' · '+esc(l.cnt):''}</dd>`:''}<dt>Устройство</dt><dd>${esc(l.device||'—')}</dd><dt>Страница</dt><dd>${esc(l.page||'—')}</dd>
  <dt>Telegram</dt><dd>${l.tg?.ok?'<span class="pill g">Отправлено</span>':`<span class="pill r">Не отправлено</span> <span class="tiny muted">${esc(l.tg?.error||'')}</span>`}</dd></dl>
  <div class="col"><b class="small">Статус</b><div class="tabs">${Object.entries(LEAD_ST).map(([k,v])=>`<button class="${l.status===k?'on':''}" data-act="leadStatus" data-arg="${l.id}|${k}">${v[0]}</button>`).join('')}</div></div>
@@ -179,20 +184,24 @@ const AUD={beginner:'Новичкам',work:'Для работы',business:'Дл
 const ICONS={cpu:'Процессор',pen:'Перо',msg:'Чат',trend:'График роста',chart:'Диаграмма',bot:'Бот',code:'Код',layers:'Слои',book:'Книга'};
 function pCourses(){return `<div class="col" style="gap:16px"><div class="row between"><h1>Курсы</h1><button class="btn" data-act="newCourse">+ Новый курс</button></div>
  <div class="card tablewrap" style="padding:6px 10px"><table class="t"><tr><th></th><th>Курс</th><th>Аудитория</th><th class="n">Уроков</th><th class="n">Цена</th><th>Статус</th></tr>
- ${D.courses.slice().sort((a,b)=>a.order-b.order).map(c=>`<tr class="click" data-act="goCourse" data-arg="${c.id}"><td style="width:46px"><div style="width:36px;height:36px;border-radius:9px;background:${grad(c.cover)}"></div></td><td><b>${esc(c.title)}</b><div class="tiny muted">${esc(c.id)}</div></td><td>${AUD[c.audience]||'—'}</td><td class="n">${c.modules.reduce((a,m)=>a+m.l.length,0)}</td><td class="n" style="white-space:nowrap">${c.price?fmt(c.price):'Бесплатно'}</td><td>${c.published?'<span class="pill g">На сайте</span>':'<span class="pill">Скрыт</span>'}</td></tr>`).join('')}</table></div></div>`}
+ ${D.courses.slice().sort((a,b)=>a.order-b.order).map(c=>`<tr class="click" data-act="goCourse" data-arg="${c.id}"><td style="width:46px"><div style="width:36px;height:36px;border-radius:9px;background:${grad(c.cover)}"></div></td><td><b>${esc(L(c.title))}</b><div class="tiny muted">${esc(c.id)}</div></td><td>${AUD[c.audience]||'—'}</td><td class="n">${c.modules.reduce((a,m)=>a+m.l.length,0)}</td><td class="n" style="white-space:nowrap">${c.price?fmt(c.price):'Бесплатно'}</td><td>${c.published?'<span class="pill g">На сайте</span>':'<span class="pill">Скрыт</span>'}</td></tr>`).join('')}</table></div></div>`}
 let EC=null;
 function pCourseEdit(id){const c=D.courses.find(x=>x.id===id);if(!c)return '<div class="empty">Загрузка…</div>';if(!EC||EC.id!==id)EC=JSON.parse(JSON.stringify(c));const e=EC;
  const sel=(k,opts)=>`<select data-ec="${k}">${opts.map(([v,l])=>`<option value="${v}" ${String(e[k])===String(v)?'selected':''}>${l}</option>`).join('')}</select>`;
- return `<div class="col" style="gap:16px"><div class="row between"><div class="row"><a class="btn ghost sm" href="#courses">← Курсы</a><h1>${esc(e.title)}</h1></div><div class="row"><a class="btn ghost sm" href="/#course-${e.id}" target="_blank">На сайте ↗</a><button class="btn" data-act="saveCourse">Сохранить</button></div></div>
+ const V=o=>esc((o&&typeof o==='object'?o[EDL]:o)||'');
+ const missing=l=>!(e.title?.[l]&&e.desc?.[l]);
+ return `<div class="col" style="gap:16px"><div class="row between"><div class="row"><a class="btn ghost sm" href="#courses">← Курсы</a><h1>${esc(L(e.title))}</h1></div><div class="row"><a class="btn ghost sm" href="/?lang=${EDL}#course-${e.id}" target="_blank">На сайте ↗</a><button class="btn" data-act="saveCourse">Сохранить</button></div></div>
  <div class="grid" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);align-items:start">
  <div class="col" style="gap:16px">
-  <div class="card col"><h3>Описание</h3>
-   <label class="f">Название<input data-ec="title" value="${esc(e.title)}"></label>
-   <label class="f">Краткое описание<textarea data-ec="desc" rows="3">${esc(e.desc)}</textarea></label>
-   <label class="f">Чему научится студент — по пункту в строке<textarea data-ec="outcomes" rows="4">${esc(e.outcomes.join('\n'))}</textarea></label></div>
-  <div class="card col"><div class="row between"><h3>Программа</h3><button class="btn ghost sm" data-act="addMod">+ Модуль</button></div>
-   ${e.modules.map((m,mi)=>`<div class="blk col"><div class="row" style="flex-wrap:nowrap"><input data-mod="${mi}" value="${esc(m.t)}" placeholder="Название модуля" style="font-weight:600"><button class="btn ghost sm" data-act="delMod" data-arg="${mi}">✕</button></div>
-    ${m.l.map((l,li)=>`<div class="row" style="flex-wrap:nowrap;gap:6px"><input data-les="${mi}|${li}|t" value="${esc(l.t)}" placeholder="Название урока"><input data-les="${mi}|${li}|id" value="${esc(l.id)}" class="mono" style="max-width:110px" title="ID урока"><label class="chk" title="Открыт бесплатно"><input type="checkbox" data-les="${mi}|${li}|free" ${l.free?'checked':''}>пробный</label><button class="btn ghost sm" data-act="editLesson" data-arg="${esc(l.id)}">Контент${D.lessonIds.includes(l.id)?'':' ⚠'}</button><button class="btn ghost sm" data-act="delLes" data-arg="${mi}|${li}">✕</button></div>`).join('')}
+  <div class="card col"><div class="row between"><h3>Тексты</h3>${langTabs('edl',EDL,l=>!missing(l))}</div>
+   <p class="tiny muted">Язык редактирования: ${EDL.toUpperCase()}. Заполните тексты на всех трёх языках — сайт показывает выбранный посетителем язык.</p>
+   <label class="f">Название<input data-loc="title" value="${V(e.title)}"></label>
+   <label class="f">Тема (метка на обложке)<input data-loc="topic" value="${V(e.topic)}"></label>
+   <label class="f">Краткое описание<textarea data-loc="desc" rows="3">${V(e.desc)}</textarea></label>
+   <label class="f">Чему научится студент — по пункту в строке<textarea data-outc rows="4">${esc(e.outcomes.map(o=>o[EDL]||'').join('\n'))}</textarea></label></div>
+  <div class="card col"><div class="row between"><h3>Программа · ${EDL.toUpperCase()}</h3><button class="btn ghost sm" data-act="addMod">+ Модуль</button></div>
+   ${e.modules.map((m,mi)=>`<div class="blk col"><div class="row" style="flex-wrap:nowrap"><input data-mod="${mi}" value="${V(m.t)}" placeholder="Название модуля" style="font-weight:600"><button class="btn ghost sm" data-act="delMod" data-arg="${mi}">✕</button></div>
+    ${m.l.map((l,li)=>`<div class="row" style="flex-wrap:nowrap;gap:6px"><input data-les="${mi}|${li}|t" value="${V(l.t)}" placeholder="Название урока"><input data-les="${mi}|${li}|id" value="${esc(l.id)}" class="mono" style="max-width:110px" title="ID урока"><label class="chk" title="Открыт бесплатно"><input type="checkbox" data-les="${mi}|${li}|free" ${l.free?'checked':''}>пробный</label><button class="btn ghost sm" data-act="editLesson" data-arg="${esc(l.id)}">Контент${D.lessonIds.includes(l.id)?'':' ⚠'}</button><button class="btn ghost sm" data-act="delLes" data-arg="${mi}|${li}">✕</button></div>`).join('')}
     <button class="btn ghost sm" style="width:fit-content" data-act="addLes" data-arg="${mi}">+ Урок</button></div>`).join('')}
    <p class="tiny muted">«Пробный» — урок открыт всем. Остальные уроки закрыты: посетитель видит кнопки «Купить курс» и «Оформить подписку». ⚠ — у урока ещё нет контента.</p></div>
  </div>
@@ -200,8 +209,8 @@ function pCourseEdit(id){const c=D.courses.find(x=>x.id===id);if(!c)return '<div
   <div class="card col"><h3>Публикация</h3><label class="chk"><input type="checkbox" data-ec="published" ${e.published?'checked':''}> Показывать на сайте</label><label class="chk"><input type="checkbox" data-ec="isNew" ${e.isNew?'checked':''}> Метка «Новый»</label>
    <label class="f">Цена, сум (0 — бесплатно)<input type="number" min="0" step="1000" data-ec="price" value="${e.price}"></label></div>
   <div class="card col"><h3>Параметры</h3><div class="grid g2" style="gap:10px">
-   <label class="f">Аудитория${sel('audience',Object.entries(AUD))}</label><label class="f">Уровень${sel('level',[['Начальный','Начальный'],['Средний','Средний'],['Продвинутый','Продвинутый']])}</label>
-   <label class="f">Тема<input data-ec="topic" value="${esc(e.topic)}"></label><label class="f">Часов<input type="number" min="0" data-ec="hours" value="${e.hours}"></label>
+   <label class="f">Аудитория${sel('audience',Object.entries(AUD))}</label><label class="f">Уровень${sel('level',[['beginner','Начальный'],['intermediate','Средний'],['advanced','Продвинутый']])}</label>
+   <label class="f">Часов<input type="number" min="0" data-ec="hours" value="${e.hours}"></label>
    <label class="f">Порядок<input type="number" min="0" data-ec="order" value="${e.order}"></label><label class="f">Популярность<input type="number" min="0" data-ec="students" value="${e.students}"></label>
    <label class="f">Цвет обложки${sel('cover',Object.keys(COVERS).map(k=>[k,k.toUpperCase()]))}</label><label class="f">Иконка${sel('icon',Object.entries(ICONS))}</label></div>
    <div style="height:56px;border-radius:12px;background:${grad(e.cover)}" id="covPrev"></div><p class="tiny muted">«Популярность» влияет на порядок в блоке «Популярные курсы».</p></div>
@@ -209,7 +218,11 @@ function pCourseEdit(id){const c=D.courses.find(x=>x.id===id);if(!c)return '<div
  </div></div></div>`}
 let EL=null;
 const BT={text:'Текст',callout:'Выноска',code:'Код',quiz:'Вопрос',formula:'Формула',diagram:'Схема (SVG)',sandbox:'Песочница'};
-function lessonEditor(){const l=EL.lesson;return `<div class="row between"><h2>Контент урока <span class="mono muted">${esc(EL.id)}</span></h2><button class="btn ghost sm" data-act="closeLayer">✕</button></div>
+function lessonEditor(){const l=EL.lesson;const has=x=>!!(EL.all[x]&&EL.all[x].blocks&&EL.all[x].blocks.length);
+ const others=LANGS.filter(x=>x!==EL.lang&&has(x));
+ return `<div class="row between"><h2>Контент урока <span class="mono muted">${esc(EL.id)}</span></h2><button class="btn ghost sm" data-act="closeLayer">✕</button></div>
+ <div class="row between">${langTabs('ell',EL.lang,has)}<span class="tiny muted">Каждый язык сохраняется отдельно</span></div>
+ ${!l.blocks.length&&others.length?`<div class="hint row between"><span>На ${EL.lang.toUpperCase()} урока ещё нет. Начните с копии и переведите тексты.</span><span class="row" style="gap:6px">${others.map(x=>`<button class="btn ghost sm" data-act="elCopy" data-arg="${x}">Копия из ${x.toUpperCase()}</button>`).join('')}</span></div>`:''}
  <label class="f" style="max-width:200px">Длительность, мин<input type="number" min="1" id="lMin" value="${l.min}"></label>
  ${l.blocks.map((b,i)=>`<div class="blk col"><div class="row between"><span class="pill b">${BT[b.t]||b.t}</span><span class="row" style="gap:4px"><button class="btn ghost sm" data-act="bUp" data-arg="${i}" ${i?'':'disabled'}>↑</button><button class="btn ghost sm" data-act="bDown" data-arg="${i}" ${i<l.blocks.length-1?'':'disabled'}>↓</button><button class="btn ghost sm" data-act="bDel" data-arg="${i}">✕</button></span></div>${blockForm(b,i)}</div>`).join('')||'<p class="muted small">Блоков пока нет</p>'}
  <div class="row">${['text','callout','code','quiz','formula'].map(t=>`<button class="btn ghost sm" data-act="bAdd" data-arg="${t}">+ ${BT[t]}</button>`).join('')}</div>
@@ -280,18 +293,21 @@ document.addEventListener('click',async e=>{const a=e.target.closest('[data-act]
  case 'goCourse':location.hash='courses/'+arg;break;
  case 'newCourse':{const id=prompt('ID курса латиницей (будет в адресе страницы), например: excel-ai');if(!id)break;const r=await api('/courses',{method:'POST',body:{id}});D.courses.push(r.course);location.hash='courses/'+r.course.id;break}
  case 'saveCourse':{const r=await api('/courses/'+EC.id,{method:'PUT',body:EC});Object.assign(D.courses.find(x=>x.id===EC.id),r.course);EC=JSON.parse(JSON.stringify(r.course));toast('Курс сохранён');rerenderMain();break}
- case 'delCourse':if(!confirm('Удалить курс «'+EC.title+'»?'))break;await api('/courses/'+EC.id,{method:'DELETE'});D.courses=D.courses.filter(x=>x.id!==EC.id);EC=null;location.hash='courses';break;
- case 'addMod':EC.modules.push({t:'Новый модуль',l:[]});rerenderMain();break;
+ case 'edl':EDL=arg;rerenderMain();break;
+ case 'ell':EL.lang=arg;EL.lesson=EL.all[arg]||{min:10,blocks:[]};redrawLesson();break;
+ case 'elCopy':{const src=EL.all[arg];if(!src)break;EL.lesson=JSON.parse(JSON.stringify(src));EL.all[EL.lang]=EL.lesson;redrawLesson();toast('Скопировано из '+arg.toUpperCase()+' — переведите тексты и сохраните');break}
+ case 'delCourse':if(!confirm('Удалить курс «'+L(EC.title)+'»?'))break;await api('/courses/'+EC.id,{method:'DELETE'});D.courses=D.courses.filter(x=>x.id!==EC.id);EC=null;location.hash='courses';break;
+ case 'addMod':EC.modules.push({t:{uz:'Yangi modul',ru:'Новый модуль',en:'New module'},l:[]});rerenderMain();break;
  case 'delMod':if(EC.modules[arg].l.length&&!confirm('Удалить модуль вместе с уроками?'))break;EC.modules.splice(arg,1);rerenderMain();break;
- case 'addLes':EC.modules[arg].l.push({id:EC.id+'-'+Math.random().toString(36).slice(2,6),t:'Новый урок',free:false});rerenderMain();break;
+ case 'addLes':EC.modules[arg].l.push({id:EC.id+'-'+Math.random().toString(36).slice(2,6),t:{uz:'Yangi dars',ru:'Новый урок',en:'New lesson'},free:false});rerenderMain();break;
  case 'delLes':{const[m,l]=arg.split('|');EC.modules[m].l.splice(l,1);rerenderMain();break}
- case 'editLesson':{const r=await api('/lessons/'+encodeURIComponent(arg));EL={id:arg,lesson:r.lesson};drawer(lessonEditor());document.querySelector('.drawer').style.width='min(760px,100%)';break}
+ case 'editLesson':{const r=await api('/lessons/'+encodeURIComponent(arg));const all=r.lesson||{};EL={id:arg,all,lang:EDL,lesson:all[EDL]||{min:10,blocks:[]}};all[EDL]=EL.lesson;drawer(lessonEditor());document.querySelector('.drawer').style.width='min(760px,100%)';break}
  case 'bAdd':{const N={text:{t:'text',html:'<p>Новый абзац</p>'},callout:{t:'callout',kind:'tip',h:'Совет',html:''},code:{t:'code',lang:'Промпт',code:''},quiz:{t:'quiz',id:'q-'+Math.random().toString(36).slice(2,8),req:true,q:'',opts:[{t:'',ok:true,why:''},{t:'',ok:false,why:''}]},formula:{t:'formula',html:'',cap:''}};EL.lesson.blocks.push(N[arg]);redrawLesson();break}
  case 'bDel':if(!confirm('Удалить блок?'))break;EL.lesson.blocks.splice(arg,1);redrawLesson();break;
  case 'bUp':case 'bDown':{const i=Number(arg),j=act==='bUp'?i-1:i+1;const B=EL.lesson.blocks;[B[i],B[j]]=[B[j],B[i]];redrawLesson();break}
  case 'oAdd':EL.lesson.blocks[arg].opts.push({t:'',ok:false,why:''});redrawLesson();break;
  case 'oDel':{const[i,k]=arg.split('|');EL.lesson.blocks[i].opts.splice(k,1);redrawLesson();break}
- case 'saveLesson':{EL.lesson.min=Number(document.getElementById('lMin').value)||10;await api('/lessons/'+encodeURIComponent(EL.id),{method:'PUT',body:{lesson:EL.lesson}});if(!D.lessonIds.includes(EL.id))D.lessonIds.push(EL.id);toast('Урок сохранён');closeLayer();rerenderMain();break}
+ case 'saveLesson':{EL.lesson.min=Number(document.getElementById('lMin').value)||10;await api('/lessons/'+encodeURIComponent(EL.id),{method:'PUT',body:{lesson:EL.lesson,lang:EL.lang}});EL.all[EL.lang]=EL.lesson;if(!D.lessonIds.includes(EL.id))D.lessonIds.push(EL.id);toast('Урок сохранён ('+EL.lang.toUpperCase()+')');redrawLesson();break}
  case 'savePlans':{const r=await api('/plans',{method:'PUT',body:{plans:D.plans}});D.plans=r.plans;toast('Тарифы сохранены');rerenderMain();break}
  case 'tgTest':{a.disabled=true;const r=await api('/settings/test-telegram',{method:'POST'});a.disabled=false;toast(r.ok?'Тестовое сообщение отправлено':'Ошибка: '+r.error);break}
  }}catch(er){toast(er.message);a.disabled=false}});
@@ -299,8 +315,11 @@ function redrawLesson(){const d=document.querySelector('.drawer');const y=d.scro
 document.addEventListener('input',e=>{const el=e.target;
  if(el.dataset.input==='lq'){leadF.q=el.value;document.getElementById('leadTable').innerHTML=leadTable(leadsFiltered())}
  if(el.dataset.ec){const k=el.dataset.ec;EC[k]=el.type==='checkbox'?el.checked:k==='outcomes'?el.value.split('\n').map(s=>s.trim()).filter(Boolean):el.type==='number'?Number(el.value):el.value;if(k==='cover')document.getElementById('covPrev').style.background=grad(el.value)}
- if(el.dataset.mod!==undefined)EC.modules[el.dataset.mod].t=el.value;
- if(el.dataset.les){const[m,l,k]=el.dataset.les.split('|');EC.modules[m].l[l][k]=el.type==='checkbox'?el.checked:el.value}
+ const setLoc=(obj,key)=>{if(!obj[key]||typeof obj[key]!=='object')obj[key]={uz:'',ru:'',en:'',...(typeof obj[key]==='string'?{ru:obj[key]}:{})};obj[key][EDL]=el.value};
+ if(el.dataset.loc)setLoc(EC,el.dataset.loc);
+ if(el.dataset.outc!==undefined){const lines=el.value.split('\n');const n=Math.max(lines.length,EC.outcomes.length);const out=[];for(let i=0;i<n;i++){const o={uz:'',ru:'',en:'',...(EC.outcomes[i]||{})};o[EDL]=(lines[i]||'').trim();out.push(o)}EC.outcomes=out.filter(o=>o.uz||o.ru||o.en)}
+ if(el.dataset.mod!==undefined)setLoc(EC.modules[el.dataset.mod],'t');
+ if(el.dataset.les){const[m,l,k]=el.dataset.les.split('|');const les=EC.modules[m].l[l];if(k==='t')setLoc(les,'t');else les[k]=el.type==='checkbox'?el.checked:el.value}
  if(el.dataset.b){const[i,k]=el.dataset.b.split('|');EL.lesson.blocks[i][k]=el.type==='checkbox'?el.checked:el.value}
  if(el.dataset.o){const[i,k,f]=el.dataset.o.split('|');const opts=EL.lesson.blocks[i].opts;if(f==='ok'){opts.forEach((o,n)=>o.ok=n==k);redrawLesson()}else opts[k][f]=el.value}
  if(el.dataset.plan){const[i,k]=el.dataset.plan.split('|');if(k==='best')D.plans.forEach((p,n)=>p.best=n==i);else D.plans[i][k]=Number(el.value)}});

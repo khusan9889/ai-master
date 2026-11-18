@@ -57,12 +57,15 @@ function leadText(l) {
     `👤 <b>Имя:</b> ${h(l.name)}`,
     `📞 <b>Телефон:</b> ${h(l.phone)}`
   ];
-  if (l.item) rows.push(`📦 <b>Выбор:</b> ${h(l.item)}`);
+  if (l.courseTitle) rows.push(`📚 <b>Курс:</b> ${h(l.courseTitle)}${l.coursePrice ? ` · ${h(l.coursePrice)}` : ''}`);
+  if (l.plan) rows.push(`💳 <b>Тариф:</b> ${h(l.plan)}`);
   if (l.company) rows.push(`🏢 <b>Компания:</b> ${h(l.company)}`);
   if (l.size) rows.push(`👥 <b>Сотрудников:</b> ${h(l.size)}`);
   if (l.message) rows.push(`📝 <b>Комментарий:</b> ${h(l.message)}`);
+  if (l.viewed && l.viewed.length) rows.push(`👀 <b>Смотрел курсы:</b> ${h(l.viewed.join(', '))}`);
   const src = [l.src, l.med, l.cmp].filter(Boolean).join(' / ');
   rows.push('', `📊 Источник: ${h(src || 'прямой заход')}${l.cnt ? ` · ${h(l.cnt)}` : ''}`);
+  if (l.lang) rows.push(`🌐 Язык сайта: ${h(l.lang.toUpperCase())}`);
   rows.push(`🕒 ${fmtDate(l.createdAt)} (Ташкент)`);
   return rows.join('\n');
 }

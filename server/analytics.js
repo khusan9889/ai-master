@@ -22,6 +22,7 @@ function parseUA(ua = '') {
   return { dev, os, br };
 }
 
+const loc = (v) => (v && typeof v === 'object' ? v.ru || v.uz || v.en || '' : v || '');
 const clip = (v, n = 120) => (v == null ? '' : String(v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n));
 
 // Определяем источник визита по UTM, кликовым меткам и рефереру.
@@ -56,7 +57,7 @@ function ingest(body, req) {
   if (BOT_RE.test(ua)) return 0;
   const vid = clip(body.v, 40), sid = clip(body.s, 40);
   if (!vid || !sid || !Array.isArray(body.e)) return 0;
-  const meta = { ...parseUA(ua), ...source(body.c || {}, req.hostname) };
+  const meta = { ...parseUA(ua), ...source(body.c || {}, req.hostname), lang: ['uz', 'ru', 'en'].includes(body.l) ? body.l : '' };
   const now = Date.now();
   let n = 0;
   for (const e of body.e.slice(0, 50)) {
@@ -74,7 +75,7 @@ function ingest(body, req) {
 function logLead(lead, req) {
   if (!lead.vid || !lead.sid) return;
   append({ t: Date.now(), v: lead.vid, s: lead.sid, e: 'lead', n: lead.type, p: lead.page, d: { item: lead.itemId || '' }, ...parseUA(req.get('user-agent') || ''),
-    src: lead.src, med: lead.med, cmp: lead.cmp, cnt: lead.cnt, trm: lead.trm, ref: lead.ref });
+    lang: lead.lang || '', src: lead.src, med: lead.med, cmp: lead.cmp, cnt: lead.cnt, trm: lead.trm, ref: lead.ref });
 }
 
 function readRange(from, to) {
@@ -87,19 +88,19 @@ function readRange(from, to) {
   return out;
 }
 
-const CTA_LABELS = { subscribe: 'Оформить подписку', buy_course: 'Купить курс', try_free: 'Попробовать бесплатно', consult: 'Заказать звонок', business: 'Заявка от компании', choose_course: 'Выбрать курс' };
-const PLACE_LABELS = { pricing: 'Блок цен', course: 'Страница курса', lesson: 'Закрытый урок', hero: 'Первый экран', header: 'Шапка сайта', footer: 'Подвал', catalog: 'Каталог', faq: 'Блок вопросов' };
+const CTA_LABELS = { subscribe: 'Оформить подписку', buy_course: 'Купить курс', try_free: 'Попробовать бесплатно', consult: 'Заказать звонок', business: 'Заявка от компании', choose_course: 'Выбрать курс', demo_open: 'Смотреть демо (первый экран)', demo_play: 'Запустили демо-видео', demo_done: 'Досмотрели демо-видео' };
+const PLACE_LABELS = { pricing: 'Блок цен', course: 'Страница курса', lesson: 'Закрытый урок', hero: 'Первый экран', demo: 'Блок демо', header: 'Шапка сайта', footer: 'Подвал', catalog: 'Каталог', faq: 'Блок вопросов' };
 
 function pageLabel(p) {
   const c = store.db.courses;
   if (!p || p === 'home') return 'Главная';
-  if (p.startsWith('course-')) return 'Курс: ' + (c.find((x) => x.id === p.slice(7))?.title || p.slice(7));
-  if (p.startsWith('lesson-')) { for (const x of c) for (const m of x.modules) for (const l of m.l) if (l.id === p.slice(7)) return 'Урок: ' + l.t; return p; }
+  if (p.startsWith('course-')) return 'Курс: ' + (loc(c.find((x) => x.id === p.slice(7))?.title) || p.slice(7));
+  if (p.startsWith('lesson-')) { for (const x of c) for (const m of x.modules) for (const l of m.l) if (l.id === p.slice(7)) return 'Урок: ' + loc(l.t); return p; }
   return { catalog: 'Каталог', pricing: 'Цены', business: 'Компаниям', privacy: 'Политика конфиденциальности' }[p] || p;
 }
 function itemLabel(id) {
   if (!id) return '—';
-  const c = store.db.courses.find((x) => x.id === id); if (c) return c.title;
+  const c = store.db.courses.find((x) => x.id === id); if (c) return loc(c.title);
   const p = store.db.plans.find((x) => x.id === id); if (p) return `Подписка ${p.months} мес`;
   return id;
 }
@@ -117,7 +118,7 @@ function report(from, to) {
   const S = new Map();
   for (const e of ev) {
     let s = S.get(e.s);
-    if (!s) { s = { v: e.v, first: e.t, last: e.t, pv: 0, inter: 0, src: e.src || '', med: e.med || '', cmp: e.cmp || '', cnt: e.cnt || '', dev: e.dev, os: e.os, br: e.br, viewedOffer: false, cta: false, open: false, lead: false, day: dayKey(e.t) }; S.set(e.s, s); }
+    if (!s) { s = { lang: e.lang || '', v: e.v, first: e.t, last: e.t, pv: 0, inter: 0, src: e.src || '', med: e.med || '', cmp: e.cmp || '', cnt: e.cnt || '', dev: e.dev, os: e.os, br: e.br, viewedOffer: false, cta: false, open: false, lead: false, day: dayKey(e.t) }; S.set(e.s, s); }
     s.last = Math.max(s.last, e.t);
     if (e.e === 'pv') { s.pv++; if (e.p.startsWith('course-') || e.p === 'pricing') s.viewedOffer = true; }
     else if (e.e !== 'ping') s.inter++;
@@ -185,8 +186,9 @@ function report(from, to) {
   for (const e of ev.filter((x) => x.e === 'pv')) { count(pv, e.p || 'home'); (pvU.get(e.p || 'home') || pvU.set(e.p || 'home', new Set()).get(e.p || 'home')).add(e.v); }
   const pages = [...pv.entries()].sort((a, b) => b[1] - a[1]).slice(0, 20).map(([p, n]) => ({ path: p, label: pageLabel(p), views: n, visitors: pvU.get(p).size }));
 
-  const dev = new Map(), os = new Map(), br = new Map();
-  for (const s of sessions) { count(dev, s.dev); count(os, s.os); count(br, s.br); }
+  const dev = new Map(), os = new Map(), br = new Map(), lg = new Map();
+  const LN = { uz: 'Oʻzbekcha', ru: 'Русский', en: 'English' };
+  for (const s of sessions) { count(dev, s.dev); count(os, s.os); count(br, s.br); count(lg, LN[s.lang] || 'Не указан'); }
 
   const lessons = new Map();
   for (const e of ev.filter((x) => x.e === 'lesson' && x.d?.a === 'start')) count(lessons, pageLabel('lesson-' + e.n).replace('Урок: ', ''));
@@ -209,7 +211,8 @@ function report(from, to) {
       { label: 'Оставили заявку', n: leadSessions }
     ],
     sources, campaigns, pages,
-    devices: sorted(dev), os: sorted(os), browsers: sorted(br),
+    devices: sorted(dev), os: sorted(os), browsers: sorted(br), langs: sorted(lg),
+    courseInterest: (() => { const m = new Map(); for (const e of ev.filter((x) => x.e === 'pv' && x.p.startsWith('course-'))) count(m, pageLabel(e.p).replace('Курс: ', '')); return sorted(m, 10); })(),
     lessons: sorted(lessons, 10),
     leadsByType: sorted(leadsByType)
   };

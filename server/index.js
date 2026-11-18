@@ -61,6 +61,10 @@ function limit(key, max, windowMs) {
 }
 setInterval(() => { const t = Date.now(); for (const [k, v] of hits) if (!v.some((x) => t - x < 3600e3)) hits.delete(k); }, 600e3).unref();
 
+const LANGS = ['uz', 'ru', 'en'];
+// Локализованное поле: {uz, ru, en} или строка (старый формат). Для менеджеров — русский.
+const loc = (v, lang = 'ru') => (v && typeof v === 'object' ? v[lang] || v.ru || v.uz || v.en || '' : v || '');
+const locObj = (v, max) => { const o = {}; for (const l of LANGS) o[l] = clean(v && typeof v === 'object' ? v[l] : v, max); return o; };
 const allLessons = (c) => c.modules.flatMap((m) => m.l);
 function findLesson(lid) { for (const c of db().courses) for (const l of allLessons(c)) if (l.id === lid) return { c, l }; return null; }
 
@@ -89,7 +93,10 @@ app.get('/api/lessons/:id', (req, res) => {
   const f = findLesson(req.params.id);
   if (!f || !f.c.published) return bad(res, 404, 'Урок не найден');
   if (!(f.l.free || f.c.price === 0)) return res.status(402).json({ error: 'locked', courseId: f.c.id });
-  res.json({ lesson: db().lessons[f.l.id] || null });
+  const raw = db().lessons[f.l.id];
+  const lang = LANGS.includes(req.query.lang) ? req.query.lang : 'uz';
+  const lesson = !raw ? null : raw.blocks ? raw : raw[lang] || raw.ru || raw.uz || raw.en || null;
+  res.json({ lesson });
 });
 
 // --- аналитика: приём событий ---
@@ -109,14 +116,19 @@ app.post('/api/leads', limit('lead', 6, 10 * 60e3), async (req, res) => {
   if (phoneDigits.length < 11 || phoneDigits.length > 13) return bad(res, 400, 'Укажите номер телефона полностью');
   const type = tg.LEAD_TYPES[b.type] ? b.type : 'consult';
   const itemId = clean(b.item, 60);
-  const course = db().courses.find((c) => c.id === itemId);
+  const sum = (n) => Number(n).toLocaleString('ru-RU').replace(/ /g, ' ') + ' сум';
   const plan = db().plans.find((p) => p.id === itemId);
-  const item = course ? `Курс «${course.title}» · ${course.price.toLocaleString('ru-RU')} сум`
-    : plan ? `Подписка на ${plan.months} мес · ${plan.price.toLocaleString('ru-RU')} сум` : '';
+  // курс: явно выбранный, либо страница курса/урока, с которой отправлена заявка
+  const course = db().courses.find((c) => c.id === itemId) || db().courses.find((c) => c.id === clean(b.course, 60));
+  const viewed = (Array.isArray(b.viewed) ? b.viewed : []).slice(0, 10).map((id) => db().courses.find((c) => c.id === id)).filter((c) => c && c !== course).map((c) => loc(c.title));
+  const planText = plan ? `Подписка на все курсы, ${plan.months} мес · ${sum(plan.price)}` : '';
+  const item = [course ? `Курс «${loc(course.title)}»` : '', planText].filter(Boolean).join(' · ');
   const src = an.source(b.c || {}, req.hostname);
   const lead = {
     id: ++db().seq.lead, type, name, phone: prettyPhone(phoneDigits),
-    item, itemId: course || plan ? itemId : '',
+    item, itemId: course || plan ? (plan ? plan.id : course.id) : '',
+    courseId: course?.id || '', courseTitle: course ? loc(course.title) : '', coursePrice: course && course.price ? sum(course.price) : '',
+    plan: planText, viewed, lang: LANGS.includes(b.lang) ? b.lang : '',
     company: clean(b.company, 120), size: clean(b.size, 40), message: clean(b.message, 1000),
     page: clean(b.page, 80), ...src, device: an.parseUA(req.get('user-agent') || '').dev,
     vid: clean(b.v, 40), sid: clean(b.s, 40),
@@ -176,8 +188,8 @@ A.post('/leads/:id/resend', async (req, res) => {
 A.delete('/leads/:id', (req, res) => { db().leads = db().leads.filter((x) => x.id !== Number(req.params.id)); store.save(); res.json({ ok: true }); });
 A.get('/leads.csv', (req, res) => {
   const q = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
-  const rows = [['ID', 'Дата', 'Тип', 'Имя', 'Телефон', 'Выбор', 'Компания', 'Сотрудников', 'Комментарий', 'Источник', 'Канал', 'Кампания', 'Объявление', 'Устройство', 'Статус', 'Заметка']]
-    .concat(db().leads.map((l) => [l.id, l.createdAt, tg.LEAD_TYPES[l.type] || l.type, l.name, l.phone, l.item, l.company, l.size, l.message, l.src, l.med, l.cmp, l.cnt, l.device, l.status, l.note]));
+  const rows = [['ID', 'Дата', 'Тип', 'Имя', 'Телефон', 'Курс', 'Тариф', 'Смотрел курсы', 'Компания', 'Сотрудников', 'Комментарий', 'Источник', 'Канал', 'Кампания', 'Объявление', 'Устройство', 'Язык', 'Статус', 'Заметка']]
+    .concat(db().leads.map((l) => [l.id, l.createdAt, tg.LEAD_TYPES[l.type] || l.type, l.name, l.phone, l.courseTitle || '', l.plan || '', (l.viewed || []).join(', '), l.company, l.size, l.message, l.src, l.med, l.cmp, l.cnt, l.device, l.lang || '', l.status, l.note]));
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="leads.csv"');
   res.send('﻿' + rows.map((r) => r.map(q).join(';')).join('\n'));
@@ -189,15 +201,18 @@ function applyCourse(c, b) {
   for (const k of COURSE_FIELDS) if (b[k] !== undefined) c[k] = b[k];
   for (const k of ['hours', 'price', 'rating', 'students', 'order']) c[k] = Math.max(0, Number(c[k]) || 0);
   c.isNew = !!c.isNew; c.seq = !!c.seq; c.published = !!c.published;
-  if (!Array.isArray(c.outcomes)) c.outcomes = [];
+  c.title = locObj(c.title, 160); c.desc = locObj(c.desc, 600); c.topic = locObj(c.topic, 60);
+  if (!['beginner', 'intermediate', 'advanced'].includes(c.level)) c.level = 'beginner';
+  c.outcomes = (Array.isArray(c.outcomes) ? c.outcomes : []).map((o) => locObj(o, 200)).filter((o) => o.uz || o.ru || o.en);
   if (!Array.isArray(c.modules)) c.modules = [];
-  c.modules = c.modules.map((m) => ({ t: clean(m.t, 120), l: (m.l || []).map((l) => ({ id: clean(l.id, 40) || 'l' + crypto.randomBytes(3).toString('hex'), t: clean(l.t, 160), free: !!l.free, final: !!l.final })) }));
+  c.modules = c.modules.map((m) => ({ t: locObj(m.t, 120), l: (m.l || []).map((l) => ({ id: clean(l.id, 40) || 'l' + crypto.randomBytes(3).toString('hex'), t: locObj(l.t, 160), free: !!l.free, final: !!l.final })) }));
 }
 A.get('/courses', (req, res) => res.json({ courses: db().courses, lessonIds: Object.keys(db().lessons) }));
 A.post('/courses', (req, res) => {
   const id = clean(req.body?.id, 40).toLowerCase().replace(/[^a-z0-9-]/g, '-');
   if (!id || db().courses.some((c) => c.id === id)) return bad(res, 400, 'Укажите уникальный ID курса (латиница)');
-  const c = { id, title: 'Новый курс', topic: 'Основы', level: 'Начальный', audience: 'beginner', icon: 'cpu', hours: 1, price: 0, cover: 'a', rating: 5, students: 0, isNew: true, published: false, order: db().courses.length + 1, desc: '', outcomes: [], modules: [{ t: 'Модуль 1', l: [{ id: id + '-1', t: 'Первый урок', free: true }] }] };
+  const T = (uz, ru, en) => ({ uz, ru, en });
+  const c = { id, title: T('Yangi kurs', 'Новый курс', 'New course'), topic: T('Asoslar', 'Основы', 'Basics'), level: 'beginner', audience: 'beginner', icon: 'cpu', hours: 1, price: 0, cover: 'a', rating: 5, students: 0, isNew: true, published: false, order: db().courses.length + 1, desc: T('', '', ''), outcomes: [], modules: [{ t: T('1-modul', 'Модуль 1', 'Module 1'), l: [{ id: id + '-1', t: T('Birinchi dars', 'Первый урок', 'First lesson'), free: true }] }] };
   applyCourse(c, req.body || {});
   db().courses.push(c); store.save(); res.json({ course: c });
 });
@@ -206,11 +221,22 @@ A.put('/courses/:id', (req, res) => {
   applyCourse(c, req.body || {}); store.save(); res.json({ course: c });
 });
 A.delete('/courses/:id', (req, res) => { db().courses = db().courses.filter((x) => x.id !== req.params.id); store.save(); res.json({ ok: true }); });
-A.get('/lessons/:id', (req, res) => res.json({ lesson: db().lessons[req.params.id] || { min: 10, blocks: [] } }));
+// Урок хранится по языкам: { uz: {min, blocks}, ru: {...}, en: {...} }
+A.get('/lessons/:id', (req, res) => {
+  const raw = db().lessons[req.params.id];
+  const out = {};
+  for (const l of LANGS) out[l] = raw ? (raw.blocks ? (l === 'ru' ? raw : null) : raw[l] || null) : null;
+  res.json({ lesson: out });
+});
 A.put('/lessons/:id', (req, res) => {
-  const l = req.body?.lesson;
+  const l = req.body?.lesson, lang = req.body?.lang;
+  if (!LANGS.includes(lang)) return bad(res, 400, 'Укажите язык урока');
   if (!l || !Array.isArray(l.blocks)) return bad(res, 400, 'Неверный формат урока');
-  db().lessons[clean(req.params.id, 40)] = { min: Math.max(1, Number(l.min) || 10), blocks: l.blocks };
+  const id = clean(req.params.id, 40);
+  let raw = db().lessons[id];
+  if (!raw || raw.blocks) raw = raw && raw.blocks ? { ru: raw } : {};
+  raw[lang] = { min: Math.max(1, Number(l.min) || 10), blocks: l.blocks };
+  db().lessons[id] = raw;
   store.save(); res.json({ ok: true });
 });
 
@@ -264,7 +290,13 @@ app.use((err, req, res, next) => {
 process.on('SIGINT', () => { store.saveNow(); process.exit(0); });
 process.on('SIGTERM', () => { store.saveNow(); process.exit(0); });
 
-app.listen(PORT, () => {
+app.listen(PORT, (err) => {
+  if (err) {
+    console.error(err.code === 'EADDRINUSE'
+      ? `Порт ${PORT} уже занят — возможно, сайт уже запущен в другом окне. Закройте его (Ctrl+C) или укажите другой PORT в .env.`
+      : `Не удалось запустить сервер: ${err.message}`);
+    process.exit(1);
+  }
   const c = tg.cfg();
   console.log(`AI Master запущен: http://localhost:${PORT}`);
   console.log(`Админ-панель:      http://localhost:${PORT}/admin  (логин: ${ADMIN_LOGIN})`);
