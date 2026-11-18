@@ -10,7 +10,7 @@ const FILE = path.join(DATA_DIR, 'db.json');
 
 function fresh() {
   return {
-    version: 4,
+    version: 5,
     seq: { lead: 0 },
     adminSessions: {},
     courses: JSON.parse(JSON.stringify(seed.courses)),
@@ -38,15 +38,15 @@ function load() {
     const def = fresh();
     for (const k of Object.keys(def)) if (data[k] === undefined) data[k] = def[k];
     data.settings = Object.assign(def.settings, data.settings);
-    // v3: курсы стали трёхъязычными; v4: задания в каждом уроке, интерактивные демо-уроки, новый курс.
+    // v3: курсы стали трёхъязычными; v4: задания и демо-уроки; v5: один большой вводный урок и 12–15 уроков в курсе.
     // Заменяем контент курсов, заявки и настройки сохраняем.
-    if ((data.version || 1) < 4) {
+    if ((data.version || 1) < 5) {
       fs.copyFileSync(FILE, FILE.replace(/\.json$/, `.backup-v${data.version || 1}.json`));
       data.courses = def.courses; data.lessons = def.lessons;
       for (const k of ['users', 'sessions', 'otp', 'orders', 'promos', 'certs']) delete data[k];
-      data.version = 4;
+      data.version = 5;
       flush();
-      console.log('[db] курсы и уроки обновлены (версия 4), резервная копия сохранена');
+      console.log('[db] курсы и уроки обновлены (версия 5), резервная копия сохранена');
     }
   } else {
     data = fresh();

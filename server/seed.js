@@ -231,5 +231,7 @@ const plans = [
 ];
 
 const lessons = require('./seed-sandbox')(require('./seed-lessons'));
+// объединяем пробные уроки в один вводный и расширяем программы до 12–15 уроков
+require('./seed-extend')(courses, lessons);
 
 module.exports = { courses, lessons, plans };
