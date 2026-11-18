@@ -202,7 +202,7 @@ function pHome(){const pop=COURSES.filter(c=>c.price>0).sort((a,b)=>b.students-a
   <div class="col rv" style="gap:22px"><span class="eyebrow">${ic('play','ico s',2)} ${t('demo_k')}</span><h2>${t('demo_t')}</h2><p class="muted" style="font-size:18px">${t('demo_p')}</p>
    <div class="col" style="gap:16px">${[['read','demo_f1'],['terminal','demo_f2'],['check','demo_f3']].map(([i,k])=>`<div class="feat"><span class="tile" style="width:40px;height:40px">${ic(i,'ico s')}</span><b style="padding-top:8px">${t(k)}</b></div>`).join('')}</div></div>
   <div class="vid rv paused" id="vid" style="--d:120ms">
-   <video id="demoV" src="/media/demo.mp4#t=3" playsinline muted preload="metadata"></video>
+   <video id="demoV" src="/media/demo-music.mp4#t=3" playsinline preload="metadata"></video>
    <div class="ov"><button class="vplay" data-act="vplay"><span class="pb">${ic('play','ico',2)}</span>${t('play_video')}</button></div>
    <div class="vbar"><button data-act="vtoggle" aria-label="Play/Pause" id="vtg">${ic('play','ico s',2)}</button><div class="pg" id="vpg"><i id="vpi"></i></div><button data-act="vsound" id="vsd" aria-label="${t('sound_off')}" title="${t('sound_off')}">${ic('vol','ico s',2)}</button></div>
   </div>
@@ -414,18 +414,15 @@ function runMock(){clearTimeout(mockTimer);const P=document.getElementById('mkP'
  mockTimer=setTimeout(type,700)}
 
 /* ================== DEMO VIDEO + MUSIC ================== */
-let musicOn=true;
-function demoEls(){return {v:document.getElementById('demoV'),a:document.getElementById('demoA'),w:document.getElementById('vid')}}
-function bindVideo(){const {v,a,w}=demoEls();if(!v)return;
- const sync=()=>{if(Math.abs(a.currentTime-v.currentTime)>.25)a.currentTime=v.currentTime};
- v.onplay=()=>{w.classList.add('playing');w.classList.remove('paused');document.getElementById('vtg').innerHTML=ic('pause','ico s',2);if(musicOn){a.currentTime=v.currentTime;a.play().catch(()=>{})}};
- v.onpause=()=>{w.classList.remove('playing');w.classList.add('paused');document.getElementById('vtg').innerHTML=ic('play','ico s',2);a.pause()};
- v.ontimeupdate=()=>{const i=document.getElementById('vpi');if(i)i.style.width=(v.currentTime/v.duration*100)+'%';if(!a.paused)sync()};
- v.onseeked=sync;
- v.onended=()=>{a.pause();T.ev('click','demo_done',{place:'demo'});const ov=w.querySelector('.vplay');if(ov)ov.innerHTML=`<span class="pb">${ic('refresh','ico',2)}</span>${t('replay')}`};
+function demoEls(){return {v:document.getElementById('demoV'),w:document.getElementById('vid')}}
+function bindVideo(){const {v,w}=demoEls();if(!v)return;
+ v.onplay=()=>{w.classList.add('playing');w.classList.remove('paused');document.getElementById('vtg').innerHTML=ic('pause','ico s',2)};
+ v.onpause=()=>{w.classList.remove('playing');w.classList.add('paused');document.getElementById('vtg').innerHTML=ic('play','ico s',2)};
+ v.ontimeupdate=()=>{const i=document.getElementById('vpi');if(i)i.style.width=(v.currentTime/v.duration*100)+'%'};
+ v.onended=()=>{T.ev('click','demo_done',{place:'demo'});const ov=w.querySelector('.vplay');if(ov)ov.innerHTML=`<span class="pb">${ic('refresh','ico',2)}</span>${t('replay')}`};
  document.getElementById('vpg').onclick=e=>{const r=e.currentTarget.getBoundingClientRect();v.currentTime=(e.clientX-r.left)/r.width*v.duration};
 }
-function stopDemo(){const a=document.getElementById('demoA');if(a)a.pause()}
+function stopDemo(){const v=document.getElementById('demoV');if(v)v.pause()}
 
 /* ================== ROUTER ================== */
 let pricingObs=null;
@@ -470,7 +467,7 @@ document.addEventListener('click',async e=>{
   case 'planPick':{planSel=arg;const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
   case 'vplay':{const {v}=demoEls();if(v.ended||v.currentTime>=v.duration-0.1||!v.dataset.started){v.currentTime=0;v.dataset.started='1'}v.play();T.ev('click','demo_play',{place:'demo'});break}
   case 'vtoggle':{const {v}=demoEls();v.paused?v.play():v.pause();break}
-  case 'vsound':{const {v,a:au}=demoEls();musicOn=!musicOn;a.innerHTML=ic(musicOn?'vol':'mute','ico s',2);a.title=t(musicOn?'sound_off':'sound_on');if(musicOn&&!v.paused){au.currentTime=v.currentTime;au.play().catch(()=>{})}else au.pause();break}
+  case 'vsound':{const {v}=demoEls();v.muted=!v.muted;a.innerHTML=ic(v.muted?'mute':'vol','ico s',2);a.title=t(v.muted?'sound_on':'sound_off');break}
   case 'toggleMentor':document.getElementById('mentor')?.classList.toggle('open');setTimeout(()=>document.getElementById('mentorIn')?.focus(),250);break;
   case 'toggleToc':document.getElementById('toc')?.classList.toggle('open');break;
   case 'retryLesson':delete LCACHE[arg+':'+LANG];render();break;
