@@ -25,7 +25,10 @@ function fresh() {
       contactTelegram: '@aimaster_uz',
       metaPixelId: '',
       yandexMetrikaId: '',
-      gaId: ''
+      gaId: '',
+      clarityId: '',
+      metaCapiToken: '',
+      metaTestCode: ''
     }
   };
 }

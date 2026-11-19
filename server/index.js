@@ -19,6 +19,7 @@ const store = require('./db');
 store.load();
 const tg = require('./telegram');
 const an = require('./analytics');
+const meta = require('./meta');
 const db = () => store.db;
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -86,7 +87,7 @@ app.get('/api/catalog', (req, res) => {
   res.json({
     courses: db().courses.filter((c) => c.published).sort((a, b) => (a.order || 0) - (b.order || 0)),
     plans: db().plans,
-    settings: { contactPhone: s.contactPhone, contactTelegram: s.contactTelegram, metaPixelId: s.metaPixelId, yandexMetrikaId: s.yandexMetrikaId, gaId: s.gaId }
+    settings: { contactPhone: s.contactPhone, contactTelegram: s.contactTelegram, metaPixelId: s.metaPixelId, yandexMetrikaId: s.yandexMetrikaId, gaId: s.gaId, clarityId: s.clarityId }
   });
 });
 
@@ -139,6 +140,14 @@ app.post('/api/leads', limit('lead', 6, 10 * 60e3), async (req, res) => {
   db().leads.unshift(lead);
   store.save();
   an.logLead(lead, req);
+  // Conversions API: то же событие Lead, что отправил браузерный пиксель (event_id совпадает)
+  const eid = clean(b.eid, 64);
+  if (db().settings.metaPixelId && db().settings.metaCapiToken) {
+    meta.sendEvent({ name: 'Lead', eventId: eid || 'lead-' + lead.id, url: clean(b.url, 300) || ('https://' + req.hostname + '/'), req, phone: phoneDigits,
+      externalId: lead.vid, fbp: clean(b.fbp, 120), fbc: clean(b.fbc, 200),
+      custom: { content_name: lead.courseTitle || lead.plan || type, content_category: type, lead_type: type } })
+      .then((r) => { lead.capi = r; store.save(); if (!r.ok && !r.skipped) console.error('[meta capi]', r.error); });
+  }
   if (db().settings.notifyLeads) {
     lead.tg = await tg.send(tg.leadText(lead));
     if (!lead.tg.ok) console.error(`[telegram] заявка #${lead.id} не отправлена: ${lead.tg.error}`);
@@ -256,6 +265,9 @@ function maskedSettings() {
   s.telegramTokenMasked = c.token ? c.token.slice(0, 6) + '…' + c.token.slice(-4) : '';
   s.telegramChatIdEffective = c.chatId;
   s.telegramFromEnv = !db().settings.telegramToken && !!process.env.TELEGRAM_BOT_TOKEN;
+  s.metaCapiSet = !!s.metaCapiToken;
+  s.metaCapiMasked = s.metaCapiToken ? s.metaCapiToken.slice(0, 6) + '…' + s.metaCapiToken.slice(-4) : '';
+  delete s.metaCapiToken;
   delete s.telegramToken;
   return s;
 }
@@ -266,6 +278,10 @@ A.put('/settings', (req, res) => {
   for (const k of ['contactPhone', 'contactTelegram', 'telegramChatId']) if (b[k] !== undefined) s[k] = clean(b[k], 120);
   if (b.metaPixelId !== undefined) s.metaPixelId = clean(b.metaPixelId, 30).replace(/\D/g, '');
   if (b.yandexMetrikaId !== undefined) s.yandexMetrikaId = clean(b.yandexMetrikaId, 30).replace(/\D/g, '');
+  if (b.clarityId !== undefined) s.clarityId = clean(b.clarityId, 20).replace(/[^a-z0-9]/gi, '');
+  if (b.metaTestCode !== undefined) s.metaTestCode = clean(b.metaTestCode, 30).replace(/[^A-Z0-9]/gi, '');
+  if (b.metaCapiToken) s.metaCapiToken = clean(b.metaCapiToken, 400);
+  if (b.metaCapiClear) s.metaCapiToken = '';
   if (b.gaId !== undefined) { const g = clean(b.gaId, 30).toUpperCase(); s.gaId = /^G-[A-Z0-9]{4,20}$/.test(g) ? g : ''; }
   if (b.telegramToken) s.telegramToken = clean(b.telegramToken, 120);
   store.save(); res.json({ settings: maskedSettings() });
