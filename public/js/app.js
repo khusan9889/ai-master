@@ -483,7 +483,14 @@ function observe(){
  document.querySelectorAll('.rv:not(.in)').forEach(e=>rvObs.observe(e));
  cntObs=cntObs||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){countUp(e.target);cntObs.unobserve(e.target)}}),{threshold:.6});
  document.querySelectorAll('[data-count]').forEach(e=>cntObs.observe(e));
+ clearTimeout(revealT);revealT=setTimeout(revealVisible,1800);
 }
+// Страховка: если браузер не сообщает о видимости (некоторые встроенные браузеры), показываем блоки по позиции на экране.
+let revealT=null,revealRaf=0;
+function revealVisible(){const h=innerHeight*1.1;
+ document.querySelectorAll('.rv:not(.in)').forEach(e=>{const r=e.getBoundingClientRect();if(r.top<h&&r.bottom>-50){e.classList.add('in');rvObs?.unobserve(e)}});
+ document.querySelectorAll('[data-count]').forEach(e=>{if(e.textContent==='0'){const r=e.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0){countUp(e);cntObs?.unobserve(e)}}})}
+addEventListener('scroll',()=>{if(revealRaf)return;revealRaf=setTimeout(()=>{revealRaf=0;revealVisible()},250)},{passive:true});
 function countUp(el){const to=Number(el.dataset.count);const dec=String(to).includes('.')?1:0;const t0=performance.now(),D=1400;
  const f=n=>dec?n.toFixed(1).replace('.',LANG==='en'?'.':','):Math.round(n).toLocaleString('ru-RU').replace(/ |,/g,' ');
  (function step(now){const p=Math.min(1,(now-t0)/D);const e=1-Math.pow(1-p,3);el.textContent=f(to*e);if(p<1)requestAnimationFrame(step)})(t0)}
