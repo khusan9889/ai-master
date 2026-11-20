@@ -10,7 +10,7 @@ const FILE = path.join(DATA_DIR, 'db.json');
 
 function fresh() {
   return {
-    version: 6,
+    version: 7,
     seq: { lead: 0 },
     adminSessions: {},
     courses: JSON.parse(JSON.stringify(seed.courses)),
@@ -59,6 +59,23 @@ function load() {
       data.version = 6;
       flush();
       console.log('[db] тарифы упрощены: одна месячная подписка (версия 6), резервная копия сохранена');
+    }
+    // v7: правильные ответы в тестах на разных позициях + новый курс «ИИ в Excel, Word и PowerPoint».
+    // Остальные курсы, их цены, тарифы, заявки и настройки не трогаем.
+    if (data.version < 7) {
+      fs.copyFileSync(FILE, FILE.replace(/.json$/, `.backup-v${data.version}.json`));
+      const { rebalanceLesson } = require('./quiz-order');
+      for (const id of Object.keys(data.lessons || {})) rebalanceLesson(data.lessons[id]);
+      const office = require('./seed-office');
+      if (!data.courses.some((c) => c.id === office.course.id)) {
+        const c = JSON.parse(JSON.stringify(office.course));
+        c.order = Math.max(0, ...data.courses.map((x) => x.order || 0)) + 1;
+        data.courses.push(c);
+      }
+      for (const [id, les] of Object.entries(office.lessons)) if (!data.lessons[id]) data.lessons[id] = rebalanceLesson(JSON.parse(JSON.stringify(les)));
+      data.version = 7;
+      flush();
+      console.log('[db] тесты перемешаны, добавлен курс по Office (версия 7), резервная копия сохранена');
     }
   } else {
     data = fresh();

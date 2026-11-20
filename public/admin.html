@@ -178,10 +178,10 @@ function openLead(id){const l=D.leads.find(x=>x.id===Number(id));if(!l)return;
  <div style="margin-top:auto"><button class="btn danger sm" data-act="leadDel" data-arg="${l.id}">Удалить заявку</button></div>`)}
 
 /* ---------- courses ---------- */
-const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E'],g:['#0E8C82','#06514B']};
+const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E'],g:['#0E8C82','#06514B'],h:['#1F7A45','#0D3F22']};
 const grad=k=>{const c=COVERS[k]||COVERS.a;return `linear-gradient(140deg,${c[0]},${c[1]})`};
 const AUD={beginner:'Новичкам',work:'Для работы',business:'Для бизнеса',dev:'Разработчикам'};
-const ICONS={cpu:'Процессор',pen:'Перо',msg:'Чат',trend:'График роста',chart:'Диаграмма',bot:'Бот',code:'Код',layers:'Слои',book:'Книга'};
+const ICONS={cpu:'Процессор',pen:'Перо',msg:'Чат',trend:'График роста',chart:'Диаграмма',bot:'Бот',code:'Код',layers:'Слои',book:'Книга',table:'Таблица'};
 function pCourses(){return `<div class="col" style="gap:16px"><div class="row between"><h1>Курсы</h1><button class="btn" data-act="newCourse">+ Новый курс</button></div>
  <div class="card tablewrap" style="padding:6px 10px"><table class="t"><tr><th></th><th>Курс</th><th>Аудитория</th><th class="n">Уроков</th><th class="n">Цена</th><th>Статус</th></tr>
  ${D.courses.slice().sort((a,b)=>a.order-b.order).map(c=>`<tr class="click" data-act="goCourse" data-arg="${c.id}"><td style="width:46px"><div style="width:36px;height:36px;border-radius:9px;background:${grad(c.cover)}"></div></td><td><b>${esc(L(c.title))}</b><div class="tiny muted">${esc(c.id)}</div></td><td>${AUD[c.audience]||'—'}</td><td class="n">${c.modules.reduce((a,m)=>a+m.l.length,0)}</td><td class="n" style="white-space:nowrap">${c.price?fmt(c.price):'Бесплатно'}</td><td>${c.published?'<span class="pill g">На сайте</span>':'<span class="pill">Скрыт</span>'}</td></tr>`).join('')}</table></div></div>`}

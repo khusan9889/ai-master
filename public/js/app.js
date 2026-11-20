@@ -3,6 +3,7 @@
 
 /* ================== ICONS ================== */
 const IP={
+ table:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/>',
  check:'<path d="M20 6 9 17l-5-5"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',back:'<path d="M19 12H5M11 18l-6-6 6-6"/>',
  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
  play:'<path d="M7 4.5v15l12-7.5z"/>',pause:'<path d="M7 5v14M17 5v14"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
@@ -52,7 +53,7 @@ const L=v=>v&&typeof v==='object'?(v[LANG]||v.ru||v.uz||v.en||''):(v||'');
 const CTR=()=>CONTRACTS[LANG]||CONTRACTS.ru;
 
 /* ================== DATA ================== */
-const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E'],g:['#0E8C82','#06514B']};
+const COVERS={a:['#F2601A','#B2321A'],b:['#3046C5','#18236E'],c:['#2A2F3D','#111318'],d:['#13804F','#0A4A2F'],e:['#5B3FD1','#2D1C80'],f:['#C2571C','#6E2D0E'],g:['#0E8C82','#06514B'],h:['#1F7A45','#0D3F22']};
 const AUD={beginner:'sprout',work:'briefcase',business:'trend',dev:'code'};
 const AUD_ICON={beginner:'cpu',work:'pen',business:'trend',dev:'code'};
 const TOOLS=['ChatGPT','Claude','Gemini','Midjourney','Copilot','n8n','Telegram','Python','Excel','Google Sheets','Notion','Perplexity'];
@@ -350,7 +351,7 @@ function renderBlock(b,i,lid){
  if(b.t==='code')return `<div class="block"><div class="code"><div class="hd"><span>${esc(b.lang)}</span><button data-act="copy" data-arg="${i}">${ic('copy','ico s')} ${t('copy')}</button></div><pre>${hl(b.code,b.lang)}</pre></div></div>`;
  if(b.t==='quiz'){const st=S.quiz[b.id];return `<div class="block quiz"><span class="eyebrow" style="color:var(--blue)">${ic('target','ico s')} ${t('check_self')}</span><h3 style="margin:8px 0 2px;font-size:20px">${esc(b.q)}</h3>
   ${b.opts.map((o,k)=>{const pk=st&&st.pick===k;return `<button class="opt ${pk?(o.ok?'ok':'bad'):''}" data-act="quiz" data-arg="${lid}|${i}|${k}"><span class="l">${pk?(o.ok?ic('check','ico s',2.5):ic('x','ico s',2.5)):String.fromCharCode(65+k)}</span><span>${esc(o.t)}</span></button>${pk?`<div class="why"><b>${o.ok?t('right'):t('wrong')}</b>${esc(o.why)}</div>`:''}`}).join('')}</div>`}
- if(b.t==='sandbox')return b.kind==='spot'?spotHTML(b):b.kind==='rubric'?rubricHTML(b):b.kind==='fit'?fitHTML(b):b.kind==='agent'?agentHTML(b):sandboxHTML(b);
+ if(b.t==='sandbox')return b.kind==='spot'?spotHTML(b):b.kind==='rubric'?rubricHTML(b):b.kind==='fit'?fitHTML(b):b.kind==='agent'?agentHTML(b):b.kind==='excel'?xlHTML(b):sandboxHTML(b);
  return ''}
 function hl(code,lang){let h=esc(code);if(lang==='Python'){h=h.replace(/(#.*)$/gm,'<span class="c">$1</span>').replace(/\b(from|import|print|def|return|for|in)\b/g,'<span class="k">$1</span>').replace(/\b(LinearRegression|fit|predict)\b/g,'<span class="fn">$1</span>')}else{h=h.replace(/(&quot;[a-z_]+&quot;)/g,'<span class="s">$1</span>')}return h}
 
@@ -404,6 +405,75 @@ function rubricHTML(b){const st=SBST(b.id);const c=b.cfg;const met=new Set(st.me
 function rubricRun(b,prompt){const c=b.cfg;const M=new Set(c.criteria.filter(k=>new RegExp(k.rx,'i').test(prompt)).map(k=>k.id));
  const score=Math.min(10,c.criteria.filter(k=>M.has(k.id)).reduce((a,k)=>a+k.pts,0));
  const out=c.pieces.map(p=>p.need===''?p.ok:(M.has(p.need)?p.ok:p.bad)).filter(Boolean).join('\n\n');return {met:[...M],score,out,prompt}}
+
+/* ---- песочница: мини-Excel (формулы считаются по-настоящему) ---- */
+const XL_FN={SUM:'SUM',СУММ:'SUM',AVERAGE:'AVERAGE',СРЗНАЧ:'AVERAGE',MIN:'MIN',МИН:'MIN',MAX:'MAX',МАКС:'MAX',COUNT:'COUNT',СЧЁТ:'COUNT',СЧЕТ:'COUNT',COUNTA:'COUNTA',СЧЁТЗ:'COUNTA',СЧЕТЗ:'COUNTA',
+ COUNTIF:'COUNTIF',СЧЁТЕСЛИ:'COUNTIF',СЧЕТЕСЛИ:'COUNTIF',SUMIF:'SUMIF',СУММЕСЛИ:'SUMIF',AVERAGEIF:'AVERAGEIF',СРЗНАЧЕСЛИ:'AVERAGEIF',ROUND:'ROUND',ОКРУГЛ:'ROUND'};
+// Таблица: строка 1 — заголовки, данные со строки 2; столбцы A, B, C…
+function xlEval(src,grid){
+ let s=String(src||'').trim();if(!s.startsWith('='))throw new Error('eq');
+ s=s.slice(1).replace(/[АаВвСс](?=\d)/g,ch=>({А:'A',а:'A',В:'B',в:'B',С:'C',с:'C'}[ch])).replace(/[“”«»]/g,'"');
+ let i=0;const peek=()=>s[i],ws=()=>{while(s[i]===' ')i++};
+ const cell=(col,row)=>{const r=grid[row-1];if(!r)return null;const v=r[col.charCodeAt(0)-65];return v===undefined?null:v};
+ function primary(){ws();const c=peek();
+  if(c==='('){i++;const v=expr();ws();if(s[i]!==')')throw new Error('paren');i++;return v}
+  if(c==='"'){const j=s.indexOf('"',i+1);if(j<0)throw new Error('str');const v=s.slice(i+1,j);i=j+1;return v}
+  if(c==='-'){i++;return -num(primary())}
+  let m=s.slice(i).match(/^\d+([.,]\d+)?/);if(m&&!/^[A-Za-z]/.test(s.slice(i))){i+=m[0].length;return Number(m[0].replace(',','.'))}
+  m=s.slice(i).match(/^([A-Za-z]):([A-Za-z])(?![A-Za-z(])/);if(m)s=s.slice(0,i)+m[1]+'1:'+m[2]+grid.length+s.slice(i+m[0].length);
+  m=s.slice(i).match(/^([A-Za-z])(\d+)(:([A-Za-z])(\d+))?/);
+  if(m&&!/^[A-Za-zА-Яа-яЁё]{2}/.test(s.slice(i))){i+=m[0].length;const c1=m[1].toUpperCase(),r1=+m[2];
+   if(!m[3])return cell(c1,r1);const c2=m[4].toUpperCase(),r2=+m[5];const out=[];
+   for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)for(let k=Math.min(c1.charCodeAt(0),c2.charCodeAt(0));k<=Math.max(c1.charCodeAt(0),c2.charCodeAt(0));k++)out.push(cell(String.fromCharCode(k),r));
+   out.range={c1,r1,c2,r2};return out}
+  m=s.slice(i).match(/^([A-Za-zА-Яа-яЁё]+)\s*\(/);
+  if(m){const fn=XL_FN[m[1].toUpperCase()];if(!fn)throw new Error('fn:'+m[1]);i+=m[0].length;const args=[];ws();
+   if(s[i]!==')'){for(;;){args.push(expr());ws();if(s[i]===','||s[i]===';'){i++;continue}break}}
+   ws();if(s[i]!==')')throw new Error('paren');i++;return call(fn,args)}
+  throw new Error('syntax')}
+ function num(v){if(Array.isArray(v))throw new Error('range');const n=typeof v==='number'?v:Number(v);if(Number.isNaN(n))throw new Error('nan');return n}
+ function term(){let v=primary();for(;;){ws();const c=s[i];if(c==='*'||c==='/'){i++;const r=primary();v=c==='*'?num(v)*num(r):num(v)/num(r)}else return v}}
+ function expr(){let v=term();for(;;){ws();const c=s[i];if(c==='+'||c==='-'){i++;const r=term();v=c==='+'?num(v)+num(r):num(v)-num(r)}else return v}}
+ const nums=a=>a.flat().filter(x=>typeof x==='number');
+ const match=(v,crit)=>{const m=String(crit).match(/^(<=|>=|<>|<|>|=)?(.*)$/);const op=m[1]||'=',rhs=m[2];const n=Number(rhs.replace(',','.'));
+  if(rhs!==''&&!Number.isNaN(n)&&typeof v==='number')return op==='='?v===n:op==='<>'?v!==n:op==='<'?v<n:op==='>'?v>n:op==='<='?v<=n:v>=n;
+  const a=String(v??'').toLowerCase(),b=rhs.toLowerCase();return op==='<>'?a!==b:a===b};
+ function call(fn,a){const arr=x=>Array.isArray(x)?x:[x];
+  if(fn==='SUM')return nums(a.map(arr)).reduce((p,q)=>p+q,0);
+  if(fn==='AVERAGE'){const n=nums(a.map(arr));if(!n.length)throw new Error('div0');return n.reduce((p,q)=>p+q,0)/n.length}
+  if(fn==='MIN')return Math.min(...nums(a.map(arr)));
+  if(fn==='MAX')return Math.max(...nums(a.map(arr)));
+  if(fn==='COUNT')return nums(a.map(arr)).length;
+  if(fn==='COUNTA')return a.map(arr).flat().filter(x=>x!==null&&x!=='').length;
+  if(fn==='ROUND')return Math.round(num(a[0])*10**num(a[1]||0))/10**num(a[1]||0);
+  const rng=arr(a[0]),crit=a[1];
+  if(fn==='COUNTIF')return rng.filter(v=>match(v,crit)).length;
+  const sumR=a[2]!==undefined?arr(a[2]):rng;
+  const picked=rng.map((v,k)=>match(v,crit)?sumR[k]:null).filter(x=>typeof x==='number');
+  if(fn==='SUMIF')return picked.reduce((p,q)=>p+q,0);
+  if(fn==='AVERAGEIF'){if(!picked.length)throw new Error('div0');return picked.reduce((p,q)=>p+q,0)/picked.length}
+  throw new Error('fn')}
+ const v=expr();ws();if(i<s.length)throw new Error('syntax');return v}
+function xlHTML(b){const st=SBST(b.id);const c=b.cfg;const id=esc(b.id);const ans=st.answers||[];const res=st.results||[];
+ const cols=c.grid[0].map((_,k)=>String.fromCharCode(65+k));
+ return `<div class="block sbx col" style="gap:14px" id="${id}"><span class="lbl">${ic('table','ico s')} ${t('sb')} · Excel</span>
+  <p style="color:#D7D5CF;font-size:15px">${esc(c.intro)}</p>
+  <div class="xlwrap"><table class="xl"><tr><th></th>${cols.map(x=>`<th>${x}</th>`).join('')}</tr>${c.grid.map((r,ri)=>`<tr><th>${ri+1}</th>${r.map(v=>`<td class="${ri===0?'h':typeof v==='number'?'n':''}">${esc(v)}</td>`).join('')}</tr>`).join('')}</table></div>
+  ${c.tasks.map((tk,k)=>{const r=res[k];return `<div class="xltask"><div class="row between" style="gap:8px"><b>${k+1}. ${esc(tk.q)}</b>${r?`<span class="pill ${r.ok?'g':'r'}" style="background:${r.ok?'#1F3A2A':'#3A2418'};color:${r.ok?'#4ADE80':'#FF9A5C'}">${r.ok?ic('check','ico s',2.5):ic('x','ico s',2.5)} ${esc(r.v)}</span>`:''}</div>
+   <div class="xlrow"><span class="fx">fx</span><input class="mono" data-xl="${id}|${k}" value="${esc(ans[k]||'')}" placeholder="=" spellcheck="false" autocomplete="off"></div>
+   ${r&&!r.ok&&r.msg?`<div class="tiny" style="color:#FFC7A6">${esc(r.msg)}</div>`:''}
+   <button class="btn link small" style="color:#8F9DFF" data-act="xlAi" data-arg="${id}|${k}">${ic('spark','ico s')} ${t('xl_ai')}</button>
+   <div class="xlai" id="xlai-${id}-${k}" hidden><div><span class="lbl">${t('xl_prompt')}</span><div>${esc(tk.prompt)}</div></div><div><span class="lbl">${t('xl_answer')}</span><div class="mono">${esc(tk.ai)}</div></div></div></div>`}).join('')}
+  <div class="row"><button class="btn" data-act="xlCheck" data-arg="${id}">${t('xl_check')}</button></div>
+  ${scoreRow(st)}</div>`}
+function xlCheck(b,answers){const c=b.cfg;let score=0;
+ const results=c.tasks.map((tk,k)=>{const f=String(answers[k]||'').trim();if(!f)return {ok:false,v:'—',msg:t('xl_empty')};
+  if(!/[A-Za-zА-Яа-яЁё]\s*\(|[A-Za-z]\d/.test(f))return {ok:false,v:f,msg:t('xl_hard')};
+  try{const v=xlEval(f,c.grid);const ok=typeof v==='number'&&Math.abs(v-tk.expect)<1e-6;if(ok)score+=tk.pts;
+   const shown=typeof v==='number'?(Math.round(v*100)/100).toLocaleString('ru-RU').replace(/ /g,' '):String(v);
+   return {ok,v:shown,msg:ok?'':t('xl_wrong')}}
+  catch(e){return {ok:false,v:'#ERR',msg:String(e.message).startsWith('fn:')?t('xl_fn',{f:e.message.slice(3)}):e.message==='eq'?t('xl_eq'):t('xl_err')}}});
+ return {answers,results,score:Math.min(10,score)}}
 
 /* ---- песочница: обучить модель руками ---- */
 function fitStats(pts,w,b){return pts.reduce((a,[x,y])=>a+Math.pow(y-(w*x+b),2),0)/pts.length}
@@ -595,12 +665,16 @@ document.addEventListener('click',async e=>{
     for(const l of r.lines){box.insertAdjacentHTML('beforeend',traceLine(l));box.scrollTop=box.scrollHeight;await new Promise(res=>setTimeout(res,l.k==='msg'?420:260))}
     st.trace=box.innerHTML;st.summary=r.summary;st.score=r.score;save();T.ev('lesson',location.hash.slice(8),{a:'sandbox',s:r.score});
     const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'xlCheck':{const b=curBlock(arg);const st=SBST(arg);const ans=b.cfg.tasks.map((_,k)=>document.querySelector('[data-xl="'+arg+'|'+k+'"]')?.value||'');
+    Object.assign(st,xlCheck(b,ans));save();T.ev('lesson',location.hash.slice(8),{a:'sandbox',s:st.score});const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
+  case 'xlAi':{const [id,k]=arg.split('|');const box=document.getElementById('xlai-'+id+'-'+k);if(box)box.hidden=!box.hidden;break}
   case 'sbHint':openMentor();mentorAsk(t('sb_hint_q'),'m_task');break;
   case 'mentorQuick':mentorAsk(t(arg==='simpler'?'simpler':'example')+(selText?`: «${selText}»`:''),arg==='simpler'?'m_simple':'m_example');selText='';break;
  }
 });
 document.addEventListener('input',e=>{const el=e.target;
  if(el.matches('[data-phone]')){const v=fmtPhone(el.value);if(v!==el.value)el.value=v}
+ if(el.dataset.xl){const [id,k]=el.dataset.xl.split('|');const st=SBST(id);st.answers=st.answers||[];st.answers[+k]=el.value;clearTimeout(window._xlSave);window._xlSave=setTimeout(save,300)}
  if(el.dataset.fit){const [id,k]=el.dataset.fit.split('|');const st=SBST(id);st[k]=Number(el.value);fitDraw(id);clearTimeout(window._fitSave);window._fitSave=setTimeout(save,300)}
  if(el.dataset.input==='catq'){catF.q=el.value;document.getElementById('catGrid').innerHTML=catalogItems();observe()}});
 document.addEventListener('submit',async e=>{const f=e.target;const k=f.dataset.submit;if(!k)return;e.preventDefault();

@@ -232,5 +232,12 @@ const plans = [
 const lessons = require('./seed-sandbox')(require('./seed-lessons'));
 // объединяем пробные уроки в один вводный и расширяем программы до 12–15 уроков
 require('./seed-extend')(courses, lessons);
+// курс по Excel, Word и PowerPoint
+const office = require('./seed-office');
+courses.push(office.course);
+Object.assign(lessons, office.lessons);
+// правильный ответ в тестах — на разных позициях, а не всегда вторым
+const { rebalanceLesson } = require('./quiz-order');
+for (const id of Object.keys(lessons)) rebalanceLesson(lessons[id]);
 
 module.exports = { courses, lessons, plans };
