@@ -224,10 +224,9 @@ const courses = [
   }
 ];
 
+// Одна подписка на все курсы, оплата помесячно. Цена и включение — в админке «Тарифы».
 const plans = [
-  { id: 'sub1', months: 1, price: 149000, best: false },
-  { id: 'sub3', months: 3, price: 399000, best: true },
-  { id: 'sub12', months: 12, price: 1290000, best: false }
+  { id: 'sub1', months: 1, price: 399000, best: true, active: true }
 ];
 
 const lessons = require('./seed-sandbox')(require('./seed-lessons'));

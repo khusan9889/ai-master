@@ -114,7 +114,7 @@ function pLogin(){return `<div class="login"><form class="card col" style="width
  <div class="brand" style="padding:0">${LOGO(32)}<span>AI Master · админ</span></div>
  <label class="f">Логин<input name="login" autocomplete="username" required></label><label class="f">Пароль<input name="password" type="password" autocomplete="current-password" required></label>
  <button class="btn" style="padding:12px">Войти</button></form></div>`}
-function shell(body){const items=[['analytics','Аналитика'],['leads','Заявки',D.leadsNew],['courses','Курсы'],['plans','Тарифы'],['settings','Настройки']];
+function shell(body){const items=[['analytics','Аналитика'],['leads','Заявки',D.leadsNew],['courses','Курсы'],['plans','Цены'],['settings','Настройки']];
  return `<div class="layout"><nav class="side"><div class="brand">${LOGO(28)}<span>AI Master</span></div>
  ${items.map(([k,l,n])=>`<a href="#${k}" class="${route===k||route.startsWith(k+'/')?'on':''}"><span>${l}</span>${n?`<span class="cnt">${n}</span>`:''}</a>`).join('')}
  <div class="foot"><a href="/" target="_blank">Открыть сайт ↗</a><a href="#" data-act="logout">Выйти</a></div></nav><main id="main">${body}</main></div>`}
@@ -240,9 +240,26 @@ function blockForm(b,i){const F=(k,label,rows=3,mono)=>`<label class="f">${label
  return ''}
 
 /* ---------- plans / settings ---------- */
-function pPlans(){return `<div class="col" style="gap:16px;max-width:820px"><div class="row between"><h1>Тарифы</h1><button class="btn" data-act="savePlans">Сохранить</button></div>
- <div class="card"><table class="t"><tr><th>ID</th><th>Месяцев</th><th>Цена, сум</th><th class="n">В месяц</th><th>«Выгоднее»</th></tr>${D.plans.map((p,i)=>`<tr><td class="mono">${esc(p.id)}</td><td><input type="number" min="1" data-plan="${i}|months" value="${p.months}" style="max-width:90px"></td><td><input type="number" min="0" step="1000" data-plan="${i}|price" value="${p.price}" style="max-width:150px"></td><td class="n muted">${fmt(Math.round(p.price/p.months))}</td><td><input type="radio" name="best" data-plan="${i}|best" ${p.best?'checked':''} style="width:auto;accent-color:var(--brand)"></td></tr>`).join('')}</table></div>
- <p class="small muted">Кнопка «Оформить подписку» на сайте открывает форму заявки — она приходит в Telegram-группу.</p></div>`}
+function subOf(){return D.plans.find(p=>p.id==='sub1')||D.plans[0]||{id:'sub1',months:1,price:399000,best:true,active:true}}
+function pPlans(){if(!D.courses.length||!D.plans)return '<div class="empty">Загрузка…</div>';
+ const sub=Object.assign({},subOf(),D.subEdit||{});const pe=D.priceEdit||{};const price=c=>pe[c.id]!==undefined?pe[c.id]:c.price;
+ const paid=D.courses.filter(c=>c.published&&price(c)>0).sort((a,b)=>price(a)-price(b));const n=paid.length;
+ const total=paid.reduce((a,c)=>a+price(c),0);
+ const warn=!sub.active?'':sub.price<=0?'Укажите цену подписки.':paid.length&&sub.price<price(paid[0])?'Подписка дешевле самого дешёвого курса — отдельные курсы никто не будет покупать.':total&&sub.price>=total?'Подписка дороже всех курсов вместе — покупать её невыгодно.':'';
+ return `<div class="col" style="gap:16px;max-width:900px"><h1>Цены</h1>
+ <p class="muted">На сайте два простых варианта: <b>купить курс</b> (разовая оплата, доступ навсегда) или <b>подписка на все курсы</b> (оплата раз в месяц). Первый урок каждого курса всегда бесплатный.</p>
+ <div class="card col"><div class="row between"><h2>Цены курсов</h2><button class="btn" data-act="saveCoursePrices">Сохранить цены курсов</button></div>
+  <p class="small muted">Разовая оплата, курс остаётся у ученика навсегда. 0 — курс полностью бесплатный.</p>
+  <table class="t"><tr><th>Курс</th><th>Статус</th><th class="n">Цена, сум</th></tr>${D.courses.slice().sort((a,b)=>a.order-b.order).map(c=>`<tr><td><b>${esc(L(c.title))}</b></td><td>${c.published?'<span class="pill g">На сайте</span>':'<span class="pill">Скрыт</span>'}</td><td class="n"><input type="number" min="0" step="1000" data-cprice="${c.id}" value="${price(c)}" style="width:130px;text-align:right">${pe[c.id]!==undefined&&pe[c.id]!==c.price?' <span class="pill o">изменено</span>':''}</td></tr>`).join('')}</table></div>
+ <div class="card col"><div class="row between"><h2>Подписка «Все курсы»</h2><button class="btn" data-act="saveSub">Сохранить подписку</button></div>
+  <label class="chk"><input type="checkbox" data-sub="active" ${sub.active?'checked':''}> Показывать подписку на сайте</label>
+  <label class="f" style="max-width:260px">Цена в месяц, сум<input type="number" min="0" step="1000" data-sub="price" value="${sub.price}"></label>
+  ${warn?`<div class="hint" style="background:var(--amber-soft)">${warn}</div>`:''}
+  <p class="small muted">Кнопка «Оформить подписку» открывает форму заявки — она приходит в Telegram с пометкой «Подписка на все курсы».</p></div>
+ <div class="card col"><h2>Как это увидят посетители</h2>
+  <div class="blk col" style="gap:6px">${paid.slice(0,3).map(c=>`<div class="row between"><span>Курс «${esc(L(c.title))}»</span><b>${fmt(price(c))} · разовая оплата</b></div>`).join('')}${paid.length>3?`<span class="tiny muted">…и ещё ${paid.length-3}</span>`:''}
+  ${sub.active?`<div class="row between" style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px"><span>Все курсы (${n})</span><b>${fmt(sub.price)} / мес</b></div>`:'<span class="tiny muted">Подписка выключена — на сайте будут только цены курсов.</span>'}</div></div>
+ </div>`}
 function pSettings(){const s=D.settings;if(!s)return '<div class="empty">Загрузка…</div>';
  return `<div class="col" style="gap:16px;max-width:860px"><h1>Настройки</h1>
  <form class="card col" data-submit="settings" style="gap:14px"><div class="row between"><h2>Telegram — заявки</h2>${s.telegramTokenMasked&&s.telegramChatIdEffective?'<span class="pill g">Подключено</span>':'<span class="pill r">Не настроено</span>'}</div>
@@ -266,7 +283,7 @@ async function load(what){try{
  if(what==='analytics')D.an=await api(`/analytics?from=${range.from}&to=${range.to}`);
  if(what==='leads')D.leads=(await api('/leads')).leads;
  if(what==='courses'){const r=await api('/courses');D.courses=r.courses;D.lessonIds=r.lessonIds}
- if(what==='plans')D.plans=(await api('/plans')).plans;
+ if(what==='plans'){D.plans=(await api('/plans')).plans;const r=await api('/courses');D.courses=r.courses;D.lessonIds=r.lessonIds;D.priceEdit={};D.subEdit=null}
  if(what==='settings')D.settings=(await api('/settings')).settings;
  D.leadsNew=(await api('/summary')).leadsNew;
 }catch(e){toast(e.message)}}
@@ -312,7 +329,11 @@ document.addEventListener('click',async e=>{const a=e.target.closest('[data-act]
  case 'oAdd':EL.lesson.blocks[arg].opts.push({t:'',ok:false,why:''});redrawLesson();break;
  case 'oDel':{const[i,k]=arg.split('|');EL.lesson.blocks[i].opts.splice(k,1);redrawLesson();break}
  case 'saveLesson':{EL.lesson.min=Number(document.getElementById('lMin').value)||10;await api('/lessons/'+encodeURIComponent(EL.id),{method:'PUT',body:{lesson:EL.lesson,lang:EL.lang}});EL.all[EL.lang]=EL.lesson;if(!D.lessonIds.includes(EL.id))D.lessonIds.push(EL.id);toast('Урок сохранён ('+EL.lang.toUpperCase()+')');redrawLesson();break}
- case 'savePlans':{const r=await api('/plans',{method:'PUT',body:{plans:D.plans}});D.plans=r.plans;toast('Тарифы сохранены');rerenderMain();break}
+ case 'saveCoursePrices':{const pe=D.priceEdit||{};const ids=Object.keys(pe).filter(id=>{const c=D.courses.find(x=>x.id===id);return c&&pe[id]!==c.price});
+   if(!ids.length){toast('Изменений нет');break}
+   for(const id of ids){const r=await api('/courses/'+id,{method:'PUT',body:{price:Math.max(0,Math.round(pe[id]))}});Object.assign(D.courses.find(x=>x.id===id),r.course)}
+   D.priceEdit={};toast('Цены курсов сохранены: '+ids.length);rerenderMain();break}
+ case 'saveSub':{const sub=Object.assign({},subOf(),D.subEdit||{});const r=await api('/plans',{method:'PUT',body:{plans:[{id:'sub1',months:1,price:Math.max(0,Math.round(sub.price)),best:true,active:!!sub.active}]}});D.plans=r.plans;D.subEdit=null;toast('Подписка сохранена');rerenderMain();break}
  case 'tgTest':{a.disabled=true;const r=await api('/settings/test-telegram',{method:'POST'});a.disabled=false;toast(r.ok?'Тестовое сообщение отправлено':'Ошибка: '+r.error);break}
  }}catch(er){toast(er.message);a.disabled=false}});
 function redrawLesson(){const d=document.querySelector('.drawer');const y=d.scrollTop;d.innerHTML=lessonEditor();d.scrollTop=y}
@@ -326,8 +347,11 @@ document.addEventListener('input',e=>{const el=e.target;
  if(el.dataset.les){const[m,l,k]=el.dataset.les.split('|');const les=EC.modules[m].l[l];if(k==='t'||k==='task')setLoc(les,k);else les[k]=el.type==='checkbox'?el.checked:el.value}
  if(el.dataset.b){const[i,k]=el.dataset.b.split('|');EL.lesson.blocks[i][k]=el.type==='checkbox'?el.checked:el.value}
  if(el.dataset.o){const[i,k,f]=el.dataset.o.split('|');const opts=EL.lesson.blocks[i].opts;if(f==='ok'){opts.forEach((o,n)=>o.ok=n==k);redrawLesson()}else opts[k][f]=el.value}
+ if(el.dataset.cprice){D.priceEdit=D.priceEdit||{};D.priceEdit[el.dataset.cprice]=Number(el.value)||0}
+ if(el.dataset.sub){D.subEdit=D.subEdit||{};D.subEdit[el.dataset.sub]=el.type==='checkbox'?el.checked:(Number(el.value)||0)}
  if(el.dataset.plan){const[i,k]=el.dataset.plan.split('|');if(k==='best')D.plans.forEach((p,n)=>p.best=n==i);else D.plans[i][k]=Number(el.value)}});
 document.addEventListener('change',async e=>{const el=e.target;
+ if((el.dataset.cprice||el.dataset.sub)&&route==='plans'){const pos=scrollY;rerenderMain();scrollTo(0,pos)}
  if(el.dataset.change==='lftype'){leadF.type=el.value;rerenderMain()}
  if(el.dataset.range&&el.value){range[el.dataset.range]=el.value;range.preset='';D.an=null;rerenderMain();await load('analytics');render()}});
 document.addEventListener('submit',async e=>{const f=e.target;const k=f.dataset.submit;if(!k)return;e.preventDefault();const fd=Object.fromEntries(new FormData(f).entries());

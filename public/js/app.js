@@ -62,8 +62,9 @@ const course=id=>COURSES.find(c=>c.id===id);
 const allLessons=c=>c.modules.flatMap(m=>m.l);
 function findLesson(lid){for(const c of COURSES)for(const l of allLessons(c))if(l.id===lid)return {c,l};return null}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-const bestPlan=()=>PLANS.find(p=>p.best)||PLANS[0];
-const minMonthly=()=>Math.round(Math.min(...PLANS.map(p=>p.price/p.months)));
+// Ценообразование: у курса своя цена (разовая оплата, доступ навсегда) + одна месячная подписка на все курсы.
+const subPlan=()=>PLANS.find(p=>p.active!==false&&p.price>0)||null;
+const paidCount=()=>COURSES.filter(c=>c.price>0).length;
 const level=c=>t('lvl_'+(c.level||'beginner'));
 const totalLessons=()=>COURSES.reduce((a,c)=>a+allLessons(c).length,0);
 
@@ -124,7 +125,7 @@ function modal(html){document.getElementById('layer').innerHTML=`<div class="mod
 function closeModal(){document.getElementById('layer').innerHTML=''}
 function go(r){if(location.hash==='#'+r)render();else location.hash=r}
 function cover(c,h=150){const [a,b]=COVERS[c.cover]||COVERS.a;return `<div class="ccover" style="background:linear-gradient(140deg,${a},${b});height:${h}px">${c.isNew?`<span class="nw">${t('new')}</span>`:''}<span class="lb">${esc(L(c.topic))}</span><span class="gl">${ic(c.icon||AUD_ICON[c.audience]||'layers')}</span></div>`}
-function priceTag(c){return c.price===0?`<span class="price free">${t('free')}</span>`:`<span class="price">${fmt(c.price)}</span>`}
+function priceTag(c,big){return c.price===0?`<span class="price free"${big?' style="font-size:30px"':''}>${t('free')}</span>`:`<span class="col" style="gap:0"><span class="price"${big?' style="font-size:30px"':''}>${fmt(c.price)}</span>${big?'':`<span class="tiny muted">${t('price_once')}</span>`}</span>`}
 function courseCard(c,i=0){const n=allLessons(c).length;return `<a class="card ccard rv" style="--d:${i*90}ms" href="#course-${c.id}">${cover(c)}
  <div class="body"><h3>${esc(L(c.title))}</h3><p class="desc">${esc(L(c.desc))}</p>
  <div class="meta"><span>${ic('book','ico s')} ${t('n_lessons',{n})}</span><span>${ic('clock','ico s')} ${t('hours',{n:c.hours})}</span><span>${ic('signal','ico s')} ${level(c)}</span></div>
@@ -147,7 +148,7 @@ function leadForm(o){o=Object.assign({type:'consult',cta:t('f_send'),fields:[]},
 function leadSuccess(){return `<div class="success"><div class="ok">${ic('check','ico',2.5)}</div><h3 style="font-size:22px">${t('ok_t')}</h3><p class="muted">${t('ok_p')}</p></div>`}
 function openLead(type,item){
  const p=PLANS.find(x=>x.id===item);const c=course(item)||course(ctxCourse());let h,sub,fields=[],btn=t('f_send');
- if(type==='plan'&&p){h=t('plan_h');sub=t('plan_sub',{n:p.months,p:fmt(p.price)})}
+ if(type==='plan'&&p){h=t('plan_h');sub=t('plan_sub',{n:paidCount(),p:fmt(p.price)})}
  else if(type==='buy'&&c){h=t('buy_h');sub=t('buy_sub',{c:esc(L(c.title)),p:fmt(c.price)})}
  else if(type==='business'){h=t('biz_h');sub=t('biz_sub');fields=['company','message'];btn=t('biz_cta')}
  else {type='consult';h=t('consult_h');sub=c?t('consult_course',{c:esc(L(c.title))}):t('consult_sub')}
@@ -239,23 +240,25 @@ function pHome(){const pop=COURSES.filter(c=>c.price>0).sort((a,b)=>b.students-a
   <div class="card rv" style="box-shadow:var(--sh);--d:120ms"><div class="col" style="gap:8px;margin-bottom:22px"><h3 style="font-size:24px">${t('q_t')}</h3><p class="muted">${t('q_p')}</p></div>${leadForm({type:'consult',cta:t('q_cta')})}</div>
  </div></section>`}
 
-let planSel=null;
-function pricingSection(onHome){const p=PLANS.find(x=>x.id===planSel)||bestPlan();const paid=COURSES.filter(c=>c.price>0).map(c=>c.price);
+function pricingSection(onHome){const p=subPlan();const paid=COURSES.filter(c=>c.price>0).sort((a,b)=>a.price-b.price);const n=paidCount();
+ const li=k=>`<li>${ic('check','ico s',2.2)} ${k}</li>`;
  return `<section id="plans" ${onHome?'style="padding-top:0"':''}><div class="wrap">
- <div class="head rv">${onHome?`<h2>${t('pricing_t')}</h2>`:`<h1 style="font-size:clamp(36px,5vw,56px)">${t('pricing_t')}</h1>`}<p>${t('pricing_p')}</p></div>
- <div class="grid g3" style="align-items:stretch" id="pricingGrid">
-  <div class="card plan rv"><h3>${t('free')}</h3><div class="price" style="font-size:34px">0 ${t('sum')}</div>
-   <ul><li>${ic('check','ico s',2.2)} ${t('plan_free_1')}</li><li>${ic('check','ico s',2.2)} ${t('plan_free_2')}</li></ul>
-   <a class="btn ghost block" style="margin-top:auto" href="#lesson-p1" ${cta('try_free','prompt-eng','pricing')}>${t('plan_free_btn')}</a></div>
-  <div class="card plan rv" style="--d:90ms"><h3>${t('plan_one')}</h3><div class="price" style="font-size:34px">${t('from_price',{p:fmt(paid.length?Math.min(...paid):0)})}</div>
-   <ul><li>${ic('check','ico s',2.2)} ${t('plan_one_1')}</li><li>${ic('check','ico s',2.2)} ${t('plan_one_2')}</li></ul>
+ <div class="head rv">${onHome?`<h2>${t('pricing_t')}</h2>`:`<h1 style="font-size:clamp(36px,5vw,56px)">${t('pricing_t')}</h1>`}<p>${p?t('pricing_p2'):t('pricing_p1')}</p></div>
+ <div class="grid ${p?'g2':''} pgrid" style="align-items:stretch" id="pricingGrid">
+  <div class="card plan rv"><span class="tag" style="width:fit-content">${ic('book','ico s')} ${t('opt_one_k')}</span><h3 style="font-size:24px">${t('opt_one_t')}</h3>
+   <p class="muted">${t('opt_one_d')}</p>
+   <div class="plist">${paid.map(c=>`<a href="#course-${c.id}" class="prow"><span>${esc(L(c.title))}</span><b>${fmt(c.price)}</b></a>`).join('')}</div>
+   <ul>${li(t('one_1'))}${li(t('one_2'))}</ul>
    <a class="btn ghost block" style="margin-top:auto" href="#catalog" ${cta('choose_course','','pricing')}>${t('choose_course')}</a></div>
-  <div class="card plan best rv" style="--d:180ms"><span class="badge">${t('best')}</span><h3>${t('plan_all')}</h3>
-   <div class="seg">${PLANS.map(x=>`<button class="${x.id===p.id?'on':''}" data-act="planPick" data-arg="${x.id}">${t('months',{n:x.months})}</button>`).join('')}</div>
-   <div class="pnum"><div class="price" style="font-size:34px">${fmt(p.price)}</div><p class="small muted">${t('per_month',{p:fmt(Math.round(p.price/p.months))})}</p></div>
-   <ul><li>${ic('check','ico s',2.2)} ${t('plan_all_1')}</li><li>${ic('check','ico s',2.2)} ${t('plan_all_2')}</li></ul>
-   <button class="btn block shine" style="margin-top:auto" data-act="lead" data-arg="plan" data-lead-item="${p.id}" ${cta('subscribe',p.id,'pricing')}>${t('subscribe')}</button></div>
- </div></div></section>`}
+  ${p?`<div class="card plan best rv" style="--d:120ms"><span class="badge">${t('opt_all_badge')}</span><span class="tag" style="width:fit-content">${ic('layers','ico s')} ${t('opt_all_k')}</span><h3 style="font-size:24px">${t('opt_all_t')}</h3>
+   <p class="muted">${t('opt_all_d',{n})}</p>
+   <div style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap"><span class="price" style="font-size:34px;white-space:nowrap">${fmt(p.price)}</span><span class="muted" style="white-space:nowrap">${t('per_mo_short')}</span></div>
+   <ul>${li(t('all_1',{n}))}${li(t('all_2'))}${li(t('all_3'))}</ul>
+   <button class="btn block shine" style="margin-top:auto" data-act="lead" data-arg="plan" data-lead-item="${p.id}" ${cta('subscribe',p.id,'pricing')}>${t('subscribe')}</button></div>`:''}
+ </div>
+ <div class="pnote rv">${ic('play','ico s',2)}<span>${t('free_note')}</span><a class="btn link small" href="#lesson-p1" ${cta('try_free','prompt-eng','pricing')}>${t('plan_free_btn')} ${ic('arrow','ico s')}</a></div>
+ ${p?`<div class="pwhich rv"><b>${t('which_t')}</b><span>${ic('book','ico s')} ${t('which_one')}</span><span>${ic('layers','ico s')} ${t('which_all',{p:fmt(p.price),n})}</span></div>`:''}
+ </div></section>`}
 
 /* ================== CATALOG / COURSE ================== */
 let catF={q:'',aud:''};
@@ -271,7 +274,7 @@ function catalogItems(){const q=catF.q.toLowerCase().trim();
 function refreshCatalog(){document.getElementById('catGrid').innerHTML=catalogItems();document.getElementById('catChips').innerHTML=catChips();observe()}
 
 function pCourse(id){const c=course(id);if(!c)return pNotFound();
- const ls=allLessons(c);const first=ls.find(l=>l.free)||ls[0];const free=c.price===0;const bp=bestPlan();let k=0;
+ const ls=allLessons(c);const first=ls.find(l=>l.free)||ls[0];const free=c.price===0;const bp=subPlan();let k=0;
  return `<section style="padding-top:32px"><div class="wrap col" style="gap:24px">
  <nav class="crumbs"><a href="#catalog">${t('nav_courses')}</a>${ic('arrow','ico s')}<span>${esc(L(c.topic))}</span></nav>
  <div class="course-grid">
@@ -285,11 +288,11 @@ function pCourse(id){const c=course(id);if(!c)return pNotFound();
   </div>
  </div>
  <aside class="card buybox rv" style="box-shadow:var(--sh)">${cover(c,120)}<div class="col" style="gap:14px;padding:24px">
-  ${priceTag(c)}
+  ${priceTag(c,true)}${free?'':`<span class="small muted" style="margin-top:-8px">${t('lifetime')}</span>`}
   ${free?`<a class="btn lg block" href="#lesson-${first.id}" ${cta('try_free',c.id,'course')}>${t('start_course')}</a>`
    :`<button class="btn lg block shine" data-act="lead" data-arg="buy" data-lead-item="${c.id}" ${cta('buy_course',c.id,'course')}>${t('buy')}</button>
     <a class="btn ghost block" href="#lesson-${first.id}" ${cta('try_free',c.id,'course')}>${ic('play','ico s',2)} ${t('trial')}</a>
-    ${bp?`<button class="btn link small" style="justify-content:center;color:var(--muted);font-weight:500" data-act="lead" data-arg="plan" data-lead-item="${bp.id}" ${cta('subscribe',bp.id,'course')}>${t('or_sub',{p:fmt(minMonthly())})}</button>`:''}`}
+    ${bp?`<div class="orline"><span>${t('or_lbl')}</span></div><div class="subbox"><div class="col" style="gap:2px"><b>${t('all_courses_n',{n:paidCount()})}</b><span class="small muted">${fmt(bp.price)} ${t('per_mo_short')}</span></div><button class="btn ghost sm" data-act="lead" data-arg="plan" data-lead-item="${bp.id}" ${cta('subscribe',bp.id,'course')}>${t('subscribe')}</button></div>`:''}`}
   <div class="col small" style="gap:8px;border-top:1px solid var(--line);padding-top:14px;color:var(--ink2)"><b style="color:var(--ink)">${t('included')}</b><span class="row" style="gap:8px">${ic('terminal','ico s')} ${t('inc1')}</span><span class="row" style="gap:8px">${ic('spark','ico s')} ${t('inc2')}</span><span class="row" style="gap:8px">${ic('award','ico s')} ${t('inc3')}</span></div>
   <button class="btn ghost block sm" data-act="lead" data-arg="consult" ${cta('consult',c.id,'course')}>${ic('msg','ico s')} ${t('ask_course')}</button>
  </div></aside></div></div></section>`}
@@ -335,8 +338,8 @@ function pLesson(lid){const f=findLesson(lid);if(!f)return pNotFound();const {c,
   <div class="row between" style="margin-top:28px">${idx>0?`<a class="btn ghost sm" href="#lesson-${ls[idx-1].id}">${ic('back','ico s')} ${t('back')}</a>`:'<span></span>'}${next?`<a class="btn ghost sm" href="#lesson-${next.id}">${t('next')} ${ic('arrow','ico s')}</a>`:''}</div>
  </div></div></div>
  ${data&&!(cache&&cache.locked)?`<button class="btn dark fab" data-act="toggleMentor">${ic('spark','ico s',2)} <span class="hide-xs">${t('mentor')}</span></button>${mentorPanel()}`:''}`}
-function lockedHTML(c){const bp=bestPlan();return `<div class="card lock block"><span class="tile">${ic('lock')}</span><h2 style="font-size:28px">${t('locked_h')}</h2><p class="muted" style="max-width:420px">${t('locked_p')}</p>
- <div class="row" style="justify-content:center"><button class="btn lg" data-act="lead" data-arg="buy" data-lead-item="${c.id}" ${cta('buy_course',c.id,'lesson')}>${t('buy')} · ${fmt(c.price)}</button>${bp?`<button class="btn ghost lg" data-act="lead" data-arg="plan" data-lead-item="${bp.id}" ${cta('subscribe',bp.id,'lesson')}>${t('subscribe')}</button>`:''}</div></div>`}
+function lockedHTML(c){const bp=subPlan();return `<div class="card lock block"><span class="tile">${ic('lock')}</span><h2 style="font-size:28px">${t('locked_h')}</h2><p class="muted" style="max-width:420px">${t('locked_p')}</p>
+ <div class="row" style="justify-content:center"><button class="btn lg" data-act="lead" data-arg="buy" data-lead-item="${c.id}" ${cta('buy_course',c.id,'lesson')}>${t('buy')} · ${fmt(c.price)}</button>${bp?`<button class="btn ghost lg" data-act="lead" data-arg="plan" data-lead-item="${bp.id}" ${cta('subscribe',bp.id,'lesson')}>${t('all_courses_n',{n:paidCount()})} · ${fmt(bp.price)} ${t('per_mo_short')}</button>`:''}</div></div>`}
 function blockDone(b){if(b.t==='quiz')return !!(S.quiz[b.id]&&S.quiz[b.id].ok);if(b.t==='sandbox')return !!(S.quiz[b.id]&&S.quiz[b.id].score>=7);return true}
 const CALL_IC={tip:'bulb',important:'info',error:'warn',example:'check'};
 function renderBlock(b,i,lid){
@@ -557,7 +560,6 @@ document.addEventListener('click',async e=>{
   case 'pickAud':catF={q:'',aud:arg};break;
   case 'catAud':catF.aud=arg;refreshCatalog();break;
   case 'catReset':catF={q:'',aud:''};render();break;
-  case 'planPick':{planSel=arg;const y=scrollY;render();scrollTo({top:y,behavior:'instant'});break}
   case 'vplay':{PX.goal('demo_play',{});const {v}=demoEls();if(v.ended||v.currentTime>=v.duration-0.1||!v.dataset.started){v.currentTime=0;v.dataset.started='1'}v.play();T.ev('click','demo_play',{place:'demo'});break}
   case 'vtoggle':{const {v}=demoEls();v.paused?v.play():v.pause();break}
   case 'vsound':{const {v}=demoEls();v.muted=!v.muted;a.innerHTML=ic(v.muted?'mute':'vol','ico s',2);a.title=t(v.muted?'sound_on':'sound_off');break}

@@ -338,6 +338,20 @@ header.top.scrolled{border-bottom-color:var(--line)}
 .tl-bad{color:#FFC7A6;padding-left:24px}.tl-bad .ico{color:#FF9A5C}
 .fitplot{width:100%;height:auto;background:#0B0D11;border-radius:12px}
 .sbx input[type=range]{padding:0;border:0;background:transparent;accent-color:#FF6B1A}
+
+/* понятные цены */
+.pgrid{max-width:1000px}
+.plist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.prow{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;text-decoration:none;font-size:14.5px;border-top:1px solid var(--line);transition:background .15s}
+.prow:first-child{border-top:0}.prow:hover{background:var(--bg)}
+.prow b{white-space:nowrap;font-family:Manrope}
+.pnote{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:24px;padding:14px 18px;border-radius:14px;background:var(--green-soft);color:var(--ink2);font-size:15px;max-width:1000px}
+.pnote>.ico{color:var(--green)}
+.pwhich{display:flex;flex-direction:column;gap:8px;margin-top:14px;padding:16px 18px;border-radius:14px;border:1px dashed var(--line);font-size:15px;color:var(--ink2);max-width:1000px}
+.pwhich span{display:flex;gap:10px;align-items:flex-start}.pwhich .ico{margin-top:3px;color:var(--muted)}
+.orline{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+.orline::before,.orline::after{content:"";flex:1;height:1px;background:var(--line)}
+.subbox{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;background:var(--bg2)}
 /* modal / toast */
 .modal-bg{position:fixed;inset:0;background:rgba(10,12,16,.5);z-index:90;display:grid;place-items:center;padding:16px;animation:fade .2s}
 .modal{background:var(--card);border-radius:24px;max-width:460px;width:100%;max-height:92vh;overflow:auto;padding:32px;box-shadow:var(--sh-lg);position:relative;animation:modalin .35s var(--ease)}

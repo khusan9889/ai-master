@@ -101,7 +101,7 @@ function pageLabel(p) {
 function itemLabel(id) {
   if (!id) return '—';
   const c = store.db.courses.find((x) => x.id === id); if (c) return loc(c.title);
-  const p = store.db.plans.find((x) => x.id === id); if (p) return `Подписка ${p.months} мес`;
+  const p = store.db.plans.find((x) => x.id === id); if (p) return p.months === 1 ? 'Подписка на все курсы' : `Подписка ${p.months} мес`;
   return id;
 }
 

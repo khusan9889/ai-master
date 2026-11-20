@@ -10,7 +10,7 @@ const FILE = path.join(DATA_DIR, 'db.json');
 
 function fresh() {
   return {
-    version: 5,
+    version: 6,
     seq: { lead: 0 },
     adminSessions: {},
     courses: JSON.parse(JSON.stringify(seed.courses)),
@@ -50,6 +50,15 @@ function load() {
       data.version = 5;
       flush();
       console.log('[db] курсы и уроки обновлены (версия 5), резервная копия сохранена');
+    }
+    // v6: простое ценообразование — у курса своя цена, плюс одна месячная подписка на все курсы.
+    // Меняем только тарифы; курсы, их цены, заявки и настройки не трогаем.
+    if (data.version < 6) {
+      fs.copyFileSync(FILE, FILE.replace(/\.json$/, `.backup-v${data.version}.json`));
+      data.plans = def.plans;
+      data.version = 6;
+      flush();
+      console.log('[db] тарифы упрощены: одна месячная подписка (версия 6), резервная копия сохранена');
     }
   } else {
     data = fresh();

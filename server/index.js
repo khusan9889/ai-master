@@ -86,7 +86,7 @@ app.get('/api/catalog', (req, res) => {
   const s = db().settings;
   res.json({
     courses: db().courses.filter((c) => c.published).sort((a, b) => (a.order || 0) - (b.order || 0)),
-    plans: db().plans,
+    plans: db().plans.filter((p) => p.active !== false),
     settings: { contactPhone: s.contactPhone, contactTelegram: s.contactTelegram, metaPixelId: s.metaPixelId, yandexMetrikaId: s.yandexMetrikaId, gaId: s.gaId, clarityId: s.clarityId }
   });
 });
@@ -124,7 +124,7 @@ app.post('/api/leads', limit('lead', 6, 10 * 60e3), async (req, res) => {
   // курс: явно выбранный, либо страница курса/урока, с которой отправлена заявка
   const course = db().courses.find((c) => c.id === itemId) || db().courses.find((c) => c.id === clean(b.course, 60));
   const viewed = (Array.isArray(b.viewed) ? b.viewed : []).slice(0, 10).map((id) => db().courses.find((c) => c.id === id)).filter((c) => c && c !== course).map((c) => loc(c.title));
-  const planText = plan ? `Подписка на все курсы, ${plan.months} мес · ${sum(plan.price)}` : '';
+  const planText = plan ? (plan.months === 1 ? `Подписка на все курсы · ${sum(plan.price)} в месяц` : `Подписка на все курсы, ${plan.months} мес · ${sum(plan.price)}`) : '';
   const item = [course ? `Курс «${loc(course.title)}»` : '', planText].filter(Boolean).join(' · ');
   const src = an.source(b.c || {}, req.hostname);
   const lead = {
@@ -255,7 +255,7 @@ A.put('/lessons/:id', (req, res) => {
 A.get('/plans', (req, res) => res.json({ plans: db().plans }));
 A.put('/plans', (req, res) => {
   const p = req.body?.plans; if (!Array.isArray(p)) return bad(res, 400, 'Неверный формат');
-  db().plans = p.map((x) => ({ id: clean(x.id, 20), months: Math.max(1, Number(x.months) || 1), price: Math.max(0, Number(x.price) || 0), best: !!x.best }));
+  db().plans = p.map((x) => ({ id: clean(x.id, 20) || 'sub1', months: Math.max(1, Number(x.months) || 1), price: Math.max(0, Number(x.price) || 0), best: !!x.best, active: x.active !== false }));
   store.save(); res.json({ plans: db().plans });
 });
 
